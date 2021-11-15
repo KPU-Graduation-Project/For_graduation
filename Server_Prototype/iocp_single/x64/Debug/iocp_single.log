@@ -1,0 +1,6 @@
+﻿  client.cpp
+C:\Users\dncks\Desktop\졸작 프로토타입\iocp_single\iocp_single\client.cpp(112,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  IOCP_server.cpp
+  main.cpp
+  코드를 생성하고 있습니다...
+  iocp_single.vcxproj -> C:\Users\dncks\Desktop\졸작 프로토타입\iocp_single\x64\Debug\iocp_single.exe
