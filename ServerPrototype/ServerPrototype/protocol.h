@@ -1,7 +1,7 @@
 #pragma once
 
 const short SERVER_PORT = 4000;
-const int BUFSIZE = 256;
+const int   BUFSIZE = 256;
 
 const int  WORLD_HEIGHT = 400;
 const int  WORLD_WIDTH = 400;
@@ -24,6 +24,8 @@ struct packet_info
 	unsigned char size;
 	char	      type;
 };
+
+
 
 // 기본 플레이어 데이터. 
 struct player_data{  
@@ -64,7 +66,7 @@ struct player_data{
 	float HandRAngle_y;
 	float HandRAngle_z;
 
-		float HandRPosition_x;
+	float HandRPosition_x;
 	float HandRPosition_y;
 	float HandRPosition_z;
 
@@ -148,7 +150,7 @@ struct cs_packet_move {
 struct sc_packet_login_ok {
 	packet_info           info;
 	short		          id;          // 플레이어 식별키
-	//short                 room_num;    // 다중 매칭시 방 번호. 다중 매칭 구현 전까지 기본 0;
+	short                 room_num;    // 다중 매칭시 방 번호. 다중 매칭 구현 전까지 기본 0;
 	bool                  is_char1;    // true: 1P  false: 2P
 	player_data_to_send   player_data; // 초기 플레이어 데이터
 };

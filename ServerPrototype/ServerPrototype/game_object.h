@@ -4,7 +4,11 @@
 class CGameObject
 {
 public:
+
+protected:
 	virtual void Init();
+
+public:
 	void SetPosition(fvector3 pos);
 	void SetLook(fvector3 pos);
 
@@ -12,9 +16,11 @@ public:
 	fvector3 GetLook();
 
 	explicit CGameObject();
-		~CGameObject();
+	~CGameObject();
 
 private:
+
+protected:
 	fvector3 m_pos;
 	fvector3 m_look;
 	// 바운딩박스

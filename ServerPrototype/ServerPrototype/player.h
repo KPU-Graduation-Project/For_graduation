@@ -1,6 +1,7 @@
 #pragma once
 #include "game_object.h"
 #include "header_files.h"
+#include "protocol.h"
 
 class CPlayer:CGameObject
 {
@@ -24,6 +25,8 @@ public:
 	fvector3 GetLHandAngle();
 	fvector3 GetRHandPosition();
 	fvector3 GetRHandAngle();
+
+
 
 	explicit CPlayer();
 	~CPlayer();

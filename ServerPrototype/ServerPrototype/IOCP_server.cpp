@@ -146,6 +146,23 @@ void CIOCPServer::DoRecv(CEXP_OVER* exp_over, const short client_id, const DWORD
 	cl.DoRecv();
 };
 
+
+void  CIOCPServer::SendLoginOKPacket(const short id)
+{
+	sc_packet_login_ok packet;
+	packet.info.size = sizeof(packet);
+	packet.info.size = sc_packet_login_ok;
+	clients[c_id].do_send(sizeof(packet), &packet);
+
+	sc_packet_login_ok packet;
+	packet.id = c_id;
+	packet.size = sizeof(packet);
+	packet.type = SC_PACKET_LOGIN_OK;
+	packet.x = clients[c_id].x;
+	packet.y = clients[c_id].y;
+	clients[c_id].do_send(sizeof(packet), &packet);
+}
+
 void  CIOCPServer::ProcessPacket(const short client_id, unsigned char* p)
 {
 	unsigned char packet_type = p[1];
@@ -161,8 +178,8 @@ void  CIOCPServer::ProcessPacket(const short client_id, unsigned char* p)
 		//
 		short room_num = 0;   // 매칭룸 생성 전까지 0으로 설정
 		bool is_char1 = true; // 일단 1번 캐릭터로 설정
-		player_data_to_send p_data;
-		SendLoginOKPacket(client_id, room_num,is_char1, p_data);
+		cl.InitPlayer();
+		SendLoginOKPacket(client_id);
 		break;
 	}
 	case CS_PACKET_MOVE:

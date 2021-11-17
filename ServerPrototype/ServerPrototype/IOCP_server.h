@@ -1,4 +1,4 @@
-fo1#pragma once
+#pragma once
 #include <WS2tcpip.h>
 #include <MSWSock.h>
 #include <iostream>
@@ -28,7 +28,7 @@ public:
 	void DoDisconnect(const short client_id);
 	void ProcessPacket(const short client_id, unsigned char* packet_start);
 
-	void SendLoginOKPacket(const short id, const short room_num, const bool is_char1, player_data_to_send p_data);
+	void SendLoginOKPacket(const short id);
 	void SendMovePacket();
 	void SendPutPacket();
 	void SendRemovePacket();

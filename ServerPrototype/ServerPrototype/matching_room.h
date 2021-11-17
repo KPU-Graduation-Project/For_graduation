@@ -4,8 +4,10 @@
 
 class CMatchingRoom
 {
+public:
 	explicit CMatchingRoom();
 	~CMatchingRoom();
 
+private:
 
 };

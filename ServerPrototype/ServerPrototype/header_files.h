@@ -6,3 +6,4 @@ struct fvector3
 	float y;
 	float z;
 };
+

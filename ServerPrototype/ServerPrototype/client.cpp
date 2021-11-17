@@ -26,6 +26,13 @@ void CClient::CloseSocket()
 	closesocket(m_socket);
 }
 
+void CClient::InitPlayer()
+{
+	m_player.Init();
+
+}
+
+
 void CClient::SetState(STATE state)
 {
 	m_state = state;
@@ -108,6 +115,7 @@ explicit CClient::CClient()
 {
 	m_state = ST_FREE;
 	m_prev_size = 0;
+
 };
 explicit CClient::CClient(const char* name, short id)
 {

@@ -21,6 +21,8 @@ public:
 	void Lock();
 	void Unlock();
 
+	void InitPlayer();
+
 	void SetState(STATE state);
 	void SetID(const short id);
 	void SetName(const char* name);
@@ -29,7 +31,6 @@ public:
 	void SetPrevSize(const int prev_size);
 	void SetSocket(const SOCKET& socket);
 	
-
 	STATE GetState();
 	int  GetID();
 	short GetRoomNum();
@@ -44,7 +45,7 @@ public:
 
 private:
 	STATE                 m_state = ST_FREE;
-	short		              m_id;                 // 플레이어 식별키
+	short		          m_id;                 // 클라이언트 식별키
 	char	              m_name[MAX_NAME_SIZE];// 플레이어 닉네임
 	short                 m_room_num = -1;      // 다중 매칭시 방 번호, 아직 매칭 잡히기 전 = -1. 다중매칭 전까지는 방번호 0으로
 	bool                  m_is_char1 = true;    // true: 1P  false: 2P
