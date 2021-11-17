@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 #include "IOCP_server.h"
 
 using namespace std;
@@ -125,7 +124,7 @@ void CIOCPServer::DoSend(CEXP_OVER* exp_over)
 
 };
 
-void CIOCPServer::DoRecv(CEXP_OVER* exp_over, const int client_id, const DWORD num_byte)
+void CIOCPServer::DoRecv(CEXP_OVER* exp_over, const short client_id, const DWORD num_byte)
 {
 	CClient& cl = m_clients[client_id];
 	int remain_data = num_byte + cl.GetPrevSize();
@@ -147,14 +146,26 @@ void CIOCPServer::DoRecv(CEXP_OVER* exp_over, const int client_id, const DWORD n
 	cl.DoRecv();
 };
 
-void  CIOCPServer::ProcessPacket(const int client_id, unsigned char* packet)
+void  CIOCPServer::ProcessPacket(const short client_id, unsigned char* p)
 {
-	unsigned char packet_type = packet[1];
+	unsigned char packet_type = p[1];
 	CClient& cl = m_clients[client_id];
 
 	//프로토콜별 처리
 	switch (packet_type) {
 	case CS_PACKET_LOGIN:
+	{
+		cs_packet_login* packet = reinterpret_cast<cs_packet_login*>(p);
+		//로그인 가능한지 체크
+		cl.SetName(packet->name);
+		//
+		short room_num = 0;   // 매칭룸 생성 전까지 0으로 설정
+		bool is_char1 = true; // 일단 1번 캐릭터로 설정
+		player_data_to_send p_data;
+		SendLoginOKPacket(client_id, room_num,is_char1, p_data);
+		break;
+	}
+	case CS_PACKET_MOVE:
 	{
 
 		break;
@@ -163,7 +174,7 @@ void  CIOCPServer::ProcessPacket(const int client_id, unsigned char* packet)
 	}
 };
 
-void CIOCPServer::DoDisconnect(const int client_id)
+void CIOCPServer::DoDisconnect(const short client_id)
 {
 	m_clients[client_id].Lock();
 	m_clients[client_id].CloseSocket();

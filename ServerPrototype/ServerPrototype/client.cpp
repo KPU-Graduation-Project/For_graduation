@@ -31,10 +31,15 @@ void CClient::SetState(STATE state)
 	m_state = state;
 };
 
-void CClient::SetID(const int id) 
+void CClient::SetID(const short id)
 {
 	m_id = id;
 };
+
+void CClient::SetName(const char* name)
+{
+	memcpy(m_name, name, MAX_NAME_SIZE);
+}
 
 void CClient::SetRoomNum(const short room_num)
 {
@@ -55,6 +60,7 @@ void CClient::SetSocket(const SOCKET& socket)
 {
 	m_socket = socket;
 }
+
 void CClient::InitRecvOver()
 {
 	m_recv_over.m_comp_op = OP_RECV;
@@ -63,9 +69,8 @@ void CClient::InitRecvOver()
 	ZeroMemory(&m_recv_over.m_wsa_over, sizeof(m_recv_over.m_wsa_over));
 }
 
-
 short CClient::GetRoomNum()
-{
+{	
 	return m_room_num;
 };
 
@@ -99,13 +104,12 @@ void CClient::Unlock()
 	m_state_lock.unlock();
 }
 
-
 explicit CClient::CClient()
 {
 	m_state = ST_FREE;
 	m_prev_size = 0;
 };
-explicit CClient::CClient(const char* name, int id)
+explicit CClient::CClient(const char* name, short id)
 {
 	m_state = ST_FREE;
 	m_prev_size = 0;
@@ -116,7 +120,6 @@ CClient::~CClient()
 {
 	closesocket(m_socket);
 };
-
 
 void CClient::ErrorDisplay(int err_no)
 {

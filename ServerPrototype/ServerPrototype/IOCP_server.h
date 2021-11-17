@@ -1,6 +1,7 @@
-#pragma once
+fo1#pragma once
 #include <WS2tcpip.h>
 #include <MSWSock.h>
+#include <iostream>
 #include <thread>
 #include <vector>
 #include <array>
@@ -23,9 +24,15 @@ public:
 	void WorkerThread();
 	void DoAccept(CEXP_OVER* exp_over);
 	void DoSend(CEXP_OVER* exp_over);
-	void DoRecv(CEXP_OVER* exp_over, const int client_id, const DWORD num_byte);
-	void DoDisconnect(const int client_id);
-	void ProcessPacket(const int client_id, unsigned char* packet_start);
+	void DoRecv(CEXP_OVER* exp_over, const short client_id, const DWORD num_byte);
+	void DoDisconnect(const short client_id);
+	void ProcessPacket(const short client_id, unsigned char* packet_start);
+
+	void SendLoginOKPacket(const short id, const short room_num, const bool is_char1, player_data_to_send p_data);
+	void SendMovePacket();
+	void SendPutPacket();
+	void SendRemovePacket();
+
 
 	void ErrorDisplay(int err_no);
 	int GetNewID();	

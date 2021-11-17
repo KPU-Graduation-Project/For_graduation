@@ -142,15 +142,20 @@
   <ItemGroup>
     <ClCompile Include="client.cpp" />
     <ClCompile Include="exp_over.cpp" />
+    <ClCompile Include="game_object.cpp" />
     <ClCompile Include="IOCP_server.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matching_room.cpp" />
+    <ClCompile Include="player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client.h" />
     <ClInclude Include="exp_over.h" />
+    <ClInclude Include="game_object.h" />
+    <ClInclude Include="header_files.h" />
     <ClInclude Include="IOCP_server.h" />
     <ClInclude Include="matching_room.h" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="protocol.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

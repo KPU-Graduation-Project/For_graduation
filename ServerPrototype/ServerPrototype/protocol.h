@@ -49,7 +49,7 @@ struct player_data{
 	float HandLAngle_y;
 	float HandLAngle_z;
 
-		float HandLPosition_x;
+	float HandLPosition_x;
 	float HandLPosition_y;
 	float HandLPosition_z;
 
@@ -147,21 +147,21 @@ struct cs_packet_move {
 //---------------------------------------------------
 struct sc_packet_login_ok {
 	packet_info           info;
-	int		              id;          // 플레이어 식별키
-	short                 room_num;    // 다중 매칭시 방 번호. 다중 매칭 구현 전까지 기본 0;
+	short		          id;          // 플레이어 식별키
+	//short                 room_num;    // 다중 매칭시 방 번호. 다중 매칭 구현 전까지 기본 0;
 	bool                  is_char1;    // true: 1P  false: 2P
 	player_data_to_send   player_data; // 초기 플레이어 데이터
 };
 
 struct sc_packet_move {
 	packet_info   info;
-	int		id;
+	short		id;
 	short  x, y;
 };
 
 struct sc_packet_put_object {
 	packet_info   info;
-	int id;
+	short id;
 	short x, y;
 	char object_type;
 	char	name[MAX_NAME_SIZE];
@@ -169,6 +169,6 @@ struct sc_packet_put_object {
 
 struct sc_packet_remove_object {
 	packet_info   info;
-	int id;
+	short id;
 };
 #pragma pack(pop)

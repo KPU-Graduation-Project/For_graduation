@@ -12,8 +12,8 @@
 int main()
 {
 	wcout.imbue(locale("korean"));
-	CIOCPServer IOCP_server;
+	CIOCPServer* IOCP_server=new CIOCPServer;
 
-	IOCP_server.Init(SERVER_PORT);
-	IOCP_server.Release();
+	IOCP_server->Init(SERVER_PORT);
+	IOCP_server->Release();
 }
