@@ -89,7 +89,10 @@
     <ClInclude Include="player.h">
       <Filter>소스 파일\04 game_object\01 player</Filter>
     </ClInclude>
-    <ClInclude Include="header_files.h">
+    <ClInclude Include="enum.h">
+      <Filter>소스 파일\99 header_files</Filter>
+    </ClInclude>
+    <ClInclude Include="struct.h">
       <Filter>소스 파일\99 header_files</Filter>
     </ClInclude>
   </ItemGroup>

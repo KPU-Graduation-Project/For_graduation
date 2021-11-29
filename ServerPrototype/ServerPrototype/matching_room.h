@@ -1,11 +1,12 @@
 #pragma once
+#include "struct.h"
 #include "protocol.h"
 
 
 class CMatchingRoom
 {
 public:
-	explicit CMatchingRoom();
+	CMatchingRoom();
 	~CMatchingRoom();
 
 private:

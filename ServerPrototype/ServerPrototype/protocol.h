@@ -1,176 +1,206 @@
 #pragma once
+#include "struct.h"
 
-const short SERVER_PORT = 4000;
-const int   BUFSIZE = 256;
+const short SERVER_PORT = 5000;
+const int   BUFSIZE = 512;
 
 const int  WORLD_HEIGHT = 400;
 const int  WORLD_WIDTH = 400;
 const int  MAX_NAME_SIZE = 20;
 
-const char CS_PACKET_LOGIN = 1;
-const char CS_PACKET_MOVE = 2;
 
+//===================================================
+//             CLIENT TO SERVER PACKET NUM
+//===================================================
+//--------------------InTitle------------------------
+const char CS_PACKET_LOGIN = 1;
+
+//--------------------InLobby------------------------
+const char CS_PACKET_PLAY_RANDOM_MATCHING = 2;
+const char CS_PACKET_CREATE_MATCHING_ROOM = 3;
+const char CS_PACKET_JOIN_MATCHING_ROOM = 4;
+const char CS_PACKET_STOP_MATHCING = 5;
+
+//----------------InMatchingRoom---------------------
+const char CS_PACKET_CHANGE_CHARACTER = 6;
+const char CS_PACKET_CHANGE_READY = 7;
+
+//--------------------InGame------------------------
+
+
+      
+
+//===================================================
+//             SERVER TO CLIENT PACKET NUM
+//===================================================
+//--------------------InTitle------------------------
 const char SC_PACKET_LOGIN_OK = 1;
-const char SC_PACKET_MOVE = 2;
-const char SC_PACKET_PUT_OBJECT = 3;
-const char SC_PACKET_REMOVE_OBJECT = 4;
+
+//--------------------InLobby------------------------
+const char SC_PACKET_START_RANDOM_MATHCING = 2;
+const char SC_PACKET_MATHCING_ROOM_CREATED = 3;
+const char SC_PACKET_JOINING_MATCHING_ROOM = 4;
+const char SC_PACKET_STOP_MATHCING = 5;
+const char SC_PACKET_PLAYER_MATCHED = 6;
+
+//----------------InMatchingRoom---------------------
+const char SC_PACKET_CHANGE_CHARACTER = 7;
+const char SC_PACKET_CHANGE_READY = 8;
+const char SC_PACKET_GAME_START = 9;
+
+//--------------------InGame------------------------
+const char SC_PACKET_CHANGE_STAGE = 10;
 
 #pragma pack (push, 1)
-
-//모든 패킷에 공통으로 들어감.
-//무조건 패킷 맨 앞에 위치
-struct packet_info             
+//===================================================
+//             CLIENT TO SERVER PACKET
+//===================================================
+//--------------------InTitle------------------------
+struct cs_packet_login 
 {
-	unsigned char size;
-	char	      type;
+	packet_info           info;
+	char	              name[MAX_NAME_SIZE]; //사용? 미사용?
 };
 
-
-
-// 기본 플레이어 데이터. 
-struct player_data{  
-	// Head
-	float HeadLookDir_x;
-	float HeadLookDir_y;
-	float HeadLookDir_z;
-
-	float HeadPosition_x;
-	float HeadPosition_y;
-	float HeadPosition_z;
-
-	// Body
-	float BodyLookDir_x;
-	float BodyLookDir_y;
-	float BodyLookDir_z;
-
-	float BodyPosition_x;
-	float BodyPosition_y;
-
-	// LeftHand
-	float HandLAngle_x;
-	float HandLAngle_y;
-	float HandLAngle_z;
-
-	float HandLPosition_x;
-	float HandLPosition_y;
-	float HandLPosition_z;
-
-	float HandLFingerAngle0;
-	float HandLFingerAngle1;
-	float HandLFingerAngle2;
-	float HandLFingerAngle3;
-	float HandLFingerAngle4;
-
-	// RightHand
-	float HandRAngle_x;
-	float HandRAngle_y;
-	float HandRAngle_z;
-
-	float HandRPosition_x;
-	float HandRPosition_y;
-	float HandRPosition_z;
-
-	float HandRFingerAngle0;
-	float HandRFingerAngle1;
-	float HandRFingerAngle2;
-	float HandRFingerAngle3;
-	float HandRFingerAngle4;
-
-};
-
-// 통신용 플레이어 데이터. 기본 플레이어 데이터에서 서버에서 필요로 하는 데이터만 포함.
-// 자주 변경될 것 같아서 일단 하드코딩, 이후 float3 등으로 묶겠음
-struct player_data_to_send
+//--------------------InLobby------------------------
+struct cs_packet_play_random_matching
 {
-	// Head
-	float head_pos_x;
-	float head_pos_y;
-	float head_pos_z;
-
-	float head_look_x;
-	float head_look_y;
-	float head_look_z;
-	
-	// Body
-	float body_pos_x;
-	float body_pos_y;
-
-	float body_look_x;
-	float body_look_y;
-	float body_look_z;
-
-	// LeftHand
-	float lhand_pos_x;
-	float lhand_pos_y;
-	float lhand_pos_z;
-
-	float lhand_angle_x;
-	float lhand_angle_y;
-	float lhand_angle_z;
-
-	float lhand_finger_angle_0;
-	float lhand_finger_angle_1;
-	float lhand_finger_angle_2;
-	float lhand_finger_angle_3;
-	float lhand_finger_angle_4;
-
-	// RightHand
-	float rhand_pos_x;
-	float rhand_pos_y;
-	float rhand_pos_z;
-
-	float rhand_angle_x;
-	float rhand_angle_y;
-	float rhand_angle_z;
-
-	float rhand_finger_angle_0;
-	float rhand_finger_angle_1;
-	float rhand_finger_angle_2;
-	float rhand_finger_angle_3;
-	float rhand_finger_angle_4;
-};
-
-//---------------------------------------------------
-//             client to server packet
-//---------------------------------------------------
-struct cs_packet_login {
 	packet_info           info;
-	char	              name[MAX_NAME_SIZE];
 };
 
-struct cs_packet_move {
+struct cs_packet_create_matching_room
+{
 	packet_info           info;
-	player_data_to_send   player_data;
 };
 
 
-//---------------------------------------------------
-//             server to client packet
-//---------------------------------------------------
-struct sc_packet_login_ok {
+struct cs_packet_join_matching_room
+{
+	packet_info           info;
+	short                 room_name; // 방 생성자의 id로 방 매칭
+};
+
+struct cs_packet_stop_matching
+{
+	packet_info           info;
+	// 0 = stop random_mathcing / 1 = exit created mathcing room / 2 = stop joining matching room 
+	char                  matching_type; 
+};
+
+//------------------InMatchingRoom--------------------
+struct cs_packet_change_character
+{
+	packet_info           info;
+	char                  choose_char; // 0 = char_1 / 1 = char_2 / 2 = 가운데(최초 입장시에만)
+};
+
+struct cs_packet_change_ready  
+{
+	packet_info           info;
+	char                  try_ready; // 0 = try to unready / 1 = try to ready
+};
+
+//---------------------InGame------------------------
+//struct cs_packet_move
+//{
+//	packet_info           info;
+//	player_data           player_data;
+//};
+
+
+//===================================================
+//             SERVER TO CLIENT
+//===================================================
+//--------------------InTitle------------------------
+struct sc_packet_login_ok 
+{
 	packet_info           info;
 	short		          id;          // 플레이어 식별키
-	short                 room_num;    // 다중 매칭시 방 번호. 다중 매칭 구현 전까지 기본 0;
-	bool                  is_char1;    // true: 1P  false: 2P
-	player_data_to_send   player_data; // 초기 플레이어 데이터
 };
 
-struct sc_packet_move {
-	packet_info   info;
-	short		id;
-	short  x, y;
+//--------------------InLobby------------------------
+// cs_packet_play_random_matching 수신시 매칭 큐에 들어갔음을 알림
+struct sc_packet_start_random_matching 
+{
+	packet_info           info;
 };
 
-struct sc_packet_put_object {
-	packet_info   info;
-	short id;
-	short x, y;
-	char object_type;
-	char	name[MAX_NAME_SIZE];
+// cs_packet_create_matching_room 수신시 방을 생성하고 생성되었음을 알림
+struct sc_packet_matching_room_created  
+{
+	packet_info           info;
+	short                 room_name; // 방 생성자의 id로 방 매칭
 };
 
-struct sc_packet_remove_object {
-	packet_info   info;
-	short id;
+// cs_packet_join_matching_room 수신시 해당 방 이름으로 매칭 대기중임을 알림
+struct sc_packet_joining_matching_room
+{
+	packet_info           info;
+	short                 room_name;  // 방 생성자의 id로 방 매칭
+};
+
+struct sc_packet_stop_matching
+{
+	packet_info           info;
+};
+
+// 매칭 대기중 혹은 방 생성 대기중인 플레이어에게 매칭이 잡혔음을 알림
+// 이후 매칭 상대 등에 대한 정보를 뒤이어 송신
+struct sc_packet_player_matched
+{
+	packet_info           info;
+	short                 other_id;
+};
+
+//------------------InMatchingRoom--------------------
+struct sc_packet_change_character
+{
+	packet_info           info;
+	short                 id;
+	char                  choose_char; // 0 = char_1 / 1 = char_2 / 2 = 가운데(최초 입장시에만)
+};
+
+struct sc_packet_change_ready
+{
+	packet_info           info;
+	short                 id;
+	char                  ready; // 0 = diable reay button / 1 = unready / 2 = ready
+};
+
+// 두 플레이어가 다 준비했을 때 게임 시작
+struct sc_packet_game_start
+{
+	packet_info           info;
+	char                  stage; // 처음엔 sc_packet_game_start로 stage 전송, 이후엔 sc_packet_change_stage로
+};
+
+//---------------------InGame------------------------
+
+
+
+//struct sc_packet_move {
+//	packet_info   info;
+//	short		id;
+//	short  x, y;
+//};
+//
+//struct sc_packet_put_object {
+//	packet_info   info;
+//	short id;
+//	short x, y;
+//	char object_type;
+//	char	name[MAX_NAME_SIZE];
+//};
+//
+//struct sc_packet_remove_object {
+//	packet_info   info;
+//	short id;
+//};
+
+// 게임을 진행하면서 스테이지가 바뀔때 전송
+struct sc_packet_change_stage
+{
+	packet_info           info;
+	char                  stage;
 };
 #pragma pack(pop)

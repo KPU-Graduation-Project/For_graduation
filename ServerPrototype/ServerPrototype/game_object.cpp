@@ -1,8 +1,10 @@
 #include "game_object.h"
 
-explicit CGameObject::CGameObject() {};
+CGameObject::CGameObject() {};
 
 CGameObject::~CGameObject() {};
+
+void CGameObject::Init() {};
 
 void CGameObject::SetPosition(fvector3 pos) { m_pos = pos; };
 

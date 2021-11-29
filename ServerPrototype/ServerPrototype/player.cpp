@@ -38,6 +38,6 @@ fvector3 CPlayer::GetRHandAngle() { return m_rhand_angle; }
 
 
 
-explicit CPlayer::CPlayer() {};
+CPlayer::CPlayer() {};
 
 CPlayer::~CPlayer() {};

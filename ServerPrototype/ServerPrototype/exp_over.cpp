@@ -2,7 +2,7 @@
 #include "exp_over.h"
 
 
-explicit CEXP_OVER::CEXP_OVER(COMP_OP comp_op, char num_bytes, void* mess) : m_comp_op(comp_op)
+CEXP_OVER::CEXP_OVER(COMP_OP comp_op, char num_bytes, void* mess) : m_comp_op(comp_op)
 {
 	ZeroMemory(&m_wsa_over, sizeof(m_wsa_over));
 	m_wsa_buf.buf = reinterpret_cast<char*>(m_net_buf);
@@ -10,9 +10,9 @@ explicit CEXP_OVER::CEXP_OVER(COMP_OP comp_op, char num_bytes, void* mess) : m_c
 	memcpy(m_net_buf, mess, num_bytes);
 }
 
-explicit CEXP_OVER::CEXP_OVER(COMP_OP comp_op) : m_comp_op(comp_op) {}
+CEXP_OVER::CEXP_OVER(COMP_OP comp_op) : m_comp_op(comp_op) {}
 
-explicit CEXP_OVER::CEXP_OVER()
+CEXP_OVER::CEXP_OVER()
 {
 	m_comp_op = OP_RECV;
 }

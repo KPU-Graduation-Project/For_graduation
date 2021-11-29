@@ -12,11 +12,11 @@ public:
 	WSABUF			m_wsa_buf;
 	unsigned char	m_net_buf[BUFSIZE];
 public:
-	explicit CEXP_OVER(COMP_OP comp_op, char num_bytes, void* mess);
+	CEXP_OVER(COMP_OP comp_op, char num_bytes, void* mess);
 
-	explicit CEXP_OVER(COMP_OP comp_op);
+	CEXP_OVER(COMP_OP comp_op);
 
-	explicit CEXP_OVER();
+	CEXP_OVER();
 
 	~CEXP_OVER();
 };

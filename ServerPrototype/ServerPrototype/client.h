@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <mutex>
+#include "struct.h"
 #include "protocol.h"
 #include "exp_over.h"
 #include "player.h"
@@ -39,8 +40,8 @@ public:
 
 	void ErrorDisplay(int err_no);
 
-	explicit CClient();
-	explicit CClient(const char* name, short id);
+	CClient();
+	CClient(const char* name, short id);
 	~CClient();
 
 private:

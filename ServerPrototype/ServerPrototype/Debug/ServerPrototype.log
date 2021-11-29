@@ -1,8 +1,8 @@
-﻿  client.cpp
-C:\Git\For_graduation\ServerPrototype\ServerPrototype\client.cpp(112,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  exp_over.cpp
-  IOCP_server.cpp
+﻿  IOCP_server.cpp
+  client.cpp
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\client.cpp(124,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  game_object.cpp
   main.cpp
-  matching_room.cpp
+  player.cpp
   코드를 생성하고 있습니다...
   ServerPrototype.vcxproj -> C:\Git\For_graduation\ServerPrototype\Debug\ServerPrototype.exe

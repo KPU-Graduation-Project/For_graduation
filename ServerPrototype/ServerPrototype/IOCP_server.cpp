@@ -151,16 +151,9 @@ void  CIOCPServer::SendLoginOKPacket(const short id)
 {
 	sc_packet_login_ok packet;
 	packet.info.size = sizeof(packet);
-	packet.info.size = sc_packet_login_ok;
-	clients[c_id].do_send(sizeof(packet), &packet);
-
-	sc_packet_login_ok packet;
-	packet.id = c_id;
-	packet.size = sizeof(packet);
-	packet.type = SC_PACKET_LOGIN_OK;
-	packet.x = clients[c_id].x;
-	packet.y = clients[c_id].y;
-	clients[c_id].do_send(sizeof(packet), &packet);
+	packet.info.type = SC_PACKET_LOGIN_OK;
+	packet.id = id;
+	m_clients[id].DoSend(sizeof(packet), &packet);
 }
 
 void  CIOCPServer::ProcessPacket(const short client_id, unsigned char* p)
@@ -182,9 +175,28 @@ void  CIOCPServer::ProcessPacket(const short client_id, unsigned char* p)
 		SendLoginOKPacket(client_id);
 		break;
 	}
-	case CS_PACKET_MOVE:
+	case CS_PACKET_PLAY_RANDOM_MATCHING:
 	{
 
+		break;
+	}
+	case CS_PACKET_JOIN_MATCHING_ROOM:
+	{
+
+		break;
+	}
+	case CS_PACKET_STOP_MATHCING:
+	{
+
+		break;
+	}
+	case CS_PACKET_CHANGE_CHARACTER:
+	{
+
+		break;
+	}
+	case CS_PACKET_CHANGE_READY:
+	{
 		break;
 	}
 
@@ -239,5 +251,5 @@ void CIOCPServer::ErrorDisplay(int err_no)
 	LocalFree(lpMsgBuf);
 };
 
-explicit CIOCPServer::CIOCPServer() { };
+CIOCPServer::CIOCPServer() { };
 CIOCPServer::~CIOCPServer() { };

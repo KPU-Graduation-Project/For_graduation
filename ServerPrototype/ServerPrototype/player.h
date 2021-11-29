@@ -1,6 +1,6 @@
 #pragma once
 #include "game_object.h"
-#include "header_files.h"
+#include "struct.h"
 #include "protocol.h"
 
 class CPlayer:CGameObject
@@ -28,7 +28,7 @@ public:
 
 
 
-	explicit CPlayer();
+	CPlayer();
 	~CPlayer();
 
 private:

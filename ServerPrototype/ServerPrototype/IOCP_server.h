@@ -9,6 +9,7 @@
 #include "exp_over.h"
 #include "client.h"
 #include "matching_room.h"
+#include "struct.h"
 
 constexpr const int MAX_CLIENTS = 10;
 constexpr const int MAX_MATCHINGROOM = MAX_CLIENTS / 2;
@@ -37,7 +38,7 @@ public:
 	void ErrorDisplay(int err_no);
 	int GetNewID();	
 
-	explicit CIOCPServer();
+	CIOCPServer();
 	~CIOCPServer();
 
 private:

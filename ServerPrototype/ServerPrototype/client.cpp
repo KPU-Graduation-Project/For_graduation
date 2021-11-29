@@ -111,13 +111,13 @@ void CClient::Unlock()
 	m_state_lock.unlock();
 }
 
-explicit CClient::CClient()
+CClient::CClient()
 {
 	m_state = ST_FREE;
 	m_prev_size = 0;
 
 };
-explicit CClient::CClient(const char* name, short id)
+CClient::CClient(const char* name, short id)
 {
 	m_state = ST_FREE;
 	m_prev_size = 0;

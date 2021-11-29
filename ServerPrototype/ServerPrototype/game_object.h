@@ -1,21 +1,22 @@
 #pragma once
-#include "header_files.h"
+#include "struct.h"
 
 class CGameObject
 {
 public:
 
-protected:
-	virtual void Init();
+
 
 public:
+	virtual void Init() = 0;
+
 	void SetPosition(fvector3 pos);
 	void SetLook(fvector3 pos);
 
 	fvector3 GetPosition();
 	fvector3 GetLook();
 
-	explicit CGameObject();
+	CGameObject();
 	~CGameObject();
 
 private:
