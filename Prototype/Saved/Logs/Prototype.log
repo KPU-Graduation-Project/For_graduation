@@ -4142,3 +4142,7 @@ LogConfig: Setting CVar [[r.setres:1280x720]]
 [2021.12.01-11.58.27:950][101]PackagingResults: Error: 실행 실패! Unknown Error
 [2021.12.01-11.58.27:953][101]LogAudioDerivedData: Display: OGG 압축 오디오 포맷 CompileFailed 웨이브 빌드중...
 [2021.12.01-11.58.27:966][101]LogAudioDerivedData: Display: Updated SoundWave->RawPCMDataSize from 0 to 89512 while cooking SoundWave /Engine/EditorSounds/Notifications/CompileFailed.CompileFailed.
+[2021.12.01-12.12.31:266][ 12]LogAudioMixer: Warning: Changing default audio render device to new device: {0.0.0.00000000}.{f3560c4a-d6bd-43cc-b417-88e90d02e9a5}.
+[2021.12.01-12.12.31:266][ 12]LogAudioMixer: Resetting audio stream to device id 
+[2021.12.01-12.12.31:321][ 12]LogAudioMixer: Display: 0: FrontLeft
+[2021.12.01-12.12.31:321][ 12]LogAudioMixer: Display: 1: FrontRight
