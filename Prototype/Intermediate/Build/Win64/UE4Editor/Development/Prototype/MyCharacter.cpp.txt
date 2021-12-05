@@ -1,9 +1,0 @@
-C:\Users\Kclient\Desktop\Git\For_graduation\Prototype\Intermediate\Build\Win64\UE4Editor\Development\Prototype\Definitions.Prototype.h
-C:\Users\Kclient\Desktop\Git\For_graduation\Prototype\Source\Prototype\MyCharacter.h
-C:\Game\Epic Games\UE_4.27\Engine\Source\Runtime\Engine\Classes\GameFramework/Character.h
-C:\Game\Epic Games\UE_4.27\Engine\Source\Runtime\Engine\Classes\GameFramework/CharacterMovementReplication.h
-C:\Game\Epic Games\UE_4.27\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\CharacterMovementReplication.generated.h
-C:\Game\Epic Games\UE_4.27\Engine\Source\Runtime\Engine\Classes\GameFramework/RootMotionSource.h
-C:\Game\Epic Games\UE_4.27\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\RootMotionSource.generated.h
-C:\Game\Epic Games\UE_4.27\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine\Character.generated.h
-C:\Users\Kclient\Desktop\Git\For_graduation\Prototype\Intermediate\Build\Win64\UE4Editor\Inc\Prototype\MyCharacter.generated.h
