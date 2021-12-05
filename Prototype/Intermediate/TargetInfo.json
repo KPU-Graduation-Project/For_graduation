@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "Prototype",
+			"Path": "C:\\Users\\Kclient\\Desktop\\Git\\For_graduation\\Prototype\\Source\\Prototype.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "PrototypeEditor",
+			"Path": "C:\\Users\\Kclient\\Desktop\\Git\\For_graduation\\Prototype\\Source\\PrototypeEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

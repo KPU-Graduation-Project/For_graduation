@@ -1,0 +1,2 @@
+C:\Users\Kclient\Desktop\Git\For_graduation\Prototype\Intermediate\Build\Win64\UE4Editor\Development\Prototype\Definitions.Prototype.h
+C:\Users\Kclient\Desktop\Git\For_graduation\Prototype\Source\Prototype\Prototype.h
