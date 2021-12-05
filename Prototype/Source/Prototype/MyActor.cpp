@@ -13,7 +13,7 @@ AMyActor::AMyActor()
 
 	RootComponent = Mesh;
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> SM(TEXT("StaticMesh'/Game/MY/Actor/girl_lowpoly1.girl_lowpoly1'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> SM(TEXT("StaticMesh'/Game/MY/Actor/girl_lowpoly2test.girl_lowpoly2test'"));
 
 	if (SM.Succeeded())
 	{
@@ -25,7 +25,10 @@ AMyActor::AMyActor()
 void AMyActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// 로그(카테고리, 로깅 수준, 형식인자)
+	// LogType Warning, Error, Display...
+	UE_LOG(LogTemp, Warning, TEXT("BeginPlay %d"), 3);
 }
 
 // Called every frame
@@ -33,5 +36,7 @@ void AMyActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//UE_LOG(LogTemp, Error, TEXT("Tick %f"), DeltaTime);
+	AddActorLocalRotation(FRotator(0.f, RotateSpeed * DeltaTime, 0.f));
 }
 
