@@ -3,17 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
-#include "MyPawn.generated.h"
+#include "GameFramework/Character.h"
+#include "ProtoCharacter.generated.h"
 
 UCLASS()
-class PROTOTYPE_API AMyPawn : public APawn
+class PROTOTYPE_API AProtoCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
-	AMyPawn();
+	// Sets default values for this character's properties
+	AProtoCharacter();
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,13 +26,4 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void UpDown(float Value);
-	void LeftRight(float Value);
-
-private:
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* Mesh;
-
-	UPROPERTY(VisibleAnywhere)
-	class UFloatingPawnMovement* Movement;
 };
