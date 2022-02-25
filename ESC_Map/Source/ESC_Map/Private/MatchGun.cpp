@@ -26,8 +26,6 @@ AMatchGun::AMatchGun()
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bShouldBounce = true;
 	ProjectileMovementComponent->Bounciness = 0.3f;
-	
-	InitialLifeSpan = LifeTime;
 
 	
 }
