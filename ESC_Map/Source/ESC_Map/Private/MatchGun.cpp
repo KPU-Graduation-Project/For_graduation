@@ -51,9 +51,10 @@ void AMatchGun::FireInDirection(const FVector& ShootDirection)
 void AMatchGun::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
-	{
-		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
-	}
+	//if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
+	//{
+	//	OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
+	//}
+	
 }
 
