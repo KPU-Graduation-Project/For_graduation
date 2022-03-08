@@ -8,13 +8,15 @@
 // Sets default values
 AMatchGun::AMatchGun()
 {
+	InitialLifeSpan = 3.0f;
+	
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	CollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("Projecile"));
 	CollisionComponent->OnComponentHit.AddDynamic(this, &AMatchGun::OnHit);
-	CollisionComponent->InitSphereRadius(15.0f);
+	CollisionComponent->SetSphereRadius(15.0f);
 	
 	RootComponent = CollisionComponent;
 
@@ -26,8 +28,6 @@ AMatchGun::AMatchGun()
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bShouldBounce = true;
 	ProjectileMovementComponent->Bounciness = 0.3f;
-
-	
 }
 
 // Called when the game starts or when spawned
@@ -51,10 +51,10 @@ void AMatchGun::FireInDirection(const FVector& ShootDirection)
 void AMatchGun::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	//if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
-	//{
-	//	OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
-	//}
-	
+	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
+	{
+		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, TEXT("TEST"));
 }
 
