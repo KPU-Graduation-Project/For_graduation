@@ -5,6 +5,28 @@
 
 UMyGameInstance::UMyGameInstance()
 {
-	SocketInstance = new ClientSocket();
+	SocketInstance = nullptr;
 }
 
+UMyGameInstance::~UMyGameInstance()
+{
+	if (SocketInstance)
+	{
+		delete SocketInstance;
+	}
+}
+
+void UMyGameInstance::Init()
+{
+	Super::Init();
+	
+	InitSocket();
+	UE_LOG(LogTemp, Warning, TEXT("Instance Initialized"));
+}
+
+void UMyGameInstance::InitSocket()
+{
+	if (SocketInstance != nullptr) return;
+	
+	SocketInstance = new ClientSocket();
+}

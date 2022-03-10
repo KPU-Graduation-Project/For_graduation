@@ -17,6 +17,11 @@ class ESC_MAP_API UMyGameInstance : public UGameInstance
 
 public:
 	UMyGameInstance();
+	~UMyGameInstance();
+
+	virtual void Init() override;
+	
+	void InitSocket();
 	
 	ClientSocket* SocketInstance;
 };
