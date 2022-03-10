@@ -6,6 +6,8 @@
 #include "SocketSubsystem.h"
 #include "Interfaces/IPv4/IPv4Address.h"
 
+#pragma region Main Thread Code
+
 ClientSocket::ClientSocket()
 {
 	Socket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(TEXT("Stream"), TEXT("TEST"));
@@ -31,9 +33,52 @@ ClientSocket::ClientSocket()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Fail")));
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Socket Initialized"));
+
+	// 계속 연결 요청 만들기
+
+	Thread = FRunnableThread::Create(this, TEXT("Network Thread"));
+	
 }
 
 ClientSocket::~ClientSocket()
 {
+	if (Thread)
+	{
+		Thread->Kill();
+		delete Thread;
+	}
 }
 
+#pragma endregion
+
+bool ClientSocket::Init()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Thread has been initialized"));
+
+	return true;
+}
+
+uint32 ClientSocket::Run()
+{
+	while(bRunThread)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Thread is running"));
+		FPlatformProcess::Sleep(1.0f);
+	}
+	return 0;
+}
+
+void ClientSocket::Stop()
+{
+	bRunThread = false;
+}
+
+bool ClientSocket::Send(void* Packet)
+{
+	int32 ByteSent = 0;
+	int a = Socket->Send((uint8*)reinterpret_cast<char*>(Packet), reinterpret_cast<PRT::CS_PLAYER_DATA*>(Packet)->info.size, ByteSent);
+	
+	UE_LOG(LogTemp, Log, TEXT("%d, %d sent"), a, reinterpret_cast<PRT::CS_PLAYER_DATA*>(Packet)->info.size);
+	return true;
+}

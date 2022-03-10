@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "MyGameInstance.h"
 #include "MyPlayerController_NetworkTest.generated.h"
 
 /**
@@ -14,6 +15,10 @@ class ESC_MAP_API AMyPlayerController_NetworkTest : public APlayerController
 {
 	GENERATED_BODY()
 
+	UMyGameInstance* gameInst;
+
 public:
+	virtual void BeginPlay() override;
+	
 	AMyPlayerController_NetworkTest();
 };
