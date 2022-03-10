@@ -44,19 +44,12 @@ private:
 	fvector3 m_lhand_pos;
 	fvector3 m_lhand_angle;
 
-	float m_lhand_finger_angle0;
-	float m_lhand_finger_angle1;
-	float m_lhand_finger_angle2;
-	float m_lhand_finger_angle3;
-	float m_lhand_finger_angle4;
+
+	float m_lhand_finger_angle[5];
 
 	// RightHand
 	fvector3 m_rhand_pos;
 	fvector3 m_rhand_angle;	
 
-	float m_rhand_finger_angle0;
-	float m_rhand_finger_angle1;
-	float m_rhand_finger_angle2;
-	float m_rhand_finger_angle3;
-	float m_rhand_finger_angle4;
+	float m_rhand_finger_angle[5];
 };

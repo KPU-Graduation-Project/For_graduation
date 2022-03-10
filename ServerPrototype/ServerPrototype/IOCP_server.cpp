@@ -46,7 +46,6 @@ void CIOCPServer::Release()
 
 };
 
-
 void CIOCPServer::Close()
 {
 
@@ -159,7 +158,7 @@ void  CIOCPServer::SendLoginOKPacket(const short id)
 void  CIOCPServer::ProcessPacket(const short client_id, unsigned char* p)
 {
 	unsigned char packet_type = p[1];
-	CClient& cl = m_clients[client_id];
+	CClient& client = m_clients[client_id];
 
 	//프로토콜별 처리
 	switch (packet_type) {
@@ -167,11 +166,11 @@ void  CIOCPServer::ProcessPacket(const short client_id, unsigned char* p)
 	{
 		cs_packet_login* packet = reinterpret_cast<cs_packet_login*>(p);
 		//로그인 가능한지 체크
-		cl.SetName(packet->name);
+		client.SetName(packet->name);
 		//
 		short room_num = 0;   // 매칭룸 생성 전까지 0으로 설정
 		bool is_char1 = true; // 일단 1번 캐릭터로 설정
-		cl.InitPlayer();
+		client.InitPlayer();
 		SendLoginOKPacket(client_id);
 		break;
 	}

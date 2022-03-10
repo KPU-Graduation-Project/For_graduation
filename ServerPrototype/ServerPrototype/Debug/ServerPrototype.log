@@ -1,8 +1,33 @@
-﻿  IOCP_server.cpp
-  client.cpp
+﻿  client.cpp
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(284,1): error C2011: 'sc_packet_put_player': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(219): message : 'sc_packet_put_player' 선언을 참조하십시오.
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(328,1): error C2011: 'sc_packet_put_object': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(311): message : 'sc_packet_put_object' 선언을 참조하십시오.
 C:\Git\For_graduation\ServerPrototype\ServerPrototype\client.cpp(124,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  game_object.cpp
+  exp_over.cpp
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(284,1): error C2011: 'sc_packet_put_player': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(219): message : 'sc_packet_put_player' 선언을 참조하십시오.
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(328,1): error C2011: 'sc_packet_put_object': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(311): message : 'sc_packet_put_object' 선언을 참조하십시오.
+  IOCP_server.cpp
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(284,1): error C2011: 'sc_packet_put_player': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(219): message : 'sc_packet_put_player' 선언을 참조하십시오.
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(328,1): error C2011: 'sc_packet_put_object': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(311): message : 'sc_packet_put_object' 선언을 참조하십시오.
   main.cpp
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(284,1): error C2011: 'sc_packet_put_player': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(219): message : 'sc_packet_put_player' 선언을 참조하십시오.
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(328,1): error C2011: 'sc_packet_put_object': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(311): message : 'sc_packet_put_object' 선언을 참조하십시오.
+  matching_room.cpp
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(284,1): error C2011: 'sc_packet_put_player': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(219): message : 'sc_packet_put_player' 선언을 참조하십시오.
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(328,1): error C2011: 'sc_packet_put_object': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(311): message : 'sc_packet_put_object' 선언을 참조하십시오.
+  network_manager.cpp
   player.cpp
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(284,1): error C2011: 'sc_packet_put_player': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(219): message : 'sc_packet_put_player' 선언을 참조하십시오.
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(328,1): error C2011: 'sc_packet_put_object': 'struct' 형식 재정의
+C:\Git\For_graduation\ServerPrototype\ServerPrototype\protocol.h(311): message : 'sc_packet_put_object' 선언을 참조하십시오.
   코드를 생성하고 있습니다...
-  ServerPrototype.vcxproj -> C:\Git\For_graduation\ServerPrototype\Debug\ServerPrototype.exe
