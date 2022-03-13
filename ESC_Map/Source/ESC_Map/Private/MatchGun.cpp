@@ -26,7 +26,7 @@ AMatchGun::AMatchGun()
 	ProjectileMovementComponent->InitialSpeed = 3000.0f;
 	ProjectileMovementComponent->MaxSpeed = 3000.0f;
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
-	ProjectileMovementComponent->bShouldBounce = true;
+	ProjectileMovementComponent->bShouldBounce = false;
 	ProjectileMovementComponent->Bounciness = 0.3f;
 }
 
@@ -51,6 +51,10 @@ void AMatchGun::FireInDirection(const FVector& ShootDirection)
 void AMatchGun::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (OtherActor != this)
+	{
+		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
+	}
 	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
 	{
 		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
