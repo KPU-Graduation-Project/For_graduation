@@ -20,7 +20,10 @@ public:
 	virtual uint32 Run() override;
 	virtual void Stop() override;
 
+	bool ConnectServer();
+	
 	bool Send(void* Packet);
+	void Recv();
 
 private:
 	FRunnableThread* Thread;

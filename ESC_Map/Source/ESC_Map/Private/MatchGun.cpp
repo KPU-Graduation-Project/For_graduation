@@ -8,7 +8,7 @@
 // Sets default values
 AMatchGun::AMatchGun()
 {
-	InitialLifeSpan = 3.0f;
+	InitialLifeSpan = 20.0f;
 	
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -27,7 +27,7 @@ AMatchGun::AMatchGun()
 	ProjectileMovementComponent->MaxSpeed = 3000.0f;
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bShouldBounce = false;
-	ProjectileMovementComponent->Bounciness = 0.3f;
+	ProjectileMovementComponent->ProjectileGravityScale = 0;
 }
 
 // Called when the game starts or when spawned
@@ -41,6 +41,10 @@ void AMatchGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (isHit)
+	{
+		cmp->AddImpulseAtLocation(vel, this->GetActorLocation());
+	}
 }
 
 void AMatchGun::FireInDirection(const FVector& ShootDirection)
@@ -53,11 +57,15 @@ void AMatchGun::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPr
 {
 	if (OtherActor != this)
 	{
-		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
+			UE_LOG(LogTemp, Warning, TEXT("TEST"));
+			AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
 	}
 	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
 	{
-		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
+		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity, Hit.ImpactPoint);
+		cmp = OtherComponent;
+		vel = ProjectileMovementComponent->Velocity;
+		isHit = true;
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, TEXT("TEST"));
 }
