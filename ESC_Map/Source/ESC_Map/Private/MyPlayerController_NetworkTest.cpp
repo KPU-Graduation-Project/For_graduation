@@ -13,15 +13,15 @@ AMyPlayerController_NetworkTest::AMyPlayerController_NetworkTest()
 void AMyPlayerController_NetworkTest::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	gameInst = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(AActor::GetWorld()));
-	
+
 	if (!gameInst)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Get Gemainstance Error!"));
 	}
 	
-	PRT::CS_PLAYER_DATA packet;
+	CS_PLAYER_DATA packet;
 	
 	packet.player_position.x = 12;
 	packet.player_position.y = 24;

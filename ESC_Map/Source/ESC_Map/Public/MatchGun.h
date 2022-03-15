@@ -24,6 +24,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+	//UPROPERTY(BlueprintReadWrite, Category = Projectile)
 	class USphereComponent* CollisionComponent;
 
 	UPROPERTY(VisibleAnywhere,Category = Movement)
@@ -34,4 +35,9 @@ public:
 	
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+	float time = 5.0f;
+	bool isHit;
+	UPrimitiveComponent* cmp;
+	FVector vel;
 };
