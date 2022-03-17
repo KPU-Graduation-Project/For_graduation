@@ -8,7 +8,7 @@
 // Sets default values
 AMatchGun::AMatchGun()
 {
-	InitialLifeSpan = 20.0f;
+	InitialLifeSpan = 5.0f;
 	
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -43,7 +43,7 @@ void AMatchGun::Tick(float DeltaTime)
 
 	if (isHit)
 	{
-		cmp->AddImpulseAtLocation(vel, this->GetActorLocation());
+		cmp->AddImpulseAtLocation(FVector(FVector2D(vel), 0.f), this->GetActorLocation());
 	}
 }
 
@@ -62,7 +62,7 @@ void AMatchGun::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPr
 	}
 	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
 	{
-		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity, Hit.ImpactPoint);
+		//OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity, Hit.ImpactPoint);
 		cmp = OtherComponent;
 		vel = ProjectileMovementComponent->Velocity;
 		isHit = true;
