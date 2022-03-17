@@ -3,8 +3,6 @@
 
 #include "ClientSocket.h"
 
-#include <ThirdParty/asio/1.12.2/asio/detail/socket_ops.hpp>
-
 #include "SocketSubsystem.h"
 #include "Common/UdpSocketReceiver.h"
 #include "Interfaces/IPv4/IPv4Address.h"
@@ -13,9 +11,10 @@
 
 ClientSocket::ClientSocket(): Thread()
 {
+	Socket = nullptr;
 	if (ConnectServer())
 	{
-		Thread = FRunnableThread::Create(this, TEXT("Network Thread"));
+		Thread = FRunnableThread::Create(this, TEXT("Network Thread"), 0, TPri_BelowNormal);
 	}
 }
 
@@ -36,20 +35,31 @@ bool ClientSocket::Init()
 	return true;
 }
 
+struct sc_player_data
+{ 
+	PacketInfo info;
+	unsigned int id;
+	SVector3 player_position;
+	SVector3 player_rotation;
+
+};
+
 uint32 ClientSocket::Run()
 {
-	while(bRunThread)
+	while (Socket == nullptr);
+
+	TArray<uint8> ReceivedData;
+	uint32 Size;
+
+	while(StopTaskCounter.GetValue() == 0 && Socket->HasPendingData(Size))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Thread is running"));
-		FPlatformProcess::Sleep(0.1f);
+		int32 Read;
+		ReceivedData.SetNum(Size);
+		bool result =  Socket->Recv(ReceivedData.GetData(), ReceivedData.Num(), Read);
+		UE_LOG(LogTemp, Warning, TEXT("%s"), result? _T("True") : _T("False"));
 	}
 	return 0;
 }
-
-void ClientSocket::Stop()
-{
-	bRunThread = false;
-}	
 
 bool ClientSocket::ConnectServer()
 {
@@ -65,7 +75,6 @@ bool ClientSocket::ConnectServer()
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Trying to connect.")));
 
-	// Have to try Reconnet?
 	bool isConnetcted = Socket->Connect(*addr);
 	if (isConnetcted)
 	{
@@ -88,31 +97,4 @@ bool ClientSocket::Send(void* Packet)
 	UE_LOG(LogTemp, Log, TEXT("%d Data, %d sent"), reinterpret_cast<PACKET_DATA*>(Packet)->info.size, ByteSent);
 	
 	return isSent;
-}
-
-void ClientSocket::Recv()
-{
-	Socket->Recv();
-}
-
-bool RecvMsg(FSocket *Socket, uint32 DataSize, FString& Msg)
-{
-	TSharedRef<FInternetAddr> targetAddr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
-	TArray<uint8> ReceivedData;//Define a receiver
-	uint32 Size;
-	if (ListenSocket->HasPendingData(Size))
-	{
-		success = true;
-		str = "";
-		uint8 *Recv = new uint8[Size];
-		int32 BytesRead = 0;
-		// Adjust the array to a given number of elements. The new element will be initialized.
-		ReceivedData.SetNumUninitialized(FMath::Min(Size, 65507u));
-		ListenSocket->RecvFrom(ReceivedData.GetData(), ReceivedData.Num(), BytesRead, *targetAddr);
-		char ansiiData[1024];
-		FMemory::Memcpy(ansiiData, ReceivedData.GetData(), BytesRead);//Copy data to the receiver
-		ansiiData[BytesRead] = 0; //Judge the end of the data
-		FString debugData = ANSI_TO_TCHAR(ansiiData); //string conversion
-		str = debugData;
-	}
 }
