@@ -3,15 +3,10 @@
 
 #include "ClientSocket.h"
 
-#include "SocketSubsystem.h"
-#include "Common/UdpSocketReceiver.h"
-#include "Interfaces/IPv4/IPv4Address.h"
-
 #pragma region Main Thread Code
 
 ClientSocket::ClientSocket(): Thread()
 {
-	Socket = nullptr;
 	if (ConnectServer())
 	{
 		Thread = FRunnableThread::Create(this, TEXT("Network Thread"), 0, TPri_BelowNormal);
@@ -46,55 +41,66 @@ struct sc_player_data
 
 uint32 ClientSocket::Run()
 {
-	while (Socket == nullptr);
-
-	TArray<uint8> ReceivedData;
-	uint32 Size;
-
-	while(StopTaskCounter.GetValue() == 0 && Socket->HasPendingData(Size))
+	while (1)
 	{
-		int32 Read;
-		ReceivedData.SetNum(Size);
-		bool result =  Socket->Recv(ReceivedData.GetData(), ReceivedData.Num(), Read);
-		UE_LOG(LogTemp, Warning, TEXT("%s"), result? _T("True") : _T("False"));
+		char buff[512];
+		int RecvLen = recv(Socket, &buff[0], 512, 0);
+		UE_LOG(LogTemp, Warning, TEXT("Input"));
 	}
+
+	/*while(Socket->Recv(ReceivedData.GetData(), ReceivedData.Num(), Read))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Input"));
+	}*/
 	return 0;
 }
 
 bool ClientSocket::ConnectServer()
 {
-	Socket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(TEXT("Stream"), TEXT("Client Socket"));
-	FString address = TEXT("14.36.243.158");
-	int32 port = 6000;
-	FIPv4Address ip;
-	FIPv4Address::Parse(address, ip);
-	
-	TSharedRef<FInternetAddr> addr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
-	addr->SetIp(ip.Value);
-	addr->SetPort(port);
+	WSADATA wsaData;
+	// 윈속 버전을 2.2로 초기화
+	int nRet = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (nRet != 0) {
+		return false;
+	}
+
+	// TCP 소켓 생성	
+	Socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+	if (Socket == INVALID_SOCKET) {
+		return false;
+	}
+
+	SOCKADDR_IN stServerAddr;
+
+	stServerAddr.sin_family = AF_INET;
+	// 접속할 서버 포트 및 IP
+	stServerAddr.sin_port = htons(6000);
+	//stServerAddr.sin_addr.s_addr = inet_addr("14.36.243.158");
+	stServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+	nRet = connect(Socket, (sockaddr*)&stServerAddr, sizeof(sockaddr));
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Trying to connect.")));
 
-	bool isConnetcted = Socket->Connect(*addr);
-	if (isConnetcted)
+	if (nRet == SOCKET_ERROR)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Fail")));
+		return false;
+	}
+	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Success!")));
 		UE_LOG(LogTemp, Warning, TEXT("Socket Initialized"));
 		return true;
 	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Fail")));
-		return false;
-	}
 }
 
 bool ClientSocket::Send(void* Packet)
 {
-	int32 ByteSent = 0;
-	bool isSent = Socket->Send((uint8*)reinterpret_cast<char*>(Packet), reinterpret_cast<PACKET_DATA*>(Packet)->info.size, ByteSent);
+	int nSendLen = send(Socket, reinterpret_cast<char*>(Packet), reinterpret_cast<PACKET_DATA*>(Packet)->info.size, 0);
+	//bool isSent = Socket->Send((uint8*)reinterpret_cast<char*>(Packet), reinterpret_cast<PACKET_DATA*>(Packet)->info.size, ByteSent);
 	
-	UE_LOG(LogTemp, Log, TEXT("%d Data, %d sent"), reinterpret_cast<PACKET_DATA*>(Packet)->info.size, ByteSent);
+	UE_LOG(LogTemp, Log, TEXT("%d Data, %d sent"), reinterpret_cast<PACKET_DATA*>(Packet)->info.size, nSendLen);
 	
-	return isSent;
+	return true;
 }
