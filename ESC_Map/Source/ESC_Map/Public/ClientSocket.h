@@ -3,12 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Sockets.h"
 #include "MyProtocol.h"
+
+#include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/prewindowsapi.h"
 
 #pragma comment(lib, "ws2_32.lib")
 #include <WinSock2.h>
 
+
+#include "Windows/PostWindowsApi.h"
+#include "Windows/HideWindowsPlatformTypes.h"
 /**
  * 
  */
