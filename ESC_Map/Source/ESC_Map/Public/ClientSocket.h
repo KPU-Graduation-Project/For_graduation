@@ -5,16 +5,22 @@
 #include "CoreMinimal.h"
 #include "Sockets.h"
 #include "MyProtocol.h"
+
+#pragma comment(lib, "ws2_32.lib")
+#include <WinSock2.h>
+#include <iostream>
+#include <map>
 /**
  * 
  */
+
 class ESC_MAP_API ClientSocket : public FRunnable
 {
 public:
 	ClientSocket();
 	virtual ~ClientSocket();
 
-	FSocket* Socket;
+	SOCKET Socket;
 
 	virtual bool Init() override;
 	virtual uint32 Run() override;

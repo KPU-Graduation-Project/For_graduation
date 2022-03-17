@@ -35,6 +35,6 @@ void AMyPlayerController_NetworkTest::BeginPlay()
 	packet.info.size = sizeof(packet);
 	
 	
-	//UE_LOG(LogTemp, Error, TEXT("Send!"));
-	//gameInst->SocketInstance->Send(&packet);
+	UE_LOG(LogTemp, Error, TEXT("Send!"));
+	gameInst->SocketInstance->Send(&packet);
 }
