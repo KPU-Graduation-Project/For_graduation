@@ -9,7 +9,8 @@ ClientSocket::ClientSocket(): Thread()
 {
 	if (ConnectServer())
 	{
-		Thread = FRunnableThread::Create(this, TEXT("Network Thread"), 0, TPri_BelowNormal);
+		bRunThread = true;
+		Thread = FRunnableThread::Create(this, TEXT("Network Thread"));
 	}
 }
 
@@ -17,6 +18,9 @@ ClientSocket::~ClientSocket()
 {
 	if (Thread)
 	{
+		bRunThread = false; 
+		closesocket(Socket);
+		WSACleanup();
 		Thread->Kill();
 		delete Thread;
 	}
@@ -41,17 +45,13 @@ struct sc_player_data
 
 uint32 ClientSocket::Run()
 {
-	while (1)
+	char buff[512];
+	while (bRunThread)
 	{
-		char buff[512];
 		int RecvLen = recv(Socket, &buff[0], 512, 0);
 		UE_LOG(LogTemp, Warning, TEXT("Input"));
 	}
-
-	/*while(Socket->Recv(ReceivedData.GetData(), ReceivedData.Num(), Read))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Input"));
-	}*/
+	
 	return 0;
 }
 
@@ -75,8 +75,8 @@ bool ClientSocket::ConnectServer()
 	stServerAddr.sin_family = AF_INET;
 	// 접속할 서버 포트 및 IP
 	stServerAddr.sin_port = htons(6000);
-	//stServerAddr.sin_addr.s_addr = inet_addr("14.36.243.158");
-	stServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	stServerAddr.sin_addr.s_addr = inet_addr("14.36.243.158");
+	//stServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	nRet = connect(Socket, (sockaddr*)&stServerAddr, sizeof(sockaddr));
 
@@ -90,6 +90,7 @@ bool ClientSocket::ConnectServer()
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Success!")));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%i.%i"), wsaData.wVersion >> 8, wsaData.wVersion & 0xFF));
 		UE_LOG(LogTemp, Warning, TEXT("Socket Initialized"));
 		return true;
 	}
@@ -98,7 +99,6 @@ bool ClientSocket::ConnectServer()
 bool ClientSocket::Send(void* Packet)
 {
 	int nSendLen = send(Socket, reinterpret_cast<char*>(Packet), reinterpret_cast<PACKET_DATA*>(Packet)->info.size, 0);
-	//bool isSent = Socket->Send((uint8*)reinterpret_cast<char*>(Packet), reinterpret_cast<PACKET_DATA*>(Packet)->info.size, ByteSent);
 	
 	UE_LOG(LogTemp, Log, TEXT("%d Data, %d sent"), reinterpret_cast<PACKET_DATA*>(Packet)->info.size, nSendLen);
 	

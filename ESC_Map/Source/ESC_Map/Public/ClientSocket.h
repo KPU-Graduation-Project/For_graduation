@@ -8,8 +8,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 #include <WinSock2.h>
-#include <iostream>
-#include <map>
+
 /**
  * 
  */
@@ -33,4 +32,5 @@ private:
 	FRunnableThread* Thread;
 	FThreadSafeCounter StopTaskCounter;
 
+	bool bRunThread;
 };
