@@ -7,6 +7,9 @@
 /**
  * 
  */
+
+constexpr int NetValue = 1;
+
 struct PacketInfo
 {
 	unsigned char size;
@@ -20,13 +23,30 @@ struct SVector3
 	short z;
 };
 
-struct PACKET_DATA
+namespace CS_PACKET
 {
-	PacketInfo info;
+	const char CS_PLAYER_DATA = 0;
 };
 
-struct CS_PLAYER_DATA : PACKET_DATA
+namespace SC_PACKET
 {
+	const char SC_PLAYER_DATA = 0;
+};
+
+//---------------------//
+
+struct cs_player_data
+{
+	PacketInfo info;
+	SVector3 player_position;
+	SVector3 player_rotation;
+};
+
+// Server
+struct sc_player_data
+{
+	PacketInfo info;
+	unsigned int id;
 	SVector3 player_position;
 	SVector3 player_rotation;
 };

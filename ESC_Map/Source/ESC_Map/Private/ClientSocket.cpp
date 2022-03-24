@@ -2,6 +2,7 @@
 
 
 #include "ClientSocket.h"
+#include "MyProtocol.h"
 
 #pragma region Main Thread Code
 
@@ -34,22 +35,16 @@ bool ClientSocket::Init()
 	return true;
 }
 
-struct sc_player_data
-{ 
-	PacketInfo info;
-	unsigned int id;
-	SVector3 player_position;
-	SVector3 player_rotation;
-
-};
-
 uint32 ClientSocket::Run()
 {
-	char buff[512];
+	unsigned char buff[512];
 	while (bRunThread)
 	{
-		int RecvLen = recv(Socket, &buff[0], 512, 0);
-		UE_LOG(LogTemp, Warning, TEXT("Input"));
+		int RecvLen = recv(Socket, reinterpret_cast<char*>(buff), 512, 0);
+		if (RecvLen != SOCKET_ERROR)
+		{
+			ProcessPacket(RecvLen, buff);
+		}
 	}
 	
 	return 0;
@@ -58,13 +53,13 @@ uint32 ClientSocket::Run()
 bool ClientSocket::ConnectServer()
 {
 	WSADATA wsaData;
-	// À©¼Ó ¹öÀüÀ» 2.2·Î ÃÊ±âÈ­
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2.2ï¿½ï¿½ ï¿½Ê±ï¿½È­
 	int nRet = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (nRet != 0) {
 		return false;
 	}
 
-	// TCP ¼ÒÄÏ »ý¼º	
+	// TCP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½	
 	Socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (Socket == INVALID_SOCKET) {
 		return false;
@@ -73,7 +68,7 @@ bool ClientSocket::ConnectServer()
 	SOCKADDR_IN stServerAddr;
 
 	stServerAddr.sin_family = AF_INET;
-	// Á¢¼ÓÇÒ ¼­¹ö Æ÷Æ® ¹× IP
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½ IP
 	stServerAddr.sin_port = htons(6000);
 	stServerAddr.sin_addr.s_addr = inet_addr("14.36.243.158");
 	//stServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -98,9 +93,30 @@ bool ClientSocket::ConnectServer()
 
 bool ClientSocket::Send(void* Packet)
 {
-	int nSendLen = send(Socket, reinterpret_cast<char*>(Packet), reinterpret_cast<PACKET_DATA*>(Packet)->info.size, 0);
+	int nSendLen = send(Socket, reinterpret_cast<char*>(Packet), reinterpret_cast<sc_player_data*>(Packet)->info.size, 0);
 	
-	UE_LOG(LogTemp, Log, TEXT("%d Data, %d sent"), reinterpret_cast<PACKET_DATA*>(Packet)->info.size, nSendLen);
+	UE_LOG(LogTemp, Log, TEXT("%d Data, %d sent"), reinterpret_cast<sc_player_data*>(Packet)->info.size, nSendLen);
 	
 	return true;
+}
+
+void ClientSocket::ProcessPacket(const unsigned int _uesr_id, unsigned char* p)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Input %d"), _uesr_id);
+
+	unsigned char packet_type = p[1];
+
+	switch (packet_type)
+	{
+	case CS_PACKET::CS_PLAYER_DATA:
+		{
+			cs_player_data* packet = reinterpret_cast<cs_player_data*>(p);
+
+			UE_LOG(LogTemp, Log, TEXT("Position %d %d %d"), packet->player_position.x,packet->player_position.y, packet->player_position.z);
+			
+		}
+	default:
+		break;
+	}
+	
 }

@@ -24,7 +24,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
-	//UPROPERTY(BlueprintReadWrite, Category = Projectile)
 	class USphereComponent* CollisionComponent;
 
 	UPROPERTY(VisibleAnywhere,Category = Movement)
@@ -40,4 +39,7 @@ public:
 	bool isHit;
 	UPrimitiveComponent* cmp;
 	FVector vel;
+
+	UPROPERTY(EditAnywhere, Category = Projectile)
+	float power = 1.f;
 };

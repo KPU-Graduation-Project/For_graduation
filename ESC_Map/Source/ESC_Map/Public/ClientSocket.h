@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "MyProtocol.h"
 
+// window 기본 타입 Hide
 #include "Windows/AllowWindowsPlatformTypes.h"
 #include "Windows/prewindowsapi.h"
 
@@ -22,7 +23,7 @@ class ESC_MAP_API ClientSocket : public FRunnable
 {
 public:
 	ClientSocket();
-	virtual ~ClientSocket();
+	virtual ~ClientSocket() override;
 
 	SOCKET Socket;
 
@@ -32,6 +33,7 @@ public:
 	bool ConnectServer();
 	
 	bool Send(void* Packet);
+	void ProcessPacket(const unsigned int _uesr_id, unsigned char* p);
 
 private:
 	FRunnableThread* Thread;

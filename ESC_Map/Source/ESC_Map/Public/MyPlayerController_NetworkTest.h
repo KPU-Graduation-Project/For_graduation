@@ -15,10 +15,18 @@ class ESC_MAP_API AMyPlayerController_NetworkTest : public APlayerController
 {
 	GENERATED_BODY()
 
-	UMyGameInstance* gameInst;
+	UPROPERTY()
+	UMyGameInstance *gameInst;
+	
+	// UPROPERTY()
+	// ACharacter *player;
+	UPROPERTY()
+	AActor *OtherPlayer;
+
 
 public:
 	virtual void BeginPlay() override;
 	
 	AMyPlayerController_NetworkTest();
+	virtual void Tick(float DeltaSeconds) override;
 };
