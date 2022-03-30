@@ -1,0 +1,54 @@
+
+cs : login
+sc : login_ok
+
+( if p1 and p2 loged in)
+1. 로그인 화면
+ Q. 두 플레이어가 연결되면 1p 2p가 캐릭터 선택을 할 수 있게 할 것인가?
+   - YES :  cs: select_char1 (or char2) / sc: p1_select_char1 (or p2, or char2)
+             cs: ready_char1 / sc: p1_ready_char1
+             ( if  p1.char != p2.char )
+             sc: activate_enter_button 
+             cs: enter
+   - NO :  cs: enter    
+
+( if p1 and p2 entered )
+sc: enter_ok 
+
+
+2. 인게임    
+ 기본적인 충돌체크는 클라이언트에서 진행한다. (부드러운 진행을 위해)
+ 단, 클라이언트를 맹신할 수 없기 때문에 서버에서의 검증이 필요하다.
+ 
+cs : state_run (or jump, attack, etc) / sc : p1_state_run
+cs : move / sc : p1_move  
+
+ Q. 클라이언트에서 충돌체크를 진행하므로 가끔 서버에서의 검증으로 클라이언트의 위치를 재조정하는 상황이 발생할 수 있는데, 이 상황이 자주 발생하면 심한 멀미를 유발할 수 있다: 
+    - 오브젝트가 많지 않으므로 그냥 서버에서 충돌체크하면 위치 재조정이 필요하지 않음. 하지만 대부분의 연산(충돌체크)을 서버에서 처리하므로 서버 과부하 가능
+    - 클라이언트에서 처리시 위치 재조정을 최소화하기 위한 방법 필요 (효율적인 서버 아키텍쳐로 레이턴시 감소 등)
+
+cs : shoot / sc : p1_shoot
+sc : char1_bullet_move
+sc : char1_bullet_hit
+(if char1_bullet and char2_bullet hit)
+sc : blow_up
+
+(enemy objects like hornet)
+sc : move 
+sc : attack
+sc : hit
+(if player.hp ==0 )
+sc : p1_died
+sc : p1_ressuracted 
+
+(structure objects)
+sc : move
+
+
+----
+cs : leave / sc : p1_leaved
++ sc : 위치 재조정
+             
+
+       
+
