@@ -35,12 +35,21 @@ AMatchGun::AMatchGun()
 void AMatchGun::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Speed = ProjectileMovementComponent->InitialSpeed;
+
 }
 
 // Called every frame
 void AMatchGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if(ProjectileMovementComponent->MaxSpeed < Speed)
+		return;
+
+	ProjectileMovementComponent->SetVelocityInLocalSpace(FVector(Speed + Acceleration, 0, 0));
+	Speed = Speed + Acceleration;
 }
 
 void AMatchGun::FireInDirection(const FVector& ShootDirection)
@@ -53,15 +62,10 @@ void AMatchGun::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPr
 {
 	if (OtherActor != this)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TEST"));
-		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
+		ProjectileMovementComponent->SetVelocityInLocalSpace(FVector(0, 0, 0));
+		Speed = 0;
+		Acceleration = 0;
+		//AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
+		//UE_LOG(LogTemp, Warning, TEXT("Attach to actor"));
 	}
-	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
-	{
-		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * power, Hit.ImpactPoint);
-		cmp = OtherComponent;
-		vel = ProjectileMovementComponent->Velocity;
-		isHit = true;
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, TEXT("TEST"));
 }

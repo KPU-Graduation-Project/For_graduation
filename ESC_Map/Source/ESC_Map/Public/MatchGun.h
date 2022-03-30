@@ -26,7 +26,7 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 	class USphereComponent* CollisionComponent;
 
-	UPROPERTY(VisibleAnywhere,Category = Movement)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category = Movement)
 	class UProjectileMovementComponent* ProjectileMovementComponent;
 
 	UFUNCTION(BlueprintCallable)
@@ -35,11 +35,15 @@ public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
-	float time = 5.0f;
-	bool isHit;
-	UPrimitiveComponent* cmp;
-	FVector vel;
-
+	// 부딪히면 충격량
 	UPROPERTY(EditAnywhere, Category = Projectile)
 	float power = 1.f;
+
+	// 가속도
+	UPROPERTY(EditAnywhere, Category = Projectile)
+	float Acceleration = 0.f;
+
+	// 속도 증가용 내부변수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Projectile)
+	float Speed;
 };

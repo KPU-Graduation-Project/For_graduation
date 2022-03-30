@@ -58,6 +58,5 @@ void AP_MotionController::BeginPlay()
 void AP_MotionController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
