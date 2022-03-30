@@ -24,4 +24,7 @@ public:
 	void InitSocket();
 	
 	ClientSocket* SocketInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Network)
+	bool ConnectNetwork;
 };

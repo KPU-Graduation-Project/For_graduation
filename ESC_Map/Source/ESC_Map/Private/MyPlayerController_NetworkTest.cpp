@@ -51,13 +51,13 @@ void AMyPlayerController_NetworkTest::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("Get Gemainstance Error!"));
 	}
 	
-	UWorld* const world = GetWorld();
-	UObject* SpawnActor = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL, TEXT("Blueprint'/Game/My/Blueprint/BP_FPSCharacter.BP_FPSCharacter'")));
-	UBlueprint* GeneratedBP = Cast<UBlueprint>(SpawnActor);
-
-	FVector location;
-	FRotator rotation;
-	location = FVector(0, 0, 0);
-	rotation = FRotator(0, 0,0);
-	OtherPlayer = world->SpawnActor(GeneratedBP->GeneratedClass, &location, &rotation);
+	// UWorld* const world = GetWorld();
+	// UObject* SpawnActor = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL, TEXT("Blueprint'/Game/My/Blueprint/BP_FPSCharacter.BP_FPSCharacter'")));
+	// UBlueprint* GeneratedBP = Cast<UBlueprint>(SpawnActor);
+	//
+	// FVector location;
+	// FRotator rotation;
+	// location = FVector(0, 0, 0);
+	// rotation = FRotator(0, 0,0);
+	// OtherPlayer = world->SpawnActor(GeneratedBP->GeneratedClass, &location, &rotation);
 }

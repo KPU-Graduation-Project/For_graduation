@@ -19,7 +19,11 @@ UMyGameInstance::~UMyGameInstance()
 void UMyGameInstance::Init()
 {
 	Super::Init();
-	//InitSocket();
+
+	if (ConnectNetwork)
+	{
+		InitSocket();
+	}
 	
 	UE_LOG(LogTemp, Warning, TEXT("Instance Initialized"));
 }
