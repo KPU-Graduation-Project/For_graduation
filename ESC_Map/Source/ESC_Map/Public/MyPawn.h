@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/Pawn.h"
+#include "MotionControllerComponent.h"
 #include "MyPawn.generated.h"
 
 UCLASS()
@@ -15,21 +16,26 @@ public:
 	// Sets default values for this pawn's properties
 	AMyPawn();
 
-public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	USceneComponent* RootScene;
+	USceneComponent* VR_Root;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	class UMotionControllerComponent *MotionController_L;
+	UMotionControllerComponent *MotionController_L;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	class UMotionControllerComponent *MotionController_R;
+	UMotionControllerComponent *MotionController_R;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	class USkeletalMeshComponent *HandMesh_L;
+	USkeletalMeshComponent *HandMesh_L;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	class USkeletalMeshComponent *HandMesh_R;
+	USkeletalMeshComponent *HandMesh_R;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMeshComponent* Character;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UCameraComponent* VR_Camera;
 
 	EControllerHand Hand_L, Hand_R;
 
@@ -40,10 +46,4 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual void OnConstruction(const FTransform & Transform) override;
-
 };

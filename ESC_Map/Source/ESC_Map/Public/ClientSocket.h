@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MyProtocol.h"
 
 // window 기본 타입 Hide
 #include "Windows/AllowWindowsPlatformTypes.h"

@@ -53,13 +53,11 @@ uint32 ClientSocket::Run()
 bool ClientSocket::ConnectServer()
 {
 	WSADATA wsaData;
-	// ���� ������ 2.2�� �ʱ�ȭ
 	int nRet = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (nRet != 0) {
 		return false;
 	}
 
-	// TCP ���� ����	
 	Socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (Socket == INVALID_SOCKET) {
 		return false;
@@ -68,7 +66,6 @@ bool ClientSocket::ConnectServer()
 	SOCKADDR_IN stServerAddr;
 
 	stServerAddr.sin_family = AF_INET;
-	// ������ ���� ��Ʈ �� IP
 	stServerAddr.sin_port = htons(6000);
 	stServerAddr.sin_addr.s_addr = inet_addr("14.36.243.158");
 	//stServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -118,5 +115,4 @@ void ClientSocket::ProcessPacket(const unsigned int _uesr_id, unsigned char* p)
 	default:
 		break;
 	}
-	
 }

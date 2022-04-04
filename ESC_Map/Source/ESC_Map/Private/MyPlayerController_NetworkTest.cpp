@@ -5,6 +5,7 @@
 
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "MyProtocol.h"
 #include "Engine/BlueprintGeneratedClass.h"
 
 AMyPlayerController_NetworkTest::AMyPlayerController_NetworkTest()
