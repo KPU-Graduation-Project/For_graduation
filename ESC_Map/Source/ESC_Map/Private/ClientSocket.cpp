@@ -7,11 +7,10 @@
 
 #pragma region Main Thread Code
 
-ClientSocket::ClientSocket(): Thread()
+ClientSocket::ClientSocket(): StopTaskCounter(0)
 {
 	if (ConnectServer())
 	{
-		bRunThread = true;
 		Thread = FRunnableThread::Create(this, TEXT("Network Thread"));
 	}
 }
@@ -20,10 +19,9 @@ ClientSocket::~ClientSocket()
 {
 	if (Thread)
 	{
-		bRunThread = false; 
-		closesocket(Socket);
-		WSACleanup();
-		Thread->Kill();
+		// 스레드 종료
+		Thread->WaitForCompletion();
+		Thread->Kill();	
 		delete Thread;
 	}
 }
@@ -39,7 +37,7 @@ bool ClientSocket::Init()
 uint32 ClientSocket::Run()
 {
 	unsigned char buff[512];
-	while (bRunThread)
+	while (StopTaskCounter.GetValue() == 0)
 	{
 		int RecvLen = recv(Socket, reinterpret_cast<char*>(buff), 512, 0);
 		if (RecvLen != SOCKET_ERROR)
@@ -49,6 +47,20 @@ uint32 ClientSocket::Run()
 	}
 	
 	return 0;
+}
+
+void ClientSocket::Stop()
+{
+	StopTaskCounter.Increment();
+}
+
+void ClientSocket::Exit()
+{
+	if (Socket)
+	{
+		closesocket(Socket);
+		WSACleanup();
+	}
 }
 
 bool ClientSocket::ConnectServer()
@@ -68,8 +80,8 @@ bool ClientSocket::ConnectServer()
 
 	stServerAddr.sin_family = AF_INET;
 	stServerAddr.sin_port = htons(6000);
-	stServerAddr.sin_addr.s_addr = inet_addr("14.36.243.158");
-	//stServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	//stServerAddr.sin_addr.s_addr = inet_addr("14.36.243.12");
+	stServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	nRet = connect(Socket, (sockaddr*)&stServerAddr, sizeof(sockaddr));
 
@@ -111,15 +123,17 @@ void ClientSocket::ProcessPacket(const unsigned int _uesr_id, unsigned char* p)
 
 	switch (packet_type)
 	{
-	case SC_PLAYER_DATA:
+	case SC_PACKET::SC_PLAYER_DATA:
 		{
 			sc_player_data* packet = reinterpret_cast<sc_player_data*>(p);
 
-			UE_LOG(LogTemp, Log, TEXT("Position %d %d %d"), packet->player_position.x,packet->player_position.y, packet->player_position.z);
+			UE_LOG(LogTemp, Log, TEXT("Get Data %d %d %d"), packet->x,packet->y, packet->z);
 			
-			gameInst->OtherPlayer->SetActorLocation(FVector(packet->player_position.x,packet->player_position.y, packet->player_position.z));
-			gameInst->OtherPlayer->SetActorRotation(FRotator(packet->player_rotation.x,packet->player_rotation.y, packet->player_rotation.z));
+			gameInst->OtherPlayer->SetActorLocation(FVector(packet->x,packet->y, packet->z));
+			gameInst->OtherPlayer->SetActorRotation(FRotator(packet->pitch,packet->yaw, packet->roll));
 		}
+		break;
+		
 	default:
 		break;
 	}

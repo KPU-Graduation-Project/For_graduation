@@ -23,24 +23,24 @@ void AMyPlayerController_NetworkTest::Tick(float DeltaSeconds)
 
 	if (gameInst->SocketInstance)
 	{
-		cs_player_data packet;
+		cs_player_data_packet packet;
 
 		FTransform tmp_transform = GetPawn()->GetTransform();
 		FVector pos = tmp_transform.GetLocation();
 		FRotator rat = tmp_transform.GetRotation().Rotator();
 
-		packet.player_position.x = pos.X * NetValue;
-		packet.player_position.y = pos.Y * NetValue;
-		packet.player_position.z = pos.Z * NetValue;
+		packet.x = pos.X;
+		packet.y = pos.Y;
+		packet.z = pos.Z;
 	
-		packet.player_rotation.x = rat.Roll * NetValue;
-		packet.player_rotation.y = rat.Pitch * NetValue;
-		packet.player_rotation.z = rat.Yaw * NetValue;
+		packet.pitch = rat.Pitch;
+		packet.yaw = rat.Yaw;
+		packet.roll = rat.Roll;
 	
-		packet.type = CS_PLAYER_DATA;
+		packet.type = CS_PACKET::CS_PLAYER_DATA;
 		packet.size = sizeof(packet);
 		
-		UE_LOG(LogTemp, Error, TEXT("Send! Type %d Position: %d %d %d"), packet.type, packet.player_position.x, packet.player_position.y, packet.player_position.z);
+		UE_LOG(LogTemp, Error, TEXT("Send! Type %d Position: %d %d %d"), packet.type, packet.x, packet.y, packet.z);
 		gameInst->SocketInstance->Send(&packet);
 	}
 }

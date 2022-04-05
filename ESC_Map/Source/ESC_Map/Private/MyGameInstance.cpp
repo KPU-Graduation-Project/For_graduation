@@ -10,10 +10,6 @@ UMyGameInstance::UMyGameInstance()
 
 UMyGameInstance::~UMyGameInstance()
 {
-	if (SocketInstance)
-	{
-		delete SocketInstance;
-	}
 }
 
 void UMyGameInstance::Init()

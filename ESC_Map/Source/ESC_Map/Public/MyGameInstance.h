@@ -19,7 +19,6 @@ public:
 	UMyGameInstance();
 	~UMyGameInstance();
 
-
 	virtual void Init() override;
 	
 	void InitSocket();
