@@ -15,18 +15,23 @@ UMyGameInstance::~UMyGameInstance()
 void UMyGameInstance::Init()
 {
 	Super::Init();
+	
+	UE_LOG(LogTemp, Warning, TEXT("Instance Initialized"));
+}
+
+void UMyGameInstance::OnStart()
+{
+	Super::OnStart();
 
 	if (ConnectNetwork)
 	{
 		InitSocket();
 	}
-	
-	UE_LOG(LogTemp, Warning, TEXT("Instance Initialized"));
 }
 
 void UMyGameInstance::InitSocket()
 {
 	if (SocketInstance != nullptr) return;
 	
-	SocketInstance = new ClientSocket();
+	SocketInstance = new ClientSocket(this);
 }

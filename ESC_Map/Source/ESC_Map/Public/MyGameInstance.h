@@ -20,6 +20,7 @@ public:
 	~UMyGameInstance();
 
 	virtual void Init() override;
+	virtual void OnStart() override;
 	
 	void InitSocket();
 	
@@ -27,6 +28,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Network)
 	bool ConnectNetwork;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Network)
+    FString ipAddr;
 
 	UPROPERTY(VisibleAnywhere, Category=Character)
 	AActor *OtherPlayer;

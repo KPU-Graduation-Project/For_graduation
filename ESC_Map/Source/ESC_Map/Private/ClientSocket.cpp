@@ -7,8 +7,9 @@
 
 #pragma region Main Thread Code
 
-ClientSocket::ClientSocket(): StopTaskCounter(0)
+ClientSocket::ClientSocket(UMyGameInstance* inst): StopTaskCounter(0)
 {
+	gameInst = inst;
 	if (ConnectServer())
 	{
 		Thread = FRunnableThread::Create(this, TEXT("Network Thread"));
@@ -36,7 +37,7 @@ bool ClientSocket::Init()
 
 uint32 ClientSocket::Run()
 {
-	unsigned char buff[512];
+	char buff[512];
 	while (StopTaskCounter.GetValue() == 0)
 	{
 		int RecvLen = recv(Socket, reinterpret_cast<char*>(buff), 512, 0);
@@ -81,7 +82,8 @@ bool ClientSocket::ConnectServer()
 	stServerAddr.sin_family = AF_INET;
 	stServerAddr.sin_port = htons(6000);
 	//stServerAddr.sin_addr.s_addr = inet_addr("14.36.243.12");
-	stServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	
+	stServerAddr.sin_addr.s_addr = inet_addr(TCHAR_TO_ANSI(ToCStr(gameInst->ipAddr)));
 
 	nRet = connect(Socket, (sockaddr*)&stServerAddr, sizeof(sockaddr));
 
@@ -101,11 +103,6 @@ bool ClientSocket::ConnectServer()
 	}
 }
 
-void ClientSocket::SetGameInstance(UMyGameInstance* Inst)
-{
-	gameInst = Inst;
-}
-
 bool ClientSocket::Send(void* Packet)
 {
 	int nSendLen = send(Socket, reinterpret_cast<char*>(Packet), reinterpret_cast<sc_player_data*>(Packet)->size, 0);
@@ -115,11 +112,11 @@ bool ClientSocket::Send(void* Packet)
 	return true;
 }
 
-void ClientSocket::ProcessPacket(const unsigned int _uesr_id, unsigned char* p)
+void ClientSocket::ProcessPacket(const int RecvLen, char* p)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Input %d"), _uesr_id);
+	UE_LOG(LogTemp, Warning, TEXT("Input %d"), RecvLen);
 
-	unsigned char packet_type = p[1];
+	char packet_type = p[1];
 
 	switch (packet_type)
 	{

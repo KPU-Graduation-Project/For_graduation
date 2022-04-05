@@ -56,7 +56,6 @@ void AMyPlayerController_NetworkTest::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("Get Gemainstance Error!"));
 	}
 	
-	gameInst->SocketInstance->SetGameInstance(gameInst);
 
 	if (test)
 	{

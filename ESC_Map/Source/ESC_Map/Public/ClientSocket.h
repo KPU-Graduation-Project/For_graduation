@@ -22,7 +22,7 @@ class UMyGameInstance;
 class ESC_MAP_API ClientSocket : public FRunnable
 {
 public:
-	ClientSocket();
+	ClientSocket(UMyGameInstance* inst);
 	virtual ~ClientSocket() override;
 
 	SOCKET Socket;
@@ -33,11 +33,9 @@ public:
 	virtual void Exit() override;
 
 	bool ConnectServer();
-
-	void SetGameInstance(UMyGameInstance *Inst);
 	
 	bool Send(void* Packet);
-	void ProcessPacket(const unsigned int _uesr_id, unsigned char* p);
+	void ProcessPacket(const int RecvLen, char* p);
 
 private:
 	FRunnableThread* Thread;
