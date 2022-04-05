@@ -2,6 +2,7 @@
 
 
 #include "ClientSocket.h"
+#include "MyGameInstance.h"
 #include "MyProtocol.h"
 
 #pragma region Main Thread Code
@@ -88,11 +89,16 @@ bool ClientSocket::ConnectServer()
 	}
 }
 
+void ClientSocket::SetGameInstance(UMyGameInstance* Inst)
+{
+	gameInst = Inst;
+}
+
 bool ClientSocket::Send(void* Packet)
 {
-	int nSendLen = send(Socket, reinterpret_cast<char*>(Packet), reinterpret_cast<sc_player_data*>(Packet)->info.size, 0);
+	int nSendLen = send(Socket, reinterpret_cast<char*>(Packet), reinterpret_cast<sc_player_data*>(Packet)->size, 0);
 	
-	UE_LOG(LogTemp, Log, TEXT("%d Data, %d sent"), reinterpret_cast<sc_player_data*>(Packet)->info.size, nSendLen);
+	UE_LOG(LogTemp, Log, TEXT("%d Data, %d sent"), reinterpret_cast<sc_player_data*>(Packet)->size, nSendLen);
 	
 	return true;
 }
@@ -105,12 +111,14 @@ void ClientSocket::ProcessPacket(const unsigned int _uesr_id, unsigned char* p)
 
 	switch (packet_type)
 	{
-	case CS_PACKET::CS_PLAYER_DATA:
+	case SC_PLAYER_DATA:
 		{
-			cs_player_data* packet = reinterpret_cast<cs_player_data*>(p);
+			sc_player_data* packet = reinterpret_cast<sc_player_data*>(p);
 
 			UE_LOG(LogTemp, Log, TEXT("Position %d %d %d"), packet->player_position.x,packet->player_position.y, packet->player_position.z);
 			
+			gameInst->OtherPlayer->SetActorLocation(FVector(packet->player_position.x,packet->player_position.y, packet->player_position.z));
+			gameInst->OtherPlayer->SetActorRotation(FRotator(packet->player_rotation.x,packet->player_rotation.y, packet->player_rotation.z));
 		}
 	default:
 		break;

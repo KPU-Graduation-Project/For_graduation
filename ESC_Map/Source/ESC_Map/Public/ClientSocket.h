@@ -17,6 +17,7 @@
 /**
  * 
  */
+class UMyGameInstance;
 
 class ESC_MAP_API ClientSocket : public FRunnable
 {
@@ -30,6 +31,8 @@ public:
 	virtual uint32 Run() override;
 
 	bool ConnectServer();
+
+	void SetGameInstance(UMyGameInstance *Inst);
 	
 	bool Send(void* Packet);
 	void ProcessPacket(const unsigned int _uesr_id, unsigned char* p);
@@ -39,4 +42,6 @@ private:
 	FThreadSafeCounter StopTaskCounter;
 
 	bool bRunThread;
+
+	UMyGameInstance *gameInst;
 };

@@ -10,7 +10,11 @@
 
 AMyPlayerController_NetworkTest::AMyPlayerController_NetworkTest()
 {
-
+	ConstructorHelpers::FObjectFinder<UBlueprint> character_boy(TEXT("Blueprint'/Game/My/Blueprint/Character/Boy/BP_FPSCharacter_Boy.BP_FPSCharacter_Boy'"));
+	if (character_boy.Object)
+	{
+		test = character_boy.Object;
+	}
 }
 
 void AMyPlayerController_NetworkTest::Tick(float DeltaSeconds)
@@ -33,10 +37,10 @@ void AMyPlayerController_NetworkTest::Tick(float DeltaSeconds)
 		packet.player_rotation.y = rat.Pitch * NetValue;
 		packet.player_rotation.z = rat.Yaw * NetValue;
 	
-		packet.info.type = CS_PACKET::CS_PLAYER_DATA;
-		packet.info.size = sizeof(packet);
+		packet.type = CS_PLAYER_DATA;
+		packet.size = sizeof(packet);
 		
-		UE_LOG(LogTemp, Error, TEXT("Send! Type %d Position: %d %d %d"), packet.info.type, packet.player_position.x, packet.player_position.y, packet.player_position.z);
+		UE_LOG(LogTemp, Error, TEXT("Send! Type %d Position: %d %d %d"), packet.type, packet.player_position.x, packet.player_position.y, packet.player_position.z);
 		gameInst->SocketInstance->Send(&packet);
 	}
 }
@@ -44,21 +48,21 @@ void AMyPlayerController_NetworkTest::Tick(float DeltaSeconds)
 void AMyPlayerController_NetworkTest::BeginPlay()
 {
 	Super::BeginPlay();
-
-	gameInst = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(AActor::GetWorld()));
+	
+	gameInst = Cast<UMyGameInstance>(GetWorld()->GetGameInstance());
 
 	if (!gameInst)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Get Gemainstance Error!"));
 	}
 	
-	// UWorld* const world = GetWorld();
-	// UObject* SpawnActor = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL, TEXT("Blueprint'/Game/My/Blueprint/BP_FPSCharacter.BP_FPSCharacter'")));
-	// UBlueprint* GeneratedBP = Cast<UBlueprint>(SpawnActor);
-	//
-	// FVector location;
-	// FRotator rotation;
-	// location = FVector(0, 0, 0);
-	// rotation = FRotator(0, 0,0);
-	// OtherPlayer = world->SpawnActor(GeneratedBP->GeneratedClass, &location, &rotation);
+	gameInst->SocketInstance->SetGameInstance(gameInst);
+
+	if (test)
+	{
+		OtherPlayer = GetWorld()->SpawnActor(test->GeneratedClass);
+		OtherPlayer->SetActorLocationAndRotation(FVector(0, 0, 0), FRotator(0, 0,0));
+
+		gameInst->OtherPlayer = OtherPlayer;
+	}
 }

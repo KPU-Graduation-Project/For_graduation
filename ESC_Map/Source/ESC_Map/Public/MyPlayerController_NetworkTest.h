@@ -18,11 +18,11 @@ class ESC_MAP_API AMyPlayerController_NetworkTest : public APlayerController
 	UPROPERTY()
 	UMyGameInstance *gameInst;
 	
-	// UPROPERTY()
-	// ACharacter *player;
 	UPROPERTY()
 	AActor *OtherPlayer;
 
+	UPROPERTY()
+	UBlueprint* test;
 
 public:
 	virtual void BeginPlay() override;
