@@ -17,12 +17,9 @@ class ESC_MAP_API AMyPlayerController_NetworkTest : public APlayerController
 
 	UPROPERTY()
 	UMyGameInstance *gameInst;
-	
-	UPROPERTY()
-	AActor *OtherPlayer;
 
 	UPROPERTY()
-	UBlueprint* test;
+	UBlueprint* Characters[2];
 
 public:
 	virtual void BeginPlay() override;

@@ -11,9 +11,16 @@
 AMyPlayerController_NetworkTest::AMyPlayerController_NetworkTest()
 {
 	ConstructorHelpers::FObjectFinder<UBlueprint> character_boy(TEXT("Blueprint'/Game/My/Blueprint/Character/Boy/BP_FPSCharacter_Boy.BP_FPSCharacter_Boy'"));
+	ConstructorHelpers::FObjectFinder<UBlueprint> character_girl(TEXT("Blueprint'/Game/My/Blueprint/Character/Girl/BP_FPSCharacter_Girl.BP_FPSCharacter_Girl'"));
+	
 	if (character_boy.Object)
 	{
-		test = character_boy.Object;
+		Characters[0] = character_boy.Object;
+	}
+
+	if (character_girl.Object)
+	{
+		Characters[1] = character_girl.Object;
 	}
 }
 
@@ -25,7 +32,8 @@ void AMyPlayerController_NetworkTest::Tick(float DeltaSeconds)
 	{
 		cs_player_data_packet packet;
 
-		FTransform tmp_transform = GetPawn()->GetTransform();
+		
+		FTransform tmp_transform = gameInst->MainPlayer->GetTransform();
 		FVector pos = tmp_transform.GetLocation();
 		FRotator rat = tmp_transform.GetRotation().Rotator();
 
@@ -57,11 +65,13 @@ void AMyPlayerController_NetworkTest::BeginPlay()
 	}
 	
 
-	if (test)
+	// 로그인 입력을 받으면 선택해서 스폰을 할 수 있게 수정해야함
+	// 임시로 남자 캐릭터를 다른 플레이어에 배치하도록 되어있음
+	if (Characters)
 	{
-		OtherPlayer = GetWorld()->SpawnActor(test->GeneratedClass);
-		OtherPlayer->SetActorLocationAndRotation(FVector(0, 0, 0), FRotator(0, 0,0));
-
-		gameInst->OtherPlayer = OtherPlayer;
+		gameInst->MainPlayer = GetPawn();
+		
+		gameInst->OtherPlayer = GetWorld()->SpawnActor<APawn>(Characters[0]->GeneratedClass);
+		gameInst->OtherPlayer->SetActorLocationAndRotation(FVector(0, 0, 0), FRotator(0, 0,0));
 	}
 }

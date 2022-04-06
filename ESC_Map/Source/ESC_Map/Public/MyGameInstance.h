@@ -32,6 +32,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Network)
     FString ipAddr;
 
-	UPROPERTY(VisibleAnywhere, Category=Character)
-	AActor *OtherPlayer;
+	UPROPERTY(BlueprintReadOnly, Category=Character)
+	APawn *MainPlayer;
+	
+	UPROPERTY(BlueprintReadOnly, Category=Character)
+	APawn *OtherPlayer;
 };
