@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MyPlayerController_NetworkTest.h"
-
+#include "MyGameInstance.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "MyProtocol.h"
@@ -31,16 +29,15 @@ void AMyPlayerController_NetworkTest::Tick(float DeltaSeconds)
 	if (gameInst->SocketInstance)
 	{
 		cs_player_data_packet packet;
-
 		
-		FTransform tmp_transform = gameInst->MainPlayer->GetTransform();
-		FVector pos = tmp_transform.GetLocation();
-		FRotator rat = tmp_transform.GetRotation().Rotator();
+		FVector pos = MainPlayer->GetActorLocation();
+		FRotator rat = MainPlayer->GetActorRotation();
 
-		packet.x = pos.X;
-		packet.y = pos.Y;
-		packet.z = pos.Z;
+		packet.x = pos.X * 100;
+		packet.y = pos.Y * 100;
+		packet.z = pos.Z * 100;
 	
+	    // short
 		packet.pitch = rat.Pitch;
 		packet.yaw = rat.Yaw;
 		packet.roll = rat.Roll;
@@ -61,17 +58,31 @@ void AMyPlayerController_NetworkTest::BeginPlay()
 
 	if (!gameInst)
 	{
+		gameInst->playerController = this;
 		UE_LOG(LogTemp, Warning, TEXT("Get Gemainstance Error!"));
 	}
-	
+}
 
-	// 로그인 입력을 받으면 선택해서 스폰을 할 수 있게 수정해야함
-	// 임시로 남자 캐릭터를 다른 플레이어에 배치하도록 되어있음
-	if (Characters)
+void AMyPlayerController_NetworkTest::PutPlayer(int playerType, bool isPlayer, const FVector& Location, const FRotator& Rotation)
+{
+	if (Characters[playerType])
 	{
-		gameInst->MainPlayer = GetPawn();
-		
-		gameInst->OtherPlayer = GetWorld()->SpawnActor<APawn>(Characters[0]->GeneratedClass);
-		gameInst->OtherPlayer->SetActorLocationAndRotation(FVector(0, 0, 0), FRotator(0, 0,0));
+		APawn* pawn = GetWorld()->SpawnActor<APawn>(Characters[playerType]->GeneratedClass);
+		pawn->SetActorLocationAndRotation(Location, Rotation);
+
+		if (isPlayer)
+		{
+			MainPlayer = pawn;
+			Possess(pawn);
+		}
+		else
+		{
+			OtherPlayer = pawn;
+		}
 	}
+}
+
+void AMyPlayerController_NetworkTest::MovePawn(const FVector& Location, const FRotator& Rotation)
+{
+	OtherPlayer->SetActorLocationAndRotation(Location, Rotation);
 }

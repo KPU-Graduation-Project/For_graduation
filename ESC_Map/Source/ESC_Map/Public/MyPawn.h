@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Pawn.h"
 #include "MotionControllerComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "MyPawn.generated.h"
 
 UCLASS()
@@ -38,6 +39,9 @@ public:
 	UCameraComponent* VR_Camera;
 
 	EControllerHand Hand_L, Hand_R;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UCharacterMovementComponent *PlayerMovement;
 
 protected:
 	// Called when the game starts or when spawned

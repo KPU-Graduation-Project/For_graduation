@@ -1,19 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MyPawn.h"
-
+#include "MotionControl.h"
 
 // Sets default values
-AMyPawn::AMyPawn()
+AMotionControl::AMotionControl()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_Hand(TEXT("SkeletalMesh'/Game/My/Actor/Hand/MannequinHand_Right.MannequinHand_Right'"));
-
-	VR_Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	RootComponent = VR_Root;
 
 	VR_Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	VR_Camera->SetupAttachment(RootComponent);
@@ -24,13 +20,6 @@ AMyPawn::AMyPawn()
 	MotionController_R = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionContoller_R"));
 	HandMesh_R = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh_R"));
 	
-	Character = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Chracter"));
-	Character->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-	Character->SetOwnerNoSee(true);
-	Character->SetupAttachment(RootComponent);
-
-	PlayerMovement = CreateDefaultSubobject<UCharacterMovementComponent>(TEXT("CharacterMovement"));
-	
 	Hand_L = EControllerHand::Left;
 	Hand_R = EControllerHand::Right;
 
@@ -39,6 +28,7 @@ AMyPawn::AMyPawn()
 	MotionController_L->SetCollisionProfileName(TEXT("BlockAll"));
 	MotionController_L->SetTrackingSource(Hand_L);
 
+	MotionController_R->SetupAttachment(RootComponent);
 	MotionController_R->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 	MotionController_R->SetCollisionProfileName(TEXT("BlockAll"));
 	MotionController_R->SetTrackingSource(Hand_R);
@@ -53,6 +43,8 @@ AMyPawn::AMyPawn()
 	HandMesh_R->SetRelativeRotation(FRotator(-80.0f, 0.0f, 90.0f));
 	HandMesh_R->SetCollisionProfileName(TEXT("NoCollision"));
 	HandMesh_R->CastShadow = false;
+
+	GetMesh()->SetOwnerNoSee(true);
 	
 	if (SK_Hand.Succeeded())
 	{
@@ -65,14 +57,23 @@ AMyPawn::AMyPawn()
 }
 
 // Called when the game starts or when spawned
-void AMyPawn::BeginPlay()
+void AMotionControl::BeginPlay()
 {
 	Super::BeginPlay();
+	
 }
 
 // Called every frame
-void AMyPawn::Tick(float DeltaTime)
+void AMotionControl::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+}
+
+// Called to bind functionality to input
+void AMotionControl::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
 }
 
