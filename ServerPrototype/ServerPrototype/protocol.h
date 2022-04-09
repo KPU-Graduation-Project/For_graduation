@@ -101,11 +101,11 @@ struct cs_packet_change_ready
 };
 
 //---------------------InGame------------------------
-//struct cs_packet_move
-//{
-//	packet_info           info;
-//	player_data           player_data;
-//};
+struct cs_packet_player_move
+{
+	packet_info           info;
+
+};
 
 
 //===================================================
@@ -203,4 +203,130 @@ struct sc_packet_change_stage
 	packet_info           info;
 	char                  stage;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+struct sc_packet_put_player
+{
+	packet_info           info;
+
+	short                 id;
+	fvector3              pos;
+	fvector3              look;
+	fvector3              up;
+
+	//헤드트래킹 정보?
+
+	//핸드트래킹 정보?
+};
+
+//달리기 등 다른 스테이트가 없다면, 단순 move와 stop만으로 가능
+	struct cs_packet_move_player
+	{
+		packet_info           info;
+
+		fvector3              dir;
+	};
+
+	struct cs_packet_stop_player
+	{
+		packet_info           info;
+	};
+
+	struct sc_packet_move_player
+	{
+		packet_info           info;
+		short                 id;
+
+		fvector3              dir;
+	};
+
+	struct sc_packet_stop_player
+	{
+		packet_info           info;
+		short                 id;
+	};
+
+
+	//사격 - 키다운시 딜레이를 가지고 연사가 가능한 상황으로 상정 / 무기 고정(변경불가)으로 상정
+	struct cs_packet_shoot
+	{
+		packet_info           info;
+
+	};
+
+	struct cs_packet_stop_shooting
+	{
+		packet_info           info;
+	};
+
+	struct sc_packet_shoot
+	{
+		packet_info           info;
+
+		//총알 종류
+		fvector3              pos;
+		fvector3              look;
+	};
+
+
+struct sc_packet_put_player
+{
+	packet_info           info;
+
+	short                 id;
+	fvector3              pos;
+	fvector3              look;
+	fvector3              up;
+
+	//헤드트래킹 정보?
+
+	//핸드트래킹 정보?
+};
+
+//핸드트래킹 정보
+struct cs_packet_put_player
+{
+	packet_info           info;
+
+	fvector3              look;
+	fvector3              up;
+
+	//헤드트래킹 정보?
+
+	//핸드트래킹 정보?
+};
+
+
+struct sc_packet_put_object
+{
+	packet_info           info;
+
+	//오브젝트 id
+	//오브젝트 타입
+	fvector3              pos;
+	fvector3              look;
+	fvector3              up;
+
+
+};
+
+
+
+////////
+struct sc_packet_put_object
+{
+	packet_info           info;
+};
+
 #pragma pack(pop)

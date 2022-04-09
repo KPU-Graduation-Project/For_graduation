@@ -16,23 +16,8 @@
     <Filter Include="소스 파일\01 IOCP_server">
       <UniqueIdentifier>{7f2a9d4f-df23-4a0b-a652-bf21d83bbc50}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\02 client">
-      <UniqueIdentifier>{f2aa6675-8da7-4453-a6f1-c7df44bd107b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\00 main">
       <UniqueIdentifier>{38dfa1f8-4c19-41e9-aa0f-c291a93942a9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\03 matching_room">
-      <UniqueIdentifier>{a4265c0e-cbc6-47e8-bc06-10c7c537b2c5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\04 game_object">
-      <UniqueIdentifier>{2dd7a9b5-2ef4-4ee5-a5e6-4b9ee675cdec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\04 game_object\00 game_object">
-      <UniqueIdentifier>{caf2427e-d280-4869-864f-9799f31d3584}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\04 game_object\01 player">
-      <UniqueIdentifier>{c71fb0f1-4906-49dd-ba48-020fafa6c502}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\97 exp_over">
       <UniqueIdentifier>{a5512440-7791-4aad-a642-05b2bc63088b}</UniqueIdentifier>
@@ -43,13 +28,37 @@
     <Filter Include="소스 파일\99 header_files">
       <UniqueIdentifier>{8ac9e464-7089-4187-8216-53524e0fdb3a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\03 client">
+      <UniqueIdentifier>{f2aa6675-8da7-4453-a6f1-c7df44bd107b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\04 matching_room">
+      <UniqueIdentifier>{a4265c0e-cbc6-47e8-bc06-10c7c537b2c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\05 game_object">
+      <UniqueIdentifier>{2dd7a9b5-2ef4-4ee5-a5e6-4b9ee675cdec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\05 game_object\00 game_object">
+      <UniqueIdentifier>{caf2427e-d280-4869-864f-9799f31d3584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\05 game_object\01 player">
+      <UniqueIdentifier>{c71fb0f1-4906-49dd-ba48-020fafa6c502}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\02 manager">
+      <UniqueIdentifier>{d7fb0849-107a-4556-b043-67d870a6da4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\02 manager\00 network_manager">
+      <UniqueIdentifier>{3fc9c800-2d67-4cbc-9063-5e3954a92325}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\02 manager\01 game_manager">
+      <UniqueIdentifier>{ad5da665-630e-42e1-983a-da8d4003b2f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="exp_over.cpp">
       <Filter>소스 파일\97 exp_over</Filter>
     </ClCompile>
     <ClCompile Include="matching_room.cpp">
-      <Filter>소스 파일\03 matching_room</Filter>
+      <Filter>소스 파일\04 matching_room</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일\00 main</Filter>
@@ -58,13 +67,19 @@
       <Filter>소스 파일\01 IOCP_server</Filter>
     </ClCompile>
     <ClCompile Include="client.cpp">
-      <Filter>소스 파일\02 client</Filter>
+      <Filter>소스 파일\03 client</Filter>
     </ClCompile>
     <ClCompile Include="game_object.cpp">
-      <Filter>소스 파일\04 game_object\00 game_object</Filter>
+      <Filter>소스 파일\05 game_object\00 game_object</Filter>
     </ClCompile>
     <ClCompile Include="player.cpp">
-      <Filter>소스 파일\04 game_object\01 player</Filter>
+      <Filter>소스 파일\05 game_object\01 player</Filter>
+    </ClCompile>
+    <ClCompile Include="network_manager.cpp">
+      <Filter>소스 파일\02 manager\00 network_manager</Filter>
+    </ClCompile>
+    <ClCompile Include="game_manager.cpp">
+      <Filter>소스 파일\02 manager\01 game_manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -75,25 +90,31 @@
       <Filter>소스 파일\98 protocol</Filter>
     </ClInclude>
     <ClInclude Include="matching_room.h">
-      <Filter>소스 파일\03 matching_room</Filter>
+      <Filter>소스 파일\04 matching_room</Filter>
     </ClInclude>
     <ClInclude Include="IOCP_server.h">
       <Filter>소스 파일\01 IOCP_server</Filter>
     </ClInclude>
     <ClInclude Include="client.h">
-      <Filter>소스 파일\02 client</Filter>
+      <Filter>소스 파일\03 client</Filter>
     </ClInclude>
     <ClInclude Include="game_object.h">
-      <Filter>소스 파일\04 game_object\00 game_object</Filter>
+      <Filter>소스 파일\05 game_object\00 game_object</Filter>
     </ClInclude>
     <ClInclude Include="player.h">
-      <Filter>소스 파일\04 game_object\01 player</Filter>
+      <Filter>소스 파일\05 game_object\01 player</Filter>
     </ClInclude>
     <ClInclude Include="enum.h">
       <Filter>소스 파일\99 header_files</Filter>
     </ClInclude>
     <ClInclude Include="struct.h">
       <Filter>소스 파일\99 header_files</Filter>
+    </ClInclude>
+    <ClInclude Include="network_manager.h">
+      <Filter>소스 파일\02 manager\00 network_manager</Filter>
+    </ClInclude>
+    <ClInclude Include="game_manager.h">
+      <Filter>소스 파일\02 manager\01 game_manager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

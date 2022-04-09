@@ -142,17 +142,21 @@
   <ItemGroup>
     <ClCompile Include="client.cpp" />
     <ClCompile Include="exp_over.cpp" />
+    <ClCompile Include="game_manager.cpp" />
     <ClCompile Include="game_object.cpp" />
     <ClCompile Include="IOCP_server.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matching_room.cpp" />
+    <ClCompile Include="network_manager.cpp" />
     <ClCompile Include="player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client.h" />
     <ClInclude Include="enum.h" />
     <ClInclude Include="exp_over.h" />
+    <ClInclude Include="game_manager.h" />
     <ClInclude Include="game_object.h" />
+    <ClInclude Include="network_manager.h" />
     <ClInclude Include="struct.h" />
     <ClInclude Include="IOCP_server.h" />
     <ClInclude Include="matching_room.h" />
