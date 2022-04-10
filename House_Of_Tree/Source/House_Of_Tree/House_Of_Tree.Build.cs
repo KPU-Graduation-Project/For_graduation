@@ -9,6 +9,10 @@ public class House_Of_Tree : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "HeadMountedDisplay" });
+        
+		bEnableUndefinedIdentifierWarnings = false;
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
