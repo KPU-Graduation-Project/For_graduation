@@ -7,7 +7,7 @@
 ------------------------in lobby-----------------------
 1. cs_packet_play_random_matching
 2. cs_packet_create_matching_room
-3. cs_packet_join_matching_room
+3. cs_packet_join_matching_room	
 4. cs_packet_stop_matching
 
 -----------------in matching room-------------------

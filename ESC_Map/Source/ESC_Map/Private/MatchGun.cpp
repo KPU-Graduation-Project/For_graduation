@@ -65,7 +65,7 @@ void AMatchGun::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPr
 		ProjectileMovementComponent->SetVelocityInLocalSpace(FVector(0, 0, 0));
 		Speed = 0;
 		Acceleration = 0;
-		//AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
+		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
 		//UE_LOG(LogTemp, Warning, TEXT("Attach to actor"));
 	}
 }

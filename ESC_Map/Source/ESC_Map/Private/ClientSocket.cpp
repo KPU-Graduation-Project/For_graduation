@@ -2,15 +2,19 @@
 
 
 #include "ClientSocket.h"
+
+#include "MyGameInstance.h"
+#include "MyPlayerController_NetworkTest.h"
 #include "MyProtocol.h"
+#include "GameFramework/GameSession.h"
 
 #pragma region Main Thread Code
 
-ClientSocket::ClientSocket(): Thread()
+ClientSocket::ClientSocket(UMyGameInstance* inst): StopTaskCounter(0)
 {
+	gameInst = inst;
 	if (ConnectServer())
 	{
-		bRunThread = true;
 		Thread = FRunnableThread::Create(this, TEXT("Network Thread"));
 	}
 }
@@ -19,10 +23,9 @@ ClientSocket::~ClientSocket()
 {
 	if (Thread)
 	{
-		bRunThread = false; 
-		closesocket(Socket);
-		WSACleanup();
-		Thread->Kill();
+		// 스레드 종료
+		Thread->WaitForCompletion();
+		Thread->Kill();	
 		delete Thread;
 	}
 }
@@ -34,11 +37,10 @@ bool ClientSocket::Init()
 	UE_LOG(LogTemp, Warning, TEXT("Thread has been initialized"));
 	return true;
 }
-
 uint32 ClientSocket::Run()
 {
-	unsigned char buff[512];
-	while (bRunThread)
+	char buff[512];
+	while (StopTaskCounter.GetValue() == 0)
 	{
 		int RecvLen = recv(Socket, reinterpret_cast<char*>(buff), 512, 0);
 		if (RecvLen != SOCKET_ERROR)
@@ -49,7 +51,18 @@ uint32 ClientSocket::Run()
 	
 	return 0;
 }
-
+void ClientSocket::Stop()
+{
+	StopTaskCounter.Increment();
+}
+void ClientSocket::Exit()
+{
+	if (Socket)
+	{
+		closesocket(Socket);
+		WSACleanup();
+	}
+}
 bool ClientSocket::ConnectServer()
 {
 	WSADATA wsaData;
@@ -67,8 +80,9 @@ bool ClientSocket::ConnectServer()
 
 	stServerAddr.sin_family = AF_INET;
 	stServerAddr.sin_port = htons(6000);
-	stServerAddr.sin_addr.s_addr = inet_addr("14.36.243.158");
-	//stServerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	//stServerAddr.sin_addr.s_addr = inet_addr("14.36.243.12");
+	
+	stServerAddr.sin_addr.s_addr = inet_addr(TCHAR_TO_ANSI(ToCStr(gameInst->ipAddr)));
 
 	nRet = connect(Socket, (sockaddr*)&stServerAddr, sizeof(sockaddr));
 
@@ -90,29 +104,78 @@ bool ClientSocket::ConnectServer()
 
 bool ClientSocket::Send(void* Packet)
 {
-	int nSendLen = send(Socket, reinterpret_cast<char*>(Packet), reinterpret_cast<sc_player_data*>(Packet)->info.size, 0);
+	char sendBuff[BUFSIZE];
+	strcpy_s(sendBuff, reinterpret_cast<char*>(Packet));
 	
-	UE_LOG(LogTemp, Log, TEXT("%d Data, %d sent"), reinterpret_cast<sc_player_data*>(Packet)->info.size, nSendLen);
+	int nSendLen = send(Socket, sendBuff, sendBuff[0], 0);
+	
+	UE_LOG(LogTemp, Log, TEXT("%d Data, %d sent"), sendBuff[0], nSendLen);
 	
 	return true;
 }
 
-void ClientSocket::ProcessPacket(const unsigned int _uesr_id, unsigned char* p)
+void ClientSocket::ProcessPacket(const int RecvLen, char* RecvBuff)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Input %d"), _uesr_id);
+	UE_LOG(LogTemp, Warning, TEXT("Input %d"), RecvLen);
 
-	unsigned char packet_type = p[1];
+	int packetSize = RecvLen;
+	char packet_type = RecvBuff[1];
 
-	switch (packet_type)
+	while(packetSize > 0)
 	{
-	case CS_PACKET::CS_PLAYER_DATA:
+		switch (packet_type)
 		{
-			cs_player_data* packet = reinterpret_cast<cs_player_data*>(p);
+		case SC_PACKET::SC_LOGINOK:
+			{
+				// 플레이어 입력 패킷인데 일단 비워두기
+				sc_loginok_packet* packet = reinterpret_cast<sc_loginok_packet*>(RecvBuff);
+				
+				//gameInst->playerController->PutPlayer(packet->type, true,
+				//	FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f));
+			}
+			break;
+		
+		case SC_PACKET::SC_PUT_PLAYER:
+			{
+				sc_put_player_packet* packet = reinterpret_cast<sc_put_player_packet*>(RecvBuff);
 
-			UE_LOG(LogTemp, Log, TEXT("Position %d %d %d"), packet->player_position.x,packet->player_position.y, packet->player_position.z);
-			
+				FVector location(packet->x / 100, packet->y / 100, packet->z / 100);
+				FRotator rotation(packet->pitch, packet->yaw, packet->roll);
+				gameInst->playerController->PutPlayer(packet->character_type, false, location, rotation);
+			}
+			break;
+		
+		case SC_PACKET::SC_PUT_OBJECT:
+			{
+				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(RecvBuff);
+
+				// 아직 안만듬
+			}
+			break;
+
+		case SC_PACKET::SC_REMOVE_OBJECT:
+			{
+				sc_remove_object_packet* packet = reinterpret_cast<sc_remove_object_packet*>(RecvBuff);
+
+				// 아직 안만듬
+			}
+			break;
+		
+		case SC_PACKET::SC_PLAYER_DATA:
+			{
+				sc_player_data_packet* packet = reinterpret_cast<sc_player_data_packet*>(RecvBuff);
+
+				FVector location(packet->x / 100, packet->y / 100, packet->z / 100);
+				FRotator rotation(packet->pitch, packet->yaw, packet->roll);
+				
+				gameInst->playerController->MovePawn(location, rotation);
+			}
+			break;
+		
+		default:
+			break;
 		}
-	default:
-		break;
+
+		packetSize -= RecvBuff[0];
 	}
 }

@@ -10,6 +10,8 @@
 #include "client.h"
 #include "matching_room.h"
 #include "struct.h"
+#include "network_manager.h"
+#include "game_manager.h"
 
 constexpr const int MAX_CLIENTS = 10;
 constexpr const int MAX_MATCHINGROOM = MAX_CLIENTS / 2;
@@ -42,6 +44,8 @@ public:
 	~CIOCPServer();
 
 private:
+	CNetworkManager m_network_manager;
+	CGameManager    m_game_manager;
 	SOCKET m_listen_socket;
 	HANDLE m_h_iocp;
 		

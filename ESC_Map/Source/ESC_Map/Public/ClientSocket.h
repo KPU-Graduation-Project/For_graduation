@@ -11,32 +11,34 @@
 #pragma comment(lib, "ws2_32.lib")
 #include <WinSock2.h>
 
-
 #include "Windows/PostWindowsApi.h"
 #include "Windows/HideWindowsPlatformTypes.h"
 /**
  * 
  */
+class UMyGameInstance;
 
 class ESC_MAP_API ClientSocket : public FRunnable
 {
 public:
-	ClientSocket();
+	ClientSocket(UMyGameInstance* inst);
 	virtual ~ClientSocket() override;
 
 	SOCKET Socket;
 
 	virtual bool Init() override;
 	virtual uint32 Run() override;
+	virtual void Stop() override;
+	virtual void Exit() override;
 
 	bool ConnectServer();
 	
 	bool Send(void* Packet);
-	void ProcessPacket(const unsigned int _uesr_id, unsigned char* p);
+	void ProcessPacket(const int RecvLen, char* p);
 
 private:
 	FRunnableThread* Thread;
 	FThreadSafeCounter StopTaskCounter;
 
-	bool bRunThread;
+	UMyGameInstance *gameInst;
 };

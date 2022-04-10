@@ -1,0 +1,9 @@
+﻿  ExpOver.cpp
+  GameProcessor.cpp
+  IOCPServer.cpp
+  Main.cpp
+  ServerNetworkSystem.cpp
+  stdafx.cpp
+  코드를 생성하고 있습니다...
+IOCPServer.obj : error LNK2019: __imp__WSAStartup@8"public: void __thiscall CIOCPServer::Open(void)" (?Open@CIOCPServer@@QAEXXZ) 함수에서 참조되는 확인할 수 없는 외부 기호
+C:\Users\dncks\Desktop\The Tree house Server\The Tree House Server\Debug\The Tree House Server.exe : fatal error LNK1120: 1개의 확인할 수 없는 외부 참조입니다.

@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "ClientSocket.h"
-#include "Engine/GameInstance.h"
 #include "MyGameInstance.generated.h"
 
 /**
  * 
  */
+class AMyPlayerController_NetworkTest;
+
 UCLASS()
 class ESC_MAP_API UMyGameInstance : public UGameInstance
 {
@@ -20,6 +21,7 @@ public:
 	~UMyGameInstance();
 
 	virtual void Init() override;
+	virtual void OnStart() override;
 	
 	void InitSocket();
 	
@@ -27,4 +29,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Network)
 	bool ConnectNetwork;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Network)
+    FString ipAddr;
+
+	UPROPERTY()
+	AMyPlayerController_NetworkTest *playerController;
 };

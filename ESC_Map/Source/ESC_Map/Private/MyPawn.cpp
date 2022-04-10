@@ -28,6 +28,8 @@ AMyPawn::AMyPawn()
 	Character->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	Character->SetOwnerNoSee(true);
 	Character->SetupAttachment(RootComponent);
+
+	PlayerMovement = CreateDefaultSubobject<UCharacterMovementComponent>(TEXT("CharacterMovement"));
 	
 	Hand_L = EControllerHand::Left;
 	Hand_R = EControllerHand::Right;
