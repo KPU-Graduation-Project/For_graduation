@@ -279,20 +279,20 @@ struct sc_packet_put_player
 		fvector3              look;
 	};
 
-
-struct sc_packet_put_player
-{
-	packet_info           info;
-
-	short                 id;
-	fvector3              pos;
-	fvector3              look;
-	fvector3              up;
-
-	//헤드트래킹 정보?
-
-	//핸드트래킹 정보?
-};
+// 중?복 - KSM
+//struct sc_packet_put_player
+//{
+//	packet_info           info;
+//
+//	short                 id;
+//	fvector3              pos;
+//	fvector3              look;
+//	fvector3              up;
+//
+//	//헤드트래킹 정보?
+//
+//	//핸드트래킹 정보?
+//};
 
 //핸드트래킹 정보
 struct cs_packet_put_player
@@ -322,11 +322,11 @@ struct sc_packet_put_object
 };
 
 
-
+// 중?복 - KSM
 ////////
-struct sc_packet_put_object
-{
-	packet_info           info;
-};
+//struct sc_packet_put_object
+//{
+//	packet_info           info;
+//};
 
 #pragma pack(pop)
