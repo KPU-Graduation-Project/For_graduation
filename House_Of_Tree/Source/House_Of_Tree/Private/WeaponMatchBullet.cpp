@@ -14,7 +14,7 @@ AWeaponMatchBullet::AWeaponMatchBullet()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-	CollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("Projecile"));
+	CollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("MatchBullet"));
 	CollisionComponent->OnComponentHit.AddDynamic(this, &AWeaponMatchBullet::OnHit);
 	CollisionComponent->SetSphereRadius(15.0f);
 
@@ -67,4 +67,3 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
 	}
 }
-

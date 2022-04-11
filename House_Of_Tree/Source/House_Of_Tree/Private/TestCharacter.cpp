@@ -53,5 +53,8 @@ void ATestCharacter::Tick(float DeltaTime)
 void ATestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis("Turn", this, &ATestCharacter::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &ATestCharacter::AddControllerPitchInput);
 }
 
