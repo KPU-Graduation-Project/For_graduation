@@ -1,26 +1,22 @@
 #pragma once
+#include <unordered_map>
 
-class CUser;
+class cUser;
 
-class CUserManager
+class cUserManager
 {
 public:
-	CUserManager();
-	~CUserManager();
+	cUserManager();
+	~cUserManager();
 
 	void Init();
-	unsigned int GetNewID();
-	void AddNewUser(const unsigned int& _user_id, SOCKET& _socket);
-	void UserInit(const unsigned int& _user_id);
+	void InitUsers();
+	unsigned short GetNewID();
 
-	void UserSend(const unsigned int& _user_id, int num_bytes, void* mess);
-	void UserRecv(const unsigned int& _user_id);
+public: 
+	//unordered_map <unsigned short, cUser> m_users;
+	//cUser m_users[MAX_USER];
+	cUser* m_users;
 
-	int GetPrevSize(const unsigned int& _user_id);
-
-	void SetPrevSize(const unsigned int& _user_id, int& _prev_size);
-
-private:
-	CUser* m_users;
 	unsigned int m_connected_user_num;
 };

@@ -6,11 +6,11 @@
 #pragma comment (lib, "WS2_32.LIB")
 #pragma comment (lib, "MSWSock.LIB")
 
-ServerNetworkSystem* g_server = nullptr;
+cMainServer* g_server = nullptr;
 
 int main()
 {
-	g_server = new ServerNetworkSystem;
+	g_server = new cMainServer;
 	g_server->Init();
-	g_server->Open();
+	g_server->Start();
 }

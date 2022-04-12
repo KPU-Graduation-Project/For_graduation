@@ -46,6 +46,21 @@
     <Filter Include="소스 파일\06 RoomManager">
       <UniqueIdentifier>{225cd005-cc33-486b-9ed4-fc2e5dd91318}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\96 Timer">
+      <UniqueIdentifier>{e862d3b1-a6ae-4c1f-991e-34b6b19752d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\08 GameObject">
+      <UniqueIdentifier>{cc7d033c-3cbf-4874-9c5d-3fde09e59310}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\08 GameObject\00 Character">
+      <UniqueIdentifier>{7d398fd0-2ecf-445b-9148-ae07236b3f0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\08 GameObject\01 Monster">
+      <UniqueIdentifier>{9cd159e6-c1d0-4d34-b71b-8635a6559d33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\08 GameObject\02 MapObject">
+      <UniqueIdentifier>{40722df2-0408-4610-bd97-b1f459b164d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ServerNetworkSystem.cpp">
@@ -77,6 +92,15 @@
     </ClCompile>
     <ClCompile Include="RoomManager.cpp">
       <Filter>소스 파일\06 RoomManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>소스 파일\96 Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>소스 파일\08 GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>소스 파일\08 GameObject\00 Character</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +136,15 @@
     </ClInclude>
     <ClInclude Include="struct.h">
       <Filter>소스 파일\99 Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
+      <Filter>소스 파일\96 Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>소스 파일\08 GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>소스 파일\08 GameObject\00 Character</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void CIOCPServer::Open()
+void cIOCPServer::StartServer()
 {
 	WSADATA WSAData;
 	WSAStartup(MAKEWORD(2, 2), &WSAData);
@@ -13,12 +13,12 @@ void CIOCPServer::Open()
 	this->BindAndListen(SERVER_PORT);
 }
 
-void CIOCPServer::Close()
+void cIOCPServer::CloseServer()
 {
 
 }
 
-void CIOCPServer::BindAndListen(USHORT server_port)
+void cIOCPServer::BindAndListen(USHORT server_port)
 {
 	m_listen_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 	SOCKADDR_IN server_addr;
@@ -26,38 +26,40 @@ void CIOCPServer::BindAndListen(USHORT server_port)
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(server_port);
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	bind(m_listen_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
-
+	bind(m_listen_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));	
 	listen(m_listen_socket, SOMAXCONN);
 
-	m_h_iocp = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, NULL, 0);
-	CreateIoCompletionPort(reinterpret_cast<HANDLE>(m_listen_socket), m_h_iocp, 0, 0);
-		
+	m_h_IOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, NULL, 0);
+	CreateIoCompletionPort(reinterpret_cast<HANDLE>(m_listen_socket), m_h_IOCP, 0, 0);		
 
-	SOCKET c_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
+	 m_client_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 	char	accept_buf[sizeof(SOCKADDR_IN) * 2 + 32 + 100];
-	CEXP_OVER	accept_ex;
-	*(reinterpret_cast<SOCKET*>(&accept_ex.m_net_buf)) = c_socket;
-	ZeroMemory(&accept_ex.m_wsa_over, sizeof(accept_ex.m_wsa_over));
-	accept_ex.m_comp_op = COMP_OP(OP_ACCEPT);
+	*(reinterpret_cast<SOCKET*>(&m_accept_over.m_net_buf)) = m_client_socket;
+	ZeroMemory(&m_accept_over.m_wsa_over, sizeof(m_accept_over.m_wsa_over));
+	m_accept_over.m_comp_op = OP_TYPE(OP_ACCEPT);
 
-	AcceptEx(m_listen_socket, c_socket, accept_buf, 0, sizeof(SOCKADDR_IN) + 16,
-		sizeof(SOCKADDR_IN) + 16, NULL, &accept_ex.m_wsa_over);
-	std::cout << "Accept Called\n";
+	
+	cout << AcceptEx(m_listen_socket, m_client_socket, accept_buf, 0, sizeof(SOCKADDR_IN) + 16,
+		sizeof(SOCKADDR_IN) + 16, NULL, &m_accept_over.m_wsa_over) << endl;
+	//int err_no = WSAGetLastError();
+	//cout << "GQCS Error : ";
+	//if (err_no == ERROR_INVALID_HANDLE)
+	//{
+	//	cout << "handle_error" << endl;
+	//}
+	////ErrorDisplay(err_no);
+	//cout << err_no << endl;
 
 
-	//WorkerThread();
-
+	
+	std::cout << "Server Launched\n";
 }
 
-
-
-
-void CIOCPServer::Disconnect()
+void cIOCPServer::Disconnect()
 {
 
 }
 
-CIOCPServer::CIOCPServer() {};
-CIOCPServer::~CIOCPServer() {};
+cIOCPServer::cIOCPServer() {};
+cIOCPServer::~cIOCPServer() {};
 
