@@ -4,7 +4,10 @@
 
 void cRoom::StartGame()
 {
-	if (m_state == room_state::IN_GAME)
+	//월드 초기값 설정
+
+	//
+	if (m_state == room_state::INGAME)
 	{
 		for (int i = 0; i < 2; ++i)
 		{
@@ -15,11 +18,11 @@ void cRoom::StartGame()
 			packet.character_type = 0; // 
 			packet.id = m_users[i]->GetID();
 
-			m_users[i]->m_character.SetPosition(0, 0, 0);
-			m_users[i]->m_character.SetRotation(0, 0, 0);
+			m_characters[i]->SetPosition(0, 0, 0);
+			m_characters[i]->SetRotation(0, 0, 0);
 
-			iVector3 character_position = m_users[i]->m_character.GetPosition();
-			sRotation3 character_rotation = m_users[i]->m_character.GetRotation();
+			iVector3 character_position = m_characters[i]->GetPosition();
+			sRotation3 character_rotation = m_characters[i]->GetRotation();
 
 			packet.x = character_position.x;
 			packet.y = character_position.y;
@@ -28,7 +31,7 @@ void cRoom::StartGame()
 			packet.yaw = character_rotation.yaw;
 			packet.roll = character_rotation.roll;
 
-			
+
 			m_users[user_type::HOST]->Send(sizeof(packet), &packet);
 			m_users[user_type::GUEST]->Send(sizeof(packet), &packet);
 		}
@@ -38,7 +41,7 @@ void cRoom::StartGame()
 
 void cRoom::SendPlayerTransform()
 {
-	if (m_state == room_state::IN_GAME)
+	if (m_state == room_state::INGAME)
 	{
 		for (int i = 0; i < 2; ++i)
 		{
@@ -52,8 +55,8 @@ void cRoom::SendPlayerTransform()
 			packet.id = m_users[i]->GetID();
 
 
-			iVector3 character_position = m_users[i]->m_character.GetPosition();
-			sRotation3 character_rotation = m_users[i]->m_character.GetRotation();
+			iVector3 character_position = m_characters[i]->GetPosition();
+			sRotation3 character_rotation = m_characters[i]->GetRotation();
 
 			packet.x = character_position.x;
 			packet.y = character_position.y;
@@ -88,5 +91,7 @@ void cRoom::SetCharacterTransform(const unsigned short& _user_id, const short& _
 cRoom::cRoom() {
 	m_users[0] = nullptr;
 	m_users[1] = nullptr;
+	m_characters[0] = nullptr;
+	m_characters[1] = nullptr;
 };
 cRoom::~cRoom() {};

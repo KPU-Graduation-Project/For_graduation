@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <thread>
-#include <concurrent_priority_queue.h>
+#include <queue>
 #include <unordered_map>
 #include "IOCPServer.h"
 #include "ExpOver.h"
@@ -12,7 +12,7 @@ class GameProcessor;
 class cUserManager;
 class cRoomManager;
 class cTimer;
-class CTimerEvent;
+class cTimerEvent;
 class cUser;
 
 class cMainServer:public cIOCPServer
@@ -25,7 +25,7 @@ public:
 	void Init();
 	void Start();
 	void WorkerThread();
-	//void TimerThread();
+	void TimerThread();
 	void ProcessPacket(const unsigned short _user_id, unsigned char* p);
 
 	void Accept(CEXP_OVER* exp_over);
@@ -33,10 +33,7 @@ public:
 	void Recv(CEXP_OVER* exp_over, const unsigned short _user_id, const DWORD num_byte);
 	void Disconnect();
 
-	unsigned short GetNewID();
-
 private:
-	//unordered_map    <int, cUser> m_users;
 	cUserManager*    m_user_manager;
 	cRoomManager*    m_room_manager;
 
@@ -46,5 +43,5 @@ private:
 	std::vector <std::thread> m_worker_threads;
 	thread           m_timer_thread;
 
-	//concurrency::concurrent_priority_queue<CTimerEvent> m_timer_queue;
+	std::priority_queue<cTimerEvent> m_timer_queue;
 };

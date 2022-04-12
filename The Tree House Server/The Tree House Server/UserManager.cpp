@@ -4,12 +4,14 @@
 #include <MSWSock.h>
 #include "User.h"
 
+cUserManager::cUserManager() { m_last_id = 0; };
+cUserManager::~cUserManager() {};
 
 void cUserManager::Init()
 {
-	m_connected_user_num = 0;
-	m_users = new cUser[MAX_USER];
-	this->InitUsers();
+	m_last_id = 0;
+	//m_users = new cUser[MAX_USER];
+	//this->InitUsers();
 };
 
 void cUserManager::InitUsers()
@@ -17,42 +19,30 @@ void cUserManager::InitUsers()
 
 	for (int i = 0; i < MAX_USER; ++i)
 	{
-		m_users[i].Init(i);
+		//m_users[i].Init(i);
 	}
 }
 
 // return user's new id. If server is full, return MAX_USER
-unsigned short cUserManager::GetNewID() 
+unsigned short cUserManager::GetNewID()
 {
-	static unsigned short last_id = 0;
-
-	// 현재 접속중인 인원이 MAX면 바로 리턴 필요
-	/*
-	if()
+	m_last_id_lock.lock();
+	if (m_last_id < MAX_USER)
 	{
+		unsigned short new_id = m_last_id;
+		++m_last_id;
+		m_last_id_lock.unlock();
 
-	return MAX_USER
+		m_users.emplace(new_id, new cUser(new_id));
+		m_users[new_id]->SetState(user_state::ACCEPTED);
+		return new_id;
 	}
-	*/
-
-	char cnt = 0;
-	char current_id = last_id;
-	while (cnt < MAX_USER)
+	else
 	{
-		// 스레드 동기화 필요
-		if (m_users[current_id].GetState() == user_state::FREE)
-		{
-			m_users[current_id].SetState(user_state::IN_ROBBY);
-
-			last_id = (current_id + 1 < MAX_USER) ? current_id + 1 : 0;
-			return current_id;
-		}
-		if (++current_id == MAX_USER) current_id = 0;
-		++cnt;
+		m_last_id_lock.unlock();
+		return MAX_USER;
 	}
-	return MAX_USER;
+
 }
 
 
-cUserManager::cUserManager() { m_connected_user_num = 0; };
-cUserManager::~cUserManager() {};

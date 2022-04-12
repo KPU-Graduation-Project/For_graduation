@@ -37,24 +37,24 @@ void cMainServer::Start()
 	m_timer_thread.join();
 
 };
-//
-//void ServerNetworkSystem::TimerThread()
-//{
-//	while(true)
-//	{
-//		while (true)
-//		{
-//			if (m_timer_queue.empty() == true)
-//				continue;
-//			CTimerEvent timer_event;
-//			m_timer_queue.try_pop(timer_event);
-//			//if (ev.start_time <= chrono::system_clock::now())
-//		}
-//
-//		m_clock->UpdateCurrentTime();
-//		this_thread::sleep_for(5ms);
-//	}
-//}
+
+void cMainServer::TimerThread()
+{
+	//while(true)
+	//{
+	//	while (true)
+	//	{
+	//		if (m_timer_queue.empty() == true)
+	//			continue;
+	//		cTimerEvent timer_event;
+	//		m_timer_queue.try_pop(timer_event);
+	//		//if (ev.start_time <= chrono::system_clock::now())
+	//	}
+
+	//	m_clock->UpdateCurrentTime();
+	//	this_thread::sleep_for(5ms);
+	//}
+}
 
 void cMainServer::WorkerThread()
 {
@@ -136,56 +136,45 @@ void cMainServer::Accept(CEXP_OVER* exp_over)
 	else
 	{
 		SOCKET c_socket = *(reinterpret_cast<SOCKET*>(exp_over->m_net_buf));
-		m_user_manager->m_users[new_id].SetSocket(c_socket);
+		m_user_manager->m_users[new_id]->SetSocket(c_socket);
 
 		CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), cIOCPServer::m_h_IOCP, new_id, 0);
-		m_user_manager->m_users[new_id].Recv();
+		m_user_manager->m_users[new_id]->Recv();
 
 		ZeroMemory(&exp_over->m_wsa_over, sizeof(exp_over->m_wsa_over));
 		c_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 		*(reinterpret_cast<SOCKET*>(exp_over->m_net_buf)) = c_socket;
 		AcceptEx(cIOCPServer::m_listen_socket, c_socket, exp_over->m_net_buf + 8, 0, sizeof(SOCKADDR_IN) + 16,
 			sizeof(SOCKADDR_IN) + 16, NULL, &exp_over->m_wsa_over);
-
-		cout << "New User [ "<<new_id<<" ] is accepte\n";
+				
+		sc_loginok_packet packet;
+		packet.size = sizeof(sc_loginok_packet);
+		packet.type = SC_PACKET::SC_LOGINOK;
+		packet.id = new_id;
+		m_user_manager->m_users[new_id]->Send(sizeof(packet), &packet);
+		m_user_manager->m_users[new_id]->SetState(user_state::IN_ROBBY);
+		cout << "New User [ " << new_id << " ] is accepte\n";
 
 		if (new_id % 2 == 0)
 		{
-			char ret = m_room_manager->CreateRoom(new_id,&m_user_manager->m_users[new_id]);
+			char ret = m_room_manager->CreateRoom(new_id,m_user_manager->m_users[new_id]);
 			if (ret != MAX_ROOM)
 			{
-				m_user_manager->m_users[new_id].SetRoomID(ret);
-				cout << "User [ " << new_id << " ] RoomID:  " << m_user_manager->m_users[new_id].GetRoomID();
+				m_user_manager->m_users[new_id]->SetRoomID(ret);
+				cout << "User [ " << new_id << " ] RoomID:  " << m_user_manager->m_users[new_id]->GetRoomID();
 
-				sc_loginok_packet packet;
-				packet.size = sizeof(sc_loginok_packet);
-				packet.type = SC_PACKET::SC_LOGINOK;
-				packet.id = new_id;
-
-				iVector3 location = m_user_manager->m_users[new_id].m_character.GetPosition();
-				sRotation3 rotation = m_user_manager->m_users[new_id].m_character.GetRotation();
-			
-
-				m_user_manager->m_users[new_id].Send(sizeof(packet), &packet);
-			}
+		
+					}
 		}
 		else
 		{
-			bool ret = m_room_manager->JoinRoom(new_id, 0,  &m_user_manager->m_users[new_id]);
+			bool ret = m_room_manager->JoinRoom(new_id, 0,  m_user_manager->m_users[new_id]);
 			if (ret == true)
 			{
-				m_user_manager->m_users[new_id].SetRoomID(0);
-				cout << "User [ " << new_id << " ] RoomID:  " << m_user_manager->m_users[new_id].GetRoomID();
-				
-				sc_loginok_packet packet;
-				packet.size = sizeof(sc_loginok_packet);
-				packet.type = SC_PACKET::SC_LOGINOK;
-				packet.id = new_id;
-				
-				iVector3 location = m_user_manager->m_users[new_id].m_character.GetPosition();
-				sRotation3 rotation = m_user_manager->m_users[new_id].m_character.GetRotation();
+				m_user_manager->m_users[new_id]->SetRoomID(0);
+				cout << "User [ " << new_id << " ] RoomID:  " << m_user_manager->m_users[new_id]->GetRoomID();
+	
 			
-				m_user_manager->m_users[new_id].Send(sizeof(packet), &packet);
 			}
 		}		
 	}
@@ -199,7 +188,7 @@ void cMainServer::Send(CEXP_OVER* exp_over)
 void cMainServer::Recv(CEXP_OVER* exp_over, const unsigned short _user_id, const DWORD num_byte)
 {
 
-	int remain_data = num_byte + m_user_manager->m_users[_user_id].GetPrevSize();
+	int remain_data = num_byte + m_user_manager->m_users[_user_id]->GetPrevSize();
 	unsigned char* packet_start = exp_over->m_net_buf;
 	int packet_size = packet_start[0];
 
@@ -213,10 +202,10 @@ void cMainServer::Recv(CEXP_OVER* exp_over, const unsigned short _user_id, const
 	}
 
 	if (0 < remain_data) {
-		m_user_manager->m_users[_user_id].SetPrevSize(remain_data);
+		m_user_manager->m_users[_user_id]->SetPrevSize(remain_data);
 		memcpy(&exp_over->m_net_buf, packet_start, remain_data);
 	}
-	m_user_manager->m_users[_user_id].Recv();
+	m_user_manager->m_users[_user_id]->Recv();
 }
 
 void cMainServer::Disconnect()
@@ -240,12 +229,14 @@ void cMainServer::ProcessPacket(const unsigned short _user_id, unsigned char* p)
 			<< " // rotation " << packet->pitch << ", " << packet->yaw << "," << packet->roll << "\n";
 
 
-		m_user_manager->m_users[_user_id].m_character.SetTransform(
+		//캐릭터에 정보 저장 필요
+		/*m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()].
+			m_character.SetTransform(
 			packet->x, packet->y, packet->z,
-			 packet->pitch, packet->yaw, packet->roll);
+			 packet->pitch, packet->yaw, packet->roll);*/
 				
 
-		m_room_manager->m_rooms[m_user_manager->m_users[_user_id].GetRoomID()].SendPlayerTransform();
+		m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->SendPlayerTransform();
 
 		break;
 	}

@@ -1,7 +1,0 @@
-﻿  ExpOver.cpp
-  ExpOver.h
-  main.cpp
-  Struct.h
-  코드를 생성하고 있습니다...
-Debug\ExpOver.obj : warning LNK4042: 개체가 두 번 이상 지정되었습니다. 나머지는 무시됩니다.
-sfml-graphics-s-d.lib(RenderStates.cpp.obj) : fatal error LNK1112: 'x64' 모듈 컴퓨터 종류가 'x86' 대상 컴퓨터 종류와 충돌합니다.

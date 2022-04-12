@@ -6,20 +6,20 @@ using namespace chrono;
 
 enum EVENT_TYPE {};
 
-class CTimerEvent
+class cTimerEvent
 {
 public:
-	CTimerEvent();
-	~CTimerEvent();
+	cTimerEvent();
+	~cTimerEvent();
 
 	void Init();
 
-	constexpr bool operator < (const CTimerEvent& _Left) const;
+	constexpr bool operator < (const cTimerEvent& _Left) const;
 
 private:
 	unsigned int m_obj_id;
 	high_resolution_clock::time_point m_start_time;
-	EVENT_TYPE m_event;
+	EVENT_TYPE m_event_type;
 };
 
 

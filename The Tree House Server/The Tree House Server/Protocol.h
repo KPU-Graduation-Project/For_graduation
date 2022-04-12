@@ -1,5 +1,5 @@
 #pragma once
-#include "struct.h"
+
 
 const short SERVER_PORT = 6000;
 const int   BUFSIZE = 256;

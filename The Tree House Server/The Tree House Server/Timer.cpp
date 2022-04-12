@@ -4,7 +4,7 @@
 using namespace chrono;
 
 
-constexpr bool CTimerEvent::operator < (const CTimerEvent& _Left) const
+constexpr bool cTimerEvent::operator < (const cTimerEvent& _Left) const
 {
 	return (m_start_time > _Left.m_start_time);
 }

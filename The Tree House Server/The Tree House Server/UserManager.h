@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include <mutex>
 
 class cUser;
 
@@ -14,9 +15,12 @@ public:
 	unsigned short GetNewID();
 
 public: 
-	//unordered_map <unsigned short, cUser> m_users;
+	unordered_map <unsigned short, cUser*> m_users;
 	//cUser m_users[MAX_USER];
-	cUser* m_users;
+	//cUser* m_users;
 
-	unsigned int m_connected_user_num;
+
+private:
+	unsigned short m_last_id;
+	mutex          m_last_id_lock;
 };
