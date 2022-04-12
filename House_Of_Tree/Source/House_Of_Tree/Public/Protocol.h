@@ -1,5 +1,8 @@
 #pragma once
+
+const short SERVER_PORT = 6000;
 const int   BUFSIZE = 256;
+
 
 namespace CS_PACKET
 {

@@ -22,7 +22,7 @@ class UHoTGameInstance;
 class HOUSE_OF_TREE_API ClientSocket : public FRunnable
 {
 public:
-	ClientSocket(UHoTGameInstance* inst);
+	ClientSocket(UHoTGameInstance* Inst);
 	virtual ~ClientSocket() override;
 
 	SOCKET Socket;
@@ -34,8 +34,8 @@ public:
 
 	bool ConnectServer();
 
-	bool Send(void* Packet);
-	void ProcessPacket(const int RecvLen, char* p);
+	bool Send(const int SendSize, void* SendData);
+	void ProcessPacket(const int RecvSize, char* RecvData);
 
 private:
 	FRunnableThread* Thread;

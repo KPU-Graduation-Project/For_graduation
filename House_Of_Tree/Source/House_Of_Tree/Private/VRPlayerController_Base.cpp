@@ -15,6 +15,8 @@ void AVRPlayerController_Base::BeginPlay()
 
 	gameInst = Cast<UHoTGameInstance>(GetWorld()->GetGameInstance());
 
+	MainPlayer = GetPawn();
+
 	if (!gameInst)
 	{
 		gameInst->playerController = this;
@@ -24,9 +26,9 @@ void AVRPlayerController_Base::BeginPlay()
 
 AVRPlayerController_Base::AVRPlayerController_Base()
 {
-	ConstructorHelpers::FObjectFinder<UBlueprint> character_boy(TEXT("Blueprint'/Game/Asset/Actor/Character/BP_VRCharacter_Boy.BP_VRCharacter_Boy'"));
-	ConstructorHelpers::FObjectFinder<UBlueprint> character_girl(TEXT("Blueprint'/Game/Asset/Actor/Character/BP_VRCharacter_Girl.BP_VRCharacter_Girl'"));
-	
+	static const ConstructorHelpers::FObjectFinder<UBlueprint> character_boy(TEXT("Blueprint'/Game/Asset/Actor/Character/BP_VRCharacter_Boy.BP_VRCharacter_Boy'"));
+	static const ConstructorHelpers::FObjectFinder<UBlueprint> character_girl(TEXT("Blueprint'/Game/Asset/Actor/Character/BP_VRCharacter_Girl.BP_VRCharacter_Girl'"));
+
 	if (character_boy.Object)
 	{
 		Characters[0] = character_boy.Object;
@@ -42,41 +44,36 @@ void AVRPlayerController_Base::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	Super::Tick(DeltaSeconds);
-
 	if (gameInst->SocketInstance)
 	{
-		cs_player_data_packet packet;
+		cs_player_data_packet sendPacket;
+		sendPacket.type = CS_PACKET::CS_PLAYER_DATA;
+		sendPacket.size = sizeof(sendPacket);
 		
-		FVector pos = MainPlayer->GetActorLocation();
-		FRotator rat = MainPlayer->GetActorRotation();
+		const FVector pos = MainPlayer->GetActorLocation();
+		const FRotator rat = MainPlayer->GetActorRotation();
 
-		packet.x = pos.X * 100;
-		packet.y = pos.Y * 100;
-		packet.z = pos.Z * 100;
-	
-		// short
-		packet.pitch = rat.Pitch;
-		packet.yaw = rat.Yaw;
-		packet.roll = rat.Roll;
-	
-		packet.type = CS_PACKET::CS_PLAYER_DATA;
-		packet.size = sizeof(packet);
+		sendPacket.x = pos.X * 100;
+		sendPacket.y = pos.Y * 100;
+		sendPacket.z = pos.Z * 100;
 		
-		UE_LOG(LogTemp, Error, TEXT("Send! Type %d Position: %d %d %d"), packet.type, packet.x, packet.y, packet.z);
-		gameInst->SocketInstance->Send(&packet);
+		// short Need Add Bias
+		sendPacket.pitch = rat.Pitch;
+		sendPacket.yaw = rat.Yaw;
+		sendPacket.roll = rat.Roll;
+		
+		gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
 	}
 }
 
-void AVRPlayerController_Base::PutPlayer(int playerType, bool isPlayer, const FVector& Location,
-	const FRotator& Rotation)
+void AVRPlayerController_Base::PutPlayer(int PlayerType, bool IsPlayer, const FVector& Location, const FRotator& Rotation)
 {
-	if (Characters[playerType])
+	if (Characters[PlayerType])
 	{
-		APawn* pawn = GetWorld()->SpawnActor<APawn>(Characters[playerType]->GeneratedClass);
+		APawn* pawn = GetWorld()->SpawnActor<APawn>(Characters[PlayerType]->GeneratedClass);
 		pawn->SetActorLocationAndRotation(Location, Rotation);
 
-		if (isPlayer)
+		if (IsPlayer)
 		{
 			MainPlayer = pawn;
 			Possess(pawn);

@@ -35,6 +35,6 @@ public:
 	AVRPlayerController_Base();
 	virtual void Tick(float DeltaSeconds) override;
 
-	void PutPlayer(int playerType, bool isPlayer, const FVector& Location, const FRotator& Rotation);
+	void PutPlayer(int PlayerType, bool IsPlayer, const FVector& Location, const FRotator& Rotation);
 	void MovePawn(const FVector& Location,  const FRotator& Rotation);
 };
