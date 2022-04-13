@@ -4,39 +4,28 @@
 #include "VRPlayerController_Base.h"
 #include "HoTGameInstance.h"
 #include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
-#include "Engine/BlueprintGeneratedClass.h"
 #include "Protocol.h"	// 차후 경로 변경해야함
 
+AVRPlayerController_Base::AVRPlayerController_Base()
+{
+}
 
 void AVRPlayerController_Base::BeginPlay()
 {
+	check(Characters.Num() >= 2);
+	
 	Super::BeginPlay();
 
 	gameInst = Cast<UHoTGameInstance>(GetWorld()->GetGameInstance());
 
-	MainPlayer = GetPawn();
+	//if (gameInst->ConnectNetwork == false)
+		MainPlayer = GetPawn();
+		PutPlayer(1, false, FVector(0, 0, 0), FRotator(0, 0, 0));
 
 	if (!gameInst)
 	{
 		gameInst->playerController = this;
 		UE_LOG(LogTemp, Warning, TEXT("Get Gemainstance Error!"));
-	}
-}
-
-AVRPlayerController_Base::AVRPlayerController_Base()
-{
-	static const ConstructorHelpers::FObjectFinder<UBlueprint> character_boy(TEXT("Blueprint'/Game/Asset/Actor/Character/BP_VRCharacter_Boy.BP_VRCharacter_Boy'"));
-	static const ConstructorHelpers::FObjectFinder<UBlueprint> character_girl(TEXT("Blueprint'/Game/Asset/Actor/Character/BP_VRCharacter_Girl.BP_VRCharacter_Girl'"));
-
-	if (character_boy.Object)
-	{
-		Characters[0] = character_boy.Object;
-	}
-
-	if (character_girl.Object)
-	{
-		Characters[1] = character_girl.Object;
 	}
 }
 
@@ -57,7 +46,7 @@ void AVRPlayerController_Base::Tick(float DeltaSeconds)
 		sendPacket.y = pos.Y * 100;
 		sendPacket.z = pos.Z * 100;
 		
-		// short Need Add Bias
+		// Need Rotation interpolation value
 		sendPacket.pitch = rat.Pitch;
 		sendPacket.yaw = rat.Yaw;
 		sendPacket.roll = rat.Roll;
@@ -70,7 +59,7 @@ void AVRPlayerController_Base::PutPlayer(int PlayerType, bool IsPlayer, const FV
 {
 	if (Characters[PlayerType])
 	{
-		APawn* pawn = GetWorld()->SpawnActor<APawn>(Characters[PlayerType]->GeneratedClass);
+		APawn* pawn = GetWorld()->SpawnActor<APawn>(Characters[PlayerType]);
 		pawn->SetActorLocationAndRotation(Location, Rotation);
 
 		if (IsPlayer)

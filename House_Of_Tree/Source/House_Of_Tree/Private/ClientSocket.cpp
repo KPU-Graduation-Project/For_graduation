@@ -40,13 +40,13 @@ bool ClientSocket::Init()
 
 uint32 ClientSocket::Run()
 {
-	char buff[512];
+	char RecvBuff[BUFSIZE];
 	while (StopTaskCounter.GetValue() == 0)
 	{
-		int RecvLen = recv(Socket, reinterpret_cast<char*>(buff), 512, 0);
+		int RecvLen = recv(Socket, reinterpret_cast<char*>(RecvBuff), BUFSIZE, 0);
 		if (RecvLen != SOCKET_ERROR)
 		{
-			ProcessPacket(RecvLen, buff);
+			ProcessPacket(RecvLen, RecvBuff);
 		}
 	}
 	
@@ -120,19 +120,18 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 	UE_LOG(LogTemp, Warning, TEXT("Input %d"), RecvSize);
 
 	int packetSize = RecvSize;
-	char packet_type = RecvData[1];
+	char packetType = RecvData[1];
 
 	while(packetSize > 0)
 	{
-		switch (packet_type)
+		switch (packetType)
 		{
 		case SC_PACKET::SC_LOGINOK:
 			{
 				// 플레이어 입력 패킷인데 일단 비워두기
 				sc_loginok_packet* packet = reinterpret_cast<sc_loginok_packet*>(RecvData);
-				
-				//gameInst->playerController->PutPlayer(packet->type, true,
-				//	FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f));
+
+				gameInst->playerID = packet->id;
 			}
 			break;
 		
@@ -141,8 +140,11 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 				sc_put_player_packet* packet = reinterpret_cast<sc_put_player_packet*>(RecvData);
 	
 				FVector location(packet->x / 100, packet->y / 100, packet->z / 100);
-				FRotator rotation(packet->pitch, packet->yaw, packet->roll);
-				gameInst->playerController->PutPlayer(packet->character_type, false, location, rotation);
+				FRotator rotation(packet->pitch, packet->yaw, packet->roll);	// Need Rotation interpolation value
+
+				bool isPlayer = packet->id == gameInst->playerID? true: false;
+				
+				gameInst->playerController->PutPlayer(packet->character_type, isPlayer, location, rotation);
 			}
 			break;
 		

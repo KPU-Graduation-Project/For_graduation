@@ -20,8 +20,8 @@ class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
 	UPROPERTY()
 	UHoTGameInstance *gameInst;
 
-	UPROPERTY()
-	UBlueprint* Characters[2];
+	UPROPERTY(EditDefaultsOnly, Category = "플레이어 캐릭터", DisplayName="캐릭터")
+	TArray<TSubclassOf<APawn>> Characters;
 
 	UPROPERTY()
 	APawn *MainPlayer;

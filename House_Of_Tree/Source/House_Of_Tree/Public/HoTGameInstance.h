@@ -29,15 +29,18 @@ public:
 	
 	ClientSocket* SocketInstance;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Network)
+	UPROPERTY(EditDefaultsOnly, Category=Network, DisplayName="서버 연결")
 	bool ConnectNetwork;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Network)
+	UPROPERTY(EditDefaultsOnly, Category=Network, DisplayName="IP 주소", meta = (EditCondition = "ConnectNetwork"))
 	FString ipAddr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Network)
+	UPROPERTY(EditDefaultsOnly, Category=Network, DisplayName="포트번호", meta = (EditCondition = "ConnectNetwork"))
 	int Port;
 
 	UPROPERTY()
 	AVRPlayerController_Base *playerController;
+
+	UPROPERTY()
+	int playerID;
 };
