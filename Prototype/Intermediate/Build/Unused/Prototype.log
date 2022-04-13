@@ -1,0 +1,8 @@
+﻿  Using 'git status' to determine working set for adaptive non-unity build (C:\Users\최은서\Desktop\졸작 관련\졸작git).
+  Creating makefile for PrototypeEditor (no existing makefile)
+  Building PrototypeEditor...
+  Using Visual Studio 2019 14.26.28805 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801) and Windows 10.0.18362.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+  Building 14 actions with 8 processes...
+    [1/14] SharedPCH.Engine.ShadowErrors.cpp
+c1xx : fatal error C1083: 컴파일러 중간 파일 파일을 열 수 없습니다. 'C:\Users\理쒖???Desktop\議몄옉 愿??議몄옉git\Prototype\Intermediate\Build\Win64\PrototypeEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.pch': Invalid argument
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.MakeFile.Targets(45,5): error MSB3073: ""C:\Program Files\Epic Games\UE_4.27\Engine\Build\BatchFiles\Build.bat" PrototypeEditor Win64 Development -Project="C:\Users\최은서\Desktop\졸작 관련\졸작git\Prototype\Prototype.uproject" -WaitMutex -FromMsBuild" 명령이 종료되었습니다(코드: 6).

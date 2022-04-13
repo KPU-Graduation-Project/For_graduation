@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\Prototype.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{ECA6C9B3-9510-4614-B555-9A8A5004BDDD}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\Prototype.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\PrototypeEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\.gitignore" />
+    <Filter Include="Config">
+      <UniqueIdentifier>{930212DF-C614-4FFE-B3E1-1BDC6E3C594E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\Prototype">
+      <UniqueIdentifier>{101D1FC6-21D4-49F1-8A44-76C8E7D2E1AF}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\Prototype\MyActor.cpp">
+      <Filter>Source\Prototype</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Prototype\MyActor.h">
+      <Filter>Source\Prototype</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\Prototype\MyCharacter.cpp">
+      <Filter>Source\Prototype</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Prototype\MyCharacter.h">
+      <Filter>Source\Prototype</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\Prototype\MyGameModeBase.cpp">
+      <Filter>Source\Prototype</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Prototype\MyGameModeBase.h">
+      <Filter>Source\Prototype</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\Prototype\MyPawn.cpp">
+      <Filter>Source\Prototype</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Prototype\MyPawn.h">
+      <Filter>Source\Prototype</Filter>
+    </ClInclude>
+    <None Include="..\..\Source\Prototype\Prototype.Build.cs">
+      <Filter>Source\Prototype</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\Prototype\Prototype.cpp">
+      <Filter>Source\Prototype</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Prototype\Prototype.h">
+      <Filter>Source\Prototype</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
