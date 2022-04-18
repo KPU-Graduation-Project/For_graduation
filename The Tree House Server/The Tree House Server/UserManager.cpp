@@ -4,12 +4,15 @@
 #include <MSWSock.h>
 #include "User.h"
 
+ unordered_map <unsigned int, cUser*>cUserManager::m_users;
+
 cUserManager::cUserManager() { m_last_id = 0; };
 cUserManager::~cUserManager() {};
 
 void cUserManager::Init()
 {
 	m_last_id = 0;
+	InitializeCriticalSection(&m_last_id_cs);
 	//m_users = new cUser[MAX_USER];
 	//this->InitUsers();
 };
@@ -24,14 +27,14 @@ void cUserManager::InitUsers()
 }
 
 // return user's new id. If server is full, return MAX_USER
-unsigned short cUserManager::GetNewID()
+unsigned int cUserManager::GetNewID()
 {
-	m_last_id_lock.lock();
+	EnterCriticalSection(&m_last_id_cs);
 	if (m_last_id < MAX_USER)
 	{
 		unsigned short new_id = m_last_id;
 		++m_last_id;
-		m_last_id_lock.unlock();
+		LeaveCriticalSection(&m_last_id_cs);
 
 		m_users.emplace(new_id, new cUser(new_id));
 		m_users[new_id]->SetState(user_state::ACCEPTED);
@@ -39,7 +42,7 @@ unsigned short cUserManager::GetNewID()
 	}
 	else
 	{
-		m_last_id_lock.unlock();
+		LeaveCriticalSection(&m_last_id_cs);
 		return MAX_USER;
 	}
 

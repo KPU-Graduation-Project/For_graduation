@@ -1,44 +1,45 @@
 #pragma once
-#include <mutex>
 #include "RoomManager.h"
-#include "Character.h"
-#include "User.h"
 
 namespace room_state
 {
-	enum eSTATE { FREE = 0, ACCEPTED = 1,LOADING=2,INGAME=3 };	
+	enum eSTATE { FREE = 0, IN_ROBBY_CREATED = 1, IN_ROBBY_FULLED = 2, LOADING = 3, INGAME = 4, WAITING_FOR_RESET = 5 };
 }
 namespace user_type
 {
 	enum eUSER_TYPE { HOST = 0, GUEST = 1 };
 }
 
+
+
 class cRoom
 {
 public:
+	cRoom();
+	cRoom(unsigned int _id,  room_state::eSTATE _state, const unsigned int _host_id) :
+		m_id(_id), m_state(_state) {
+		m_user_id[user_type::HOST] = _host_id;
+	};
+	~cRoom();
 
 	void StartGame();
 
-	void SendPlayerTransform();
+	void UserLoadingComplete(const unsigned int _user_id);
+	void SendOtherPlayerTransform();
 
-	void SetCharacterPosition(const unsigned short& _user_id, const short& _x, const short& _y, const short& _z);
-	void SetCharacterRotation(const unsigned short& _user_id, const short& _pitch, const short& _yaw, const short& _roll);
-	void SetCharacterTransform(const unsigned short& _user_id, const short& _x, const short& _y, const short& _z,
-		const short& _pitch, const short& _yaw, const short& _roll);
+	void Broadcast(int _size, void* _mess);
 
-	void StateLock() { m_state_lock.lock(); }
-	void StateUnlock() { m_state_lock.unlock(); }
-
-	cRoom();
-	~cRoom();
+	void StateLock() { EnterCriticalSection(&m_state_cs); }
+	void StateUnlock() { LeaveCriticalSection(&m_state_cs); }
+	
 
 protected:
-	unsigned short      m_room_id;
+	unsigned int        m_id;
 	room_state::eSTATE  m_state;
-	mutex               m_state_lock;
+	CRITICAL_SECTION    m_state_cs;
 
-	cUser*              m_users[2];
-	cCharacter*         m_characters[2];
+public:
+	unsigned int        m_user_id[2] = { MAX_USER,MAX_USER };
 
 	friend cRoomManager;
 };

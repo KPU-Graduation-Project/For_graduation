@@ -13,6 +13,4 @@ using namespace std;
 
 const unsigned int  WORLD_HEIGHT = 400;
 const unsigned int  WORLD_WIDTH = 400;
-const unsigned short  MAX_USER = 10;
 const unsigned char  MAX_NAME_SIZE = 20;
-const unsigned char  MAX_ROOM = 5;

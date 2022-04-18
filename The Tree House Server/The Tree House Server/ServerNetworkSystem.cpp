@@ -2,21 +2,25 @@
 #include "stdafx.h"
 #include "ServerNetworkSystem.h"
 #include "ExpOver.h"
+#include "RoomManager.h"
+#include "Room.h"
 #include "UserManager.h"
 #include "User.h"
 #include "RoomManager.h"
 #include "timer.h"
 #include "Character.h"
-#include "Room.h"
+
 
 using namespace std;
 
-
-
+cUserManager* cMainServer::m_user_manager;
+cRoomManager* cMainServer::m_room_manager;
+GameProcessor* cMainServer::m_game_processor;
 
 void cMainServer::Init()
 {
 	m_room_manager = new cRoomManager;
+
 	m_room_manager->Init();
 	m_user_manager = new cUserManager;
 	m_user_manager->Init();
@@ -155,29 +159,19 @@ void cMainServer::Accept(CEXP_OVER* exp_over)
 		m_user_manager->m_users[new_id]->SetState(user_state::IN_ROBBY);
 		cout << "New User [ " << new_id << " ] is accepte\n";
 
-		if (new_id % 2 == 0)
-		{
-			char ret = m_room_manager->CreateRoom(new_id,m_user_manager->m_users[new_id]);
-			if (ret != MAX_ROOM)
-			{
-				m_user_manager->m_users[new_id]->SetRoomID(ret);
-				cout << "User [ " << new_id << " ] RoomID:  " << m_user_manager->m_users[new_id]->GetRoomID();
-
-		
-					}
-		}
+		// 로비 제작 전까지 접속 순서대로 Room 배정
+		static int last_room_id = MAX_ROOM;
+		if (last_room_id == MAX_ROOM)
+			last_room_id = m_room_manager->CreateRoom(new_id);
 		else
 		{
-			bool ret = m_room_manager->JoinRoom(new_id, 0,  m_user_manager->m_users[new_id]);
+			bool ret = m_room_manager->JoinRoom(new_id, last_room_id);
 			if (ret == true)
-			{
-				m_user_manager->m_users[new_id]->SetRoomID(0);
-				cout << "User [ " << new_id << " ] RoomID:  " << m_user_manager->m_users[new_id]->GetRoomID();
-	
-			
-			}
-		}		
+				last_room_id = MAX_ROOM;
+		}
+		cout << "last room id:" << last_room_id << "\n";
 	}
+	
 }
 
 void cMainServer::Send(CEXP_OVER* exp_over)
@@ -214,32 +208,215 @@ void cMainServer::Disconnect()
 
 }
 
-void cMainServer::ProcessPacket(const unsigned short _user_id, unsigned char* p)
-{	
-	unsigned char packet_type = p[1];
+void cMainServer::ProcessPacket(const unsigned short _user_id, unsigned char* _p)
+{
+	unsigned char packet_type = _p[1];
 
 	switch (packet_type) {
-
-	case CS_PACKET::CS_PLAYER_DATA:
+	case CS_PACKET::CS_CREATE_ROOM:
 	{
-		cs_player_data_packet* packet = reinterpret_cast<cs_player_data_packet*>(p);
+		cs_create_room_packet* packet = reinterpret_cast<cs_create_room_packet*>(_p);
 		
-		cout << "CS_PLAYER_DATA from User [ " << _user_id <<
-			" ] position " <<packet->x << "," << packet->y << ", " << packet->z
-			<< " // rotation " << packet->pitch << ", " << packet->yaw << "," << packet->roll << "\n";
+		unsigned int new_room_id = m_room_manager->CreateRoom(_user_id);
+		if (new_room_id != MAX_USER)
+		{
+			sc_create_room_packet send_packet;
 
+			send_packet.size = sizeof(sc_create_room_packet);
+			send_packet.type = SC_PACKET::SC_CREATE_ROOM;
+			send_packet.room_id = new_room_id;
+			send_packet.is_ready= m_user_manager->m_users[_user_id]->m_is_ready;
+			send_packet.selected_character = m_user_manager->m_users[_user_id]->m_selected_character;
 
-		//캐릭터에 정보 저장 필요
-		/*m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()].
-			m_character.SetTransform(
-			packet->x, packet->y, packet->z,
-			 packet->pitch, packet->yaw, packet->roll);*/
-				
-
-		m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->SendPlayerTransform();
+			m_user_manager->m_users[_user_id]->Send(sizeof(sc_create_room_packet), &send_packet);
+		}
 
 		break;
 	}
+	case CS_PACKET::CS_JOIN_ROOM:
+	{
+		cs_join_room_packet* packet = reinterpret_cast<cs_join_room_packet*>(_p);
+
+		bool ret = m_room_manager->JoinRoom(_user_id, packet->room_id);
+		if (ret)
+		{
+			// for reduce cache miss after
+		
+			unsigned int host_user_id= m_room_manager->m_rooms[packet->room_id]->m_user_id[user_type::HOST];
+	
+			{
+				sc_join_room_packet send_packet;
+				send_packet.size = sizeof(sc_join_room_packet);
+				send_packet.type = SC_PACKET::SC_JOIN_ROOM;
+				send_packet.room_id = packet->room_id;
+				send_packet.is_ready = m_user_manager->m_users[_user_id]->m_is_ready;
+				send_packet.selected_character = m_user_manager->m_users[_user_id]->m_selected_character;
+
+
+				m_user_manager->m_users[_user_id]->Send(sizeof(sc_join_room_packet), &send_packet);
+			}
+			// send my data to existed user
+			{
+				sc_user_join_room_packet send_packet;
+				send_packet.size = sizeof(sc_user_join_room_packet);
+				send_packet.type = SC_PACKET::SC_USER_JOIN_ROOM;
+				send_packet.id = _user_id;
+				send_packet.is_ready = m_user_manager->m_users[_user_id]->m_is_ready;
+				send_packet.selected_character = m_user_manager->m_users[_user_id]->m_selected_character;;
+
+				m_user_manager->m_users[host_user_id]->Send(sizeof(sc_user_join_room_packet), &send_packet);
+			}
+			// get existed user's data
+			{
+				sc_user_join_room_packet send_packet;
+				send_packet.size = sizeof(sc_user_join_room_packet);
+				send_packet.type = SC_PACKET::SC_USER_JOIN_ROOM;
+				send_packet.id = host_user_id;	
+				send_packet.is_ready = m_user_manager->m_users[host_user_id]->m_is_ready;
+				send_packet.selected_character = m_user_manager->m_users[host_user_id]->m_selected_character;
+
+				m_user_manager->m_users[_user_id]->Send(sizeof(sc_user_join_room_packet), &send_packet);
+			}		
+		}
+		break;
+	}
+	case CS_PACKET::CS_JOIN_RANDOM_ROOM: //미완
+	{
+		cs_join_random_room_packet* packet = reinterpret_cast<cs_join_random_room_packet*>(_p);
+
+		// 랜덤 방 입장 기능 추가 후 수정 필요
+		//bool ret = m_room_manager->JoinRoom(_user_id, packet->room_id);
+		//if (ret)
+		//{
+		//	// for reduce cache miss after
+		//	unsigned int host_user_id = m_room_manager->m_rooms[packet->room_id]->m_user_id[user_type::HOST];
+		//	char host_user_selected_character = m_room_manager->m_rooms[packet->room_id]->m_user_selected_character[user_type::HOST];
+		//	char guest_user_selected_character = m_room_manager->m_rooms[packet->room_id]->m_user_selected_character[user_type::GUEST];
+
+		//	{
+		//		sc_join_room_packet send_packet;
+		//		send_packet.size = sizeof(sc_join_room_packet);
+		//		send_packet.type = SC_PACKET::SC_JOIN_ROOM;
+		//		send_packet.room_id = packet->room_id;
+		//		send_packet.selected_character = guest_user_selected_character;
+
+
+		//		m_user_manager->m_users[_user_id]->Send(sizeof(sc_join_room_packet), &send_packet);
+		//	}
+
+		//	// get existed user's data
+		//	{
+		//		sc_user_join_room_packet send_packet;
+		//		send_packet.size = sizeof(sc_user_join_room_packet);
+		//		send_packet.type = SC_PACKET::SC_USER_JOIN_ROOM;
+		//		send_packet.id = host_user_id;
+		//		send_packet.selected_character = host_user_selected_character;
+
+		//		m_user_manager->m_users[_user_id]->Send(sizeof(sc_user_join_room_packet), &send_packet);
+		//	}
+
+		//	// send my data to existed user
+		//	{
+		//		sc_user_join_room_packet send_packet;
+		//		send_packet.size = sizeof(sc_user_join_room_packet);
+		//		send_packet.type = SC_PACKET::SC_USER_JOIN_ROOM;
+		//		send_packet.id = _user_id;
+		//		send_packet.selected_character = guest_user_selected_character;
+
+		//		m_user_manager->m_users[host_user_id]->Send(sizeof(sc_user_join_room_packet), &send_packet);
+		//	}
+		//}
+		break;
+	}
+	case CS_PACKET::CS_READY_GAME:
+	{
+		cs_ready_game_packet* packet = reinterpret_cast<cs_ready_game_packet*>(_p);
+
+		m_user_manager->m_users[_user_id]->m_is_ready = packet->is_ready;
+
+		{
+			sc_user_ready_game_packet send_packet;
+			send_packet.size = sizeof(sc_user_ready_game_packet);
+			send_packet.type = SC_PACKET::SC_USER_READY_GAME;
+			send_packet.id = _user_id;
+			send_packet.is_ready = packet->is_ready;
+
+
+			m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]
+				->Broadcast(sizeof(sc_user_ready_game_packet), &send_packet);
+		}
+		{
+			// 둘 다 준비 완료되면
+			// 룸, 유저 상태 변환
+		}
+		break;
+	}
+	case CS_PACKET::CS_CHANGE_SELECTED_CHARACTER:
+	{
+		cs_change_selected_character* packet = reinterpret_cast<cs_change_selected_character*>(_p);
+
+		m_user_manager->m_users[_user_id]->m_selected_character = packet->selected_character;
+		{
+			sc_user_change_selected_character send_packet;
+			send_packet.size = sizeof(sc_user_change_selected_character);
+			send_packet.type = SC_PACKET::SC_USER_READY_GAME;
+			send_packet.id = _user_id;
+			send_packet.selected_character = packet->selected_character;
+
+
+			m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]
+				->Broadcast(sizeof(sc_user_change_selected_character), &send_packet);
+		}
+		break;
+	}
+	case CS_PACKET::CS_START_GAME: //보류
+	{
+		cs_start_game_packet* packet = reinterpret_cast<cs_start_game_packet*>(_p);
+
+		
+		break;
+	}
+	case CS_PACKET::CS_LOADING_COMPLETE:
+	{
+		cs_loading_complete_packet* packet = reinterpret_cast<cs_loading_complete_packet*>(_p);
+
+		cout << "CS_LOADING_COMPLETE from User [ " << _user_id <<" ] \n";
+
+		m_user_manager->m_users[_user_id]->StateLock();
+		//m_user_manager->m_users[_user_id]->SetState(user_state::);
+		m_user_manager->m_users[_user_id]->StateUnlock();
+
+		break;
+	}
+	case CS_PACKET::CS_PLAYER_DATA:
+	{
+		cs_player_data_packet* packet = reinterpret_cast<cs_player_data_packet*>(_p);
+		
+		cout << "CS_PLAYER_DATA from User [ " << _user_id <<
+			" ] position " << packet->x << "," << packet->y << ", " << packet->z
+			<< " // rotation " << packet->pitch << ", " << packet->yaw << "," << packet->roll << "\n";
+
+
+		m_user_manager->m_users[_user_id]->m_character->SetCharacterTransform
+		({ packet->x, packet->y, packet->z }, { packet->pitch, packet->yaw, packet->roll },
+			{ packet->head_x, packet->head_y, packet->head_z }, { packet->head_pitch, packet->head_yaw, packet->head_roll },
+			{ packet->rh_x, packet->rh_y, packet->rh_z }, { packet->rh_pitch, packet->rh_yaw, packet->rh_roll },
+			{ packet->lh_x, packet->lh_y, packet->lh_z }, { packet->lh_pitch, packet->lh_yaw, packet->lh_roll });
+
+		break;
+	}
+	case CS_PACKET::CS_SHOOT_BULLET:
+	{
+
+		break;
+	}
+	case CS_PACKET::CS_BULLET_HIT:
+	{
+
+		break;
+	}
+
+
 	}
 }
 

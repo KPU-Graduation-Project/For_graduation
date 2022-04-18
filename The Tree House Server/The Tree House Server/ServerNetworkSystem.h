@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include "IOCPServer.h"
 #include "ExpOver.h"
-#include "UserManager.h"
+
 
 
 class GameProcessor;
@@ -13,7 +13,7 @@ class cUserManager;
 class cRoomManager;
 class cTimer;
 class cTimerEvent;
-class cUser;
+
 
 class cMainServer:public cIOCPServer
 {
@@ -34,10 +34,10 @@ public:
 	void Disconnect();
 
 private:
-	cUserManager*    m_user_manager;
-	cRoomManager*    m_room_manager;
+	static cUserManager*    m_user_manager;
+	static cRoomManager*    m_room_manager;
 
-	GameProcessor*   m_game_processor;
+	static GameProcessor*   m_game_processor;
 	
 	cTimer*          m_clock;
 	std::vector <std::thread> m_worker_threads;

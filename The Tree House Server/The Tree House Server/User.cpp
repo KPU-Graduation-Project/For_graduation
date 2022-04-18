@@ -15,7 +15,7 @@ cUser::cUser()
 	ZeroMemory(&m_recv_over.m_wsa_over, sizeof(m_recv_over.m_wsa_over));
 };
 
-cUser::cUser(unsigned short _id)
+cUser::cUser(unsigned int _id)
 {
 	m_id = _id;
 	m_room_id = MAX_ROOM;
@@ -31,7 +31,7 @@ cUser::cUser(unsigned short _id)
 cUser::~cUser() { cout << "delete user" << endl; };
 
 
-void cUser::Init(const unsigned short& _id)
+void cUser::Init(const unsigned int& _id)
 {
 	m_id = _id;
 	m_room_id = MAX_ROOM;
@@ -65,9 +65,9 @@ void cUser::Recv()
 	}
 	*/
 }
-void cUser::Send(int num_bytes, void* mess)
+void cUser::Send(int _size, void* _mess)
 {
-	CEXP_OVER* ex_over = new CEXP_OVER(OP_SEND, num_bytes, mess);
+	CEXP_OVER* ex_over = new CEXP_OVER(OP_SEND, _size, _mess);
 	int ret = WSASend(m_socket, &ex_over->m_wsa_buf, 1, 0, 0, &ex_over->m_wsa_over, NULL);
 
 	/*

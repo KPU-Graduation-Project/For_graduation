@@ -3,6 +3,10 @@
 
 using namespace chrono;
 
+cTimerEvent::cTimerEvent() {};
+cTimerEvent::~cTimerEvent() {};
+
+void cTimerEvent::Init() {};
 
 constexpr bool cTimerEvent::operator < (const cTimerEvent& _Left) const
 {

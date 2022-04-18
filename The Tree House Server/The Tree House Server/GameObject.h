@@ -19,7 +19,7 @@ public:
 	Transform GetTransform();
 
 public:
-	unsigned short m_id;
+	unsigned int m_id;
 
 	iVector3   m_position;
 	sRotation3 m_rotation;
