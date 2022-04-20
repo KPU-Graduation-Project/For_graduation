@@ -36,5 +36,3 @@ void UHoTGameInstance::InitSocket()
 	
 	SocketInstance = new ClientSocket(this);
 }
-
-

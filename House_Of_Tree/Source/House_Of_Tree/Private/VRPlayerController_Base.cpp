@@ -12,15 +12,14 @@ AVRPlayerController_Base::AVRPlayerController_Base()
 
 void AVRPlayerController_Base::BeginPlay()
 {
-	check(Characters.Num() >= 2);
-	
 	Super::BeginPlay();
 
 	gameInst = Cast<UHoTGameInstance>(GetWorld()->GetGameInstance());
 
-	//if (gameInst->ConnectNetwork == false)
+	if (gameInst->ConnectNetwork == false)
+	{
 		MainPlayer = GetPawn();
-		PutPlayer(1, false, FVector(0, 0, 0), FRotator(0, 0, 0));
+	}
 
 	if (!gameInst)
 	{
