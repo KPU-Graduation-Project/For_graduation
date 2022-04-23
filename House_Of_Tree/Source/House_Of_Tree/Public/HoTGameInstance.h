@@ -55,4 +55,7 @@ public:
 
 	UPROPERTY()
 	int playerID;
+
+	UPROPERTY()
+	FString path;
 };

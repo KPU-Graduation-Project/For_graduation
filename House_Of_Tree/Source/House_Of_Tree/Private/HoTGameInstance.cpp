@@ -21,6 +21,9 @@ void UHoTGameInstance::Init()
 	Super::Init();
 
 	UE_LOG(LogTemp, Warning, TEXT("Instance Initialized"));
+
+	path = FPaths::ProjectUserDir();
+	path.Append(TEXT("data.txt"));
 }
 
 void UHoTGameInstance::OnStart()
@@ -44,8 +47,7 @@ void UHoTGameInstance::SetInfo()
 {
 	if (makeIDList)
 	{
-		static FString path = FPaths::ProjectUserDir();
-		path.Append(TEXT("data.txt"));
+		
 		std::ofstream out(*path);
 		
 		// 기록할 스태틱 오브젝트들을 선언 (나중에 파싱하는 방식으로 변경)
@@ -92,13 +94,11 @@ void UHoTGameInstance::SetInfo()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("%d, %s"), i.Key, *i.Value->GetName());
 				
-
 				out << "[" << i.Key << "]" << "[" << 1 << "]" << "["
 				<< i.Value->GetTransform().GetLocation().X << "/" << i.Value->GetTransform().GetLocation().Y << "/" << i.Value->GetTransform().GetLocation().Z << "]"
+				<< "[" << *i.Value->GetName() << "]"
 				<< std::endl;
-				
 			}
 		}
-		
 	}
 }
