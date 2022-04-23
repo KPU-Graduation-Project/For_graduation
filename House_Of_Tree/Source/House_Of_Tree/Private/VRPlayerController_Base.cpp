@@ -37,24 +37,25 @@ void AVRPlayerController_Base::Tick(float DeltaSeconds)
 		cs_player_data_packet sendPacket;
 		sendPacket.type = CS_PACKET::CS_PLAYER_DATA;
 		sendPacket.size = sizeof(sendPacket);
-		
+
 		const FVector pos = MainPlayer->GetActorLocation();
 		const FRotator rat = MainPlayer->GetActorRotation();
 
 		sendPacket.x = pos.X * 100;
 		sendPacket.y = pos.Y * 100;
 		sendPacket.z = pos.Z * 100;
-		
+
 		// Need Rotation interpolation value
 		sendPacket.pitch = rat.Pitch;
 		sendPacket.yaw = rat.Yaw;
 		sendPacket.roll = rat.Roll;
-		
+
 		gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
 	}
 }
 
-void AVRPlayerController_Base::PutPlayer(int PlayerType, bool IsPlayer, const FVector& Location, const FRotator& Rotation)
+void AVRPlayerController_Base::PutPlayer(int PlayerType, bool IsPlayer, const FVector& Location,
+                                         const FRotator& Rotation)
 {
 	if (Characters[PlayerType])
 	{
