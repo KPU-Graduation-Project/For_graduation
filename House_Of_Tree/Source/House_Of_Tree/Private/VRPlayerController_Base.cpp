@@ -2,6 +2,8 @@
 
 
 #include "VRPlayerController_Base.h"
+
+#include "EngineUtils.h"
 #include "HoTGameInstance.h"
 #include "GameFramework/Character.h"
 #include "Protocol.h"	// 차후 경로 변경해야함
@@ -19,6 +21,7 @@ void AVRPlayerController_Base::BeginPlay()
 	if (gameInst->ConnectNetwork == false)
 	{
 		MainPlayer = GetPawn();
+		gameInst->SetInfo();
 	}
 
 	if (!gameInst)

@@ -2,7 +2,8 @@
 
 
 #include "HoTGameInstance.h"
-
+#include <iostream>
+#include <fstream>
 #include "EngineUtils.h"
 #include "Engine/BlueprintGeneratedClass.h"
 
@@ -30,9 +31,23 @@ void UHoTGameInstance::OnStart()
 	{
 		InitSocket();
 	}
+}
 
+void UHoTGameInstance::InitSocket()
+{
+	if (SocketInstance != nullptr) return;
+
+	SocketInstance = new ClientSocket(this);
+}
+
+void UHoTGameInstance::SetInfo()
+{
 	if (makeIDList)
 	{
+		static FString path = FPaths::ProjectUserDir();
+		path.Append(TEXT("data.txt"));
+		std::ofstream out(*path);
+		
 		// 기록할 스태틱 오브젝트들을 선언 (나중에 파싱하는 방식으로 변경)
 		TArray<FString> objests = {
 			TEXT("SM_box"), TEXT("SM_door_02"), TEXT("SM_door_03"), TEXT("SM_doorbranch_01"), TEXT("SM_branch_01"),
@@ -56,50 +71,34 @@ void UHoTGameInstance::OnStart()
 			// 블루프린트 에셋과 검색한 액터가 같다면 아이디를 부여하고 저장
 			if (LoadedBP.Contains(i->GetClass()))
 			{
-				//UE_LOG(LogTemp, Error, TEXT("%s"), *i->GetName());
+				
+				//UE_LOG(LogTemp, Warning, TEXT("%lf %lf %lf"), i->GetActorTransform().GetLocation().X, i->GetActorTransform().GetLocation().Y, i->GetActorTransform().GetLocation().Z);
+
 				tempComponent = Cast<UStaticMeshComponent>(i->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 				if (tempComponent && tempComponent->GetStaticMesh())
 				{
 					int& key = ids.FindOrAdd(*tempComponent->GetStaticMesh()->GetName());
 					key++;
 
-					//UE_LOG(LogTemp, Warning, TEXT("%s %d"), *(Cast<UStaticMeshComponent>(tmp))->GetStaticMesh()->GetName(), key);
-
 					int t = objests.Find(*tempComponent->GetStaticMesh()->GetName());
 
 					objList.Add(((t + 1) * 10000) + key, i);
 				}
 			}
-
-			// else if (i->GetClass() == LoadedBP1)
-			// {
-			// 	//UE_LOG(LogTemp, Error, TEXT("%s"), *i->GetName());
-			// 	tempComponent = Cast<UStaticMeshComponent>(
-			// 		i->GetComponentByClass(UStaticMeshComponent::StaticClass()));
-			// 	if (tempComponent)
-			// 	{
-			// 		int& key = ids.FindOrAdd(*tempComponent->GetStaticMesh()->GetName());
-			// 		key++;
-			//
-			// 		//UE_LOG(LogTemp, Warning, TEXT("%s %d"), *(Cast<UStaticMeshComponent>(tmp))->GetStaticMesh()->GetName(), key);
-			//
-			// 		int t = objests.Find(*tempComponent->GetStaticMesh()->GetName());
-			//
-			// 		objList.Add(((t + 1) * 10000) + key, i);
-			// 	}
-			// }
 		}
-
-		for (const auto& i : objList)
+		if (out.is_open())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%d, %s"), i.Key, *i.Value->GetName());
+			for (const auto& i : objList)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%d, %s"), i.Key, *i.Value->GetName());
+				
+
+				out << "[" << i.Key << "]" << "[" << 1 << "]" << "["
+				<< i.Value->GetTransform().GetLocation().X << "/" << i.Value->GetTransform().GetLocation().Y << "/" << i.Value->GetTransform().GetLocation().Z << "]"
+				<< std::endl;
+				
+			}
 		}
+		
 	}
-}
-
-void UHoTGameInstance::InitSocket()
-{
-	if (SocketInstance != nullptr) return;
-
-	SocketInstance = new ClientSocket(this);
 }

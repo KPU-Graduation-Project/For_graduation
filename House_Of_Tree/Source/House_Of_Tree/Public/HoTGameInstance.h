@@ -28,6 +28,8 @@ public:
 	virtual void OnStart() override;
 	
 	void InitSocket();
+
+	void SetInfo();
 	
 	ClientSocket* SocketInstance;
 
