@@ -17,8 +17,7 @@ AWeaponCannonBall::AWeaponCannonBall()
 	CollisionComponent->SetSphereRadius(15.0f);
 	
 	// ProjectileMovementComponent 를 사용하여 이 발사체의 운동을 관장합니다.
-	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(
-		TEXT("ProjectileMovementComponent"));
+	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
 	ProjectileMovementComponent->InitialSpeed = 1500.0f;
 	ProjectileMovementComponent->MaxSpeed = 1500.0f;
