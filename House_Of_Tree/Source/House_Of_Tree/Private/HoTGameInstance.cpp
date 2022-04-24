@@ -47,9 +47,8 @@ void UHoTGameInstance::SetInfo()
 {
 	if (makeIDList)
 	{
-		
 		std::ofstream out(*path);
-		
+
 		// 기록할 스태틱 오브젝트들을 선언 (나중에 파싱하는 방식으로 변경)
 		TArray<FString> objests = {
 			TEXT("SM_box"), TEXT("SM_door_02"), TEXT("SM_door_03"), TEXT("SM_doorbranch_01"), TEXT("SM_branch_01"),
@@ -73,7 +72,6 @@ void UHoTGameInstance::SetInfo()
 			// 블루프린트 에셋과 검색한 액터가 같다면 아이디를 부여하고 저장
 			if (LoadedBP.Contains(i->GetClass()))
 			{
-				
 				//UE_LOG(LogTemp, Warning, TEXT("%lf %lf %lf"), i->GetActorTransform().GetLocation().X, i->GetActorTransform().GetLocation().Y, i->GetActorTransform().GetLocation().Z);
 
 				tempComponent = Cast<UStaticMeshComponent>(i->GetComponentByClass(UStaticMeshComponent::StaticClass()));
@@ -93,11 +91,22 @@ void UHoTGameInstance::SetInfo()
 			for (const auto& i : objList)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("%d, %s"), i.Key, *i.Value->GetName());
-				
-				out << "[" << i.Key << "]" << "[" << 1 << "]" << "["
-				<< i.Value->GetTransform().GetLocation().X << "/" << i.Value->GetTransform().GetLocation().Y << "/" << i.Value->GetTransform().GetLocation().Z << "]"
-				<< "[" << *i.Value->GetName() << "]"
-				<< std::endl;
+
+				out << "[" << i.Key << "]" << "[" << 1 << "]"
+					<< "["
+					<< i.Value->GetActorLocation().X << "/"
+					<< i.Value->GetActorLocation().Y << "/"
+					<< i.Value->GetActorLocation().Z
+					<< "]"
+					<< "["
+					<< i.Value->GetActorRotation().Pitch << "/"
+					<< i.Value->GetActorRotation().Yaw << "/"
+					<< i.Value->GetActorRotation().Roll
+					<< "]"
+					<< "["
+					<< TCHAR_TO_ANSI(*i.Value->GetName())
+					<< "]"
+					<< std::endl;
 			}
 		}
 	}
