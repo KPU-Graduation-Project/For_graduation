@@ -20,6 +20,7 @@ void AVRPlayerController_Base::BeginPlay()
 
 	if (gameInst->ConnectNetwork == false)
 	{
+		// actor list에다가 캐릭터를 집어넣으면 되자나...?
 		MainPlayer = GetPawn();
 		gameInst->SetInfo();
 	}

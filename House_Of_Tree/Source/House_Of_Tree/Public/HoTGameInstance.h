@@ -49,13 +49,18 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category=ID, DisplayName="ID 리스트 생성")
 	bool makeIDList;
 
-	// ID와 액터를 짝지어 저장하는 맵
+	// ID와 액터를 짝지어 저장하는 맵 컨테이너
 	UPROPERTY()
-	TMap<int, AActor*> objList;
+	TMap<int, AActor*> actorList;
+
+	// 사용하는 블루프린트 액터를 기록하는 컨테이너
+	UPROPERTY(EditDefaultsOnly)
+	TArray<UClass*> BPs;
 
 	UPROPERTY()
 	int playerID;
 
 	UPROPERTY()
 	FString path;
+	
 };
