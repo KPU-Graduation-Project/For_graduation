@@ -93,4 +93,9 @@
 */Plugins/**/Binaries/*
 */Plugins/**/Intermediate/*
 
+
+# Do not Delect Server Solution File
+!The Tree House Server/*.sln
+
+
 # End of https://www.toptal.com/developers/gitignore/api/unrealengine
