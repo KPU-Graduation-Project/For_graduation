@@ -1,5 +1,7 @@
 #pragma once
 #include "RoomManager.h"
+#include <unordered_map>
+#include <atomic>
 
 namespace room_state
 {
@@ -14,19 +16,22 @@ namespace user_type
 
 class cRoom
 {
+	friend class cRoomManager;
+
 public:
 	cRoom();
-	cRoom(unsigned int _id,  room_state::eSTATE _state, const unsigned int _host_id) :
+	cRoom(unsigned int _id, room_state::eSTATE _state, const unsigned int _host_id) :
 		m_id(_id), m_state(_state) {
 		m_user_id[user_type::HOST] = _host_id;
 	};
 	~cRoom();
 
+	void InitObjects();
 	void StartGame();
 
 	void UserLoadingComplete(const unsigned int _user_id);
 	void SendOtherPlayerTransform();
-
+	void SendAllObjectData();
 	void Broadcast(int _size, void* _mess);
 
 	void StateLock() { EnterCriticalSection(&m_state_cs); }
@@ -40,8 +45,10 @@ protected:
 
 public:
 	unsigned int        m_user_id[2] = { MAX_USER,MAX_USER };
+	unordered_map <unsigned int, cGameObject*> m_game_objects;
 
-	friend cRoomManager;
+private:
+	static int          m_last_object_id;
 };
 
 

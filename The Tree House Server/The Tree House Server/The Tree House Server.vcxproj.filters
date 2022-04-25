@@ -64,6 +64,12 @@
     <Filter Include="소스 파일\08 GameObject\01 Bullet">
       <UniqueIdentifier>{12158128-5c23-4821-a694-f420efa9dc18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\95 ObjectPool">
+      <UniqueIdentifier>{a0f508eb-ed20-421a-acd0-37b180745e1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\94 LevelDesignInfo">
+      <UniqueIdentifier>{ced6dec3-650b-4258-ba4d-e2a45216584f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ServerNetworkSystem.cpp">
@@ -104,6 +110,15 @@
     </ClCompile>
     <ClCompile Include="Character.cpp">
       <Filter>소스 파일\08 GameObject\00 Character</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelDesignInfo.cpp">
+      <Filter>소스 파일\94 LevelDesignInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="ProtocolManager.cpp">
+      <Filter>소스 파일\97 Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>소스 파일\08 GameObject\01 Bullet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +163,18 @@
     </ClInclude>
     <ClInclude Include="Character.h">
       <Filter>소스 파일\08 GameObject\00 Character</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPool.h">
+      <Filter>소스 파일\95 ObjectPool</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelDesignInfo.h">
+      <Filter>소스 파일\94 LevelDesignInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="ProtocolManager.h">
+      <Filter>소스 파일\97 Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>소스 파일\08 GameObject\01 Bullet</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

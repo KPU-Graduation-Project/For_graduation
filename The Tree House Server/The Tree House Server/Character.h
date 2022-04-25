@@ -2,7 +2,7 @@
 #include <list>
 #include "GameObject.h"
 
-class cCharacter :public CGameObject
+class cCharacter :public cGameObject
 {
 public:
 	cCharacter();

@@ -17,6 +17,5 @@ public:
 	static unordered_map <unsigned int, cUser*> m_users;
 
 private:
-	unsigned int     m_last_id;
-	CRITICAL_SECTION m_last_id_cs;
+	std::atomic<unsigned int>  m_last_id;
 };

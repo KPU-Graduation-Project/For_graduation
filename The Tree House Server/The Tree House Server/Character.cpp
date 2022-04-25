@@ -11,8 +11,8 @@ void cCharacter::SetCharacterTransform(
 	const iVector3& _rh_position, const sRotation3& _rh_rotation,
 	const iVector3& _lh_position, const sRotation3& _lh_rotation)
 {
-	m_position = _position;
-	m_rotation = _rotation;
+	m_transform.position = _position;
+	m_transform.rotation = _rotation;
 	m_head_position = _head_position;
 	m_head_rotation = _head_rotation;
 	m_rh_position = _rh_position;

@@ -2,23 +2,28 @@
 #include <iostream>
 #include <chrono>
 
+using namespace std;
 using namespace chrono;
 
-enum EVENT_TYPE {};
+enum EVENT_TYPE { NONE = 0, EV_SEND_WORLD_DATA };
 
 class cTimerEvent
 {
 public:
-	cTimerEvent();
-	~cTimerEvent();
+	cTimerEvent() {};
+	~cTimerEvent() {};
 
 	void Init();
 
-	constexpr bool operator < (const cTimerEvent& _Left) const;
+	constexpr bool operator < (const cTimerEvent& _Left) const
+	{
+		return (m_excute_time > _Left.m_excute_time);
+	}
 
-private:
+	public :
+	unsigned int m_room_id;
 	unsigned int m_obj_id;
-	high_resolution_clock::time_point m_start_time;
+	high_resolution_clock::time_point m_excute_time;
 	EVENT_TYPE m_event_type;
 };
 
@@ -33,7 +38,7 @@ public:
 	
 	void Init();
 	void UpdateCurrentTime();
-	high_resolution_clock::time_point GetTime();
+	chrono::high_resolution_clock::time_point GetTime();
 	float GetDeltaTimeSecond();
 
 private:

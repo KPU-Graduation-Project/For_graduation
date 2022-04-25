@@ -3,15 +3,9 @@
 
 using namespace chrono;
 
-cTimerEvent::cTimerEvent() {};
-cTimerEvent::~cTimerEvent() {};
 
 void cTimerEvent::Init() {};
 
-constexpr bool cTimerEvent::operator < (const cTimerEvent& _Left) const
-{
-	return (m_start_time > _Left.m_start_time);
-}
 
 
 

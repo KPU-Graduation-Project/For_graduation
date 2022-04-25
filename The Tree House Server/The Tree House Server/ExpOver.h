@@ -4,7 +4,7 @@
 #include "protocol.h"
 #include <map>
 
-enum OP_TYPE { OP_RECV, OP_SEND, OP_ACCEPT };
+enum OP_TYPE { OP_RECV, OP_SEND, OP_ACCEPT,OP_SEND_WORLD_DATA };
 
 class CEXP_OVER {
 public:

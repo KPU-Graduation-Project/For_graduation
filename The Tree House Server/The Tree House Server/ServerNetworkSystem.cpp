@@ -44,20 +44,36 @@ void cMainServer::Start()
 
 void cMainServer::TimerThread()
 {
-	//while(true)
-	//{
-	//	while (true)
-	//	{
-	//		if (m_timer_queue.empty() == true)
-	//			continue;
-	//		cTimerEvent timer_event;
-	//		m_timer_queue.try_pop(timer_event);
-	//		//if (ev.start_time <= chrono::system_clock::now())
-	//	}
+	while(true)
+	{
+		while (true)
+		{
+			if (g_timer_queue.empty() == true)
+				continue;
+			cTimerEvent timer_event;
+			g_timer_queue.try_pop(timer_event);
+			if (timer_event.m_excute_time <= chrono::high_resolution_clock::now())
+			{
+				switch (timer_event.m_event_type)
+				{
+				case EVENT_TYPE::EV_SEND_WORLD_DATA:
+				{
 
-	//	m_clock->UpdateCurrentTime();
-	//	this_thread::sleep_for(5ms);
-	//}
+										break;
+				}
+
+				}
+
+			}
+			else
+			{
+				g_timer_queue.push(timer_event);
+			}
+		}
+
+		m_clock->UpdateCurrentTime();
+		this_thread::sleep_for(5ms);
+	}
 }
 
 void cMainServer::WorkerThread()
@@ -123,10 +139,12 @@ void cMainServer::WorkerThread()
 		case OP_ACCEPT: {
 			//cout << "accpet called\n";
 			Accept(exp_over);
-			
+					}
+		case OP_SEND_WORLD_DATA:
+		{
+			break;
 		}
 		}
-
 	}
 
 	while (true) { cout << "Thread Loop End" << endl; };
@@ -396,13 +414,14 @@ void cMainServer::ProcessPacket(const unsigned short _user_id, unsigned char* _p
 			" ] position " << packet->x << "," << packet->y << ", " << packet->z
 			<< " // rotation " << packet->pitch << ", " << packet->yaw << "," << packet->roll << "\n";
 
-
 		m_user_manager->m_users[_user_id]->m_character->SetCharacterTransform
 		({ packet->x, packet->y, packet->z }, { packet->pitch, packet->yaw, packet->roll },
 			{ packet->head_x, packet->head_y, packet->head_z }, { packet->head_pitch, packet->head_yaw, packet->head_roll },
 			{ packet->rh_x, packet->rh_y, packet->rh_z }, { packet->rh_pitch, packet->rh_yaw, packet->rh_roll },
 			{ packet->lh_x, packet->lh_y, packet->lh_z }, { packet->lh_pitch, packet->lh_yaw, packet->lh_roll });
 
+		m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->SendOtherPlayerTransform();
+		m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->SendAllObjectData();
 		break;
 	}
 	case CS_PACKET::CS_SHOOT_BULLET:

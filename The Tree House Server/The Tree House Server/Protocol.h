@@ -12,6 +12,7 @@ namespace CS_PACKET
 {
 	enum ePACKET_TYPE
 	{
+		NONE = 0,
 		CS_CREATE_ROOM,CS_JOIN_ROOM,CS_JOIN_RANDOM_ROOM,CS_READY_GAME, CS_CHANGE_SELECTED_CHARACTER,
 		CS_START_GAME, CS_LOADING_COMPLETE, 
 		CS_SHOOT_BULLET,CS_BULLET_HIT,CS_PLAYER_DATA
@@ -23,10 +24,11 @@ namespace SC_PACKET
 	
 	enum ePACKET_TYPE
 	{
+		NONE=0,
 		SC_LOGINOK, 
 		SC_CREATE_ROOM,SC_JOIN_ROOM,SC_USER_JOIN_ROOM,USER_EXIT_ROOM,SC_USER_READY_GAME,SC_USER_CHANGE_SELECTED_CHARACTER,
 		SC_START_GAME, SC_ALL_USERS_LOADING_COMPLETE,
-		SC_PUT_OBJECT, SC_REMOVE_OBJECT, SC_PLAYER_DATA
+		SC_PUT_OBJECT, SC_REMOVE_OBJECT, SC_OBJECT_DATA, SC_PLAYER_DATA
 	};
 	
 };
@@ -238,8 +240,9 @@ struct sc_put_object_packet
 	unsigned char size;
 	unsigned char type;
 
-	unsigned short object_type;
 	unsigned int  id;
+	unsigned short object_type;	
+	unsigned char mesh_id;
 
 	int           x;
 	int           y;
@@ -247,6 +250,9 @@ struct sc_put_object_packet
 	short         pitch;
 	short         yaw;
 	short         roll;
+	short         scale_x;
+	short         scale_y;
+	short         scale_z;
 };
 
 struct sc_remove_object_packet
@@ -255,6 +261,24 @@ struct sc_remove_object_packet
 	unsigned char type;
 
 	unsigned int  id;
+};
+
+struct sc_object_data_packet
+{
+	unsigned char size;
+	unsigned char type;
+
+	unsigned int  id;
+
+	int           x;
+	int           y;
+	int           z;
+	short         pitch;
+	short         yaw;
+	short         roll;
+	short         scale_x;
+	short         scale_y;
+	short         scale_z;
 };
 
 struct sc_player_data_packet

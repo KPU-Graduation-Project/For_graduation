@@ -1,7 +1,9 @@
 #pragma once
 #include <unordered_map>
 #include <mutex>
-
+#include "ObjectPool.h"
+#include "GameObject.h"
+#include "Character.h"
 
 class cRoom;
 
@@ -19,7 +21,13 @@ public:
 public:
 	static unordered_map<unsigned int, cRoom*> m_rooms;
 
+protected:
+	static cObjectPool<cGameObject>       m_object_pool;
+	static cObjectPool<cCharacter>        m_character_pool;
+
 private:
-	unsigned int     m_last_id;
-	CRITICAL_SECTION m_last_id_cs;
+	std::atomic<unsigned int>             m_last_id;
+
+	friend cRoom;
+
 };

@@ -22,6 +22,20 @@ struct iVector3
 	}
 };
 
+struct sVector3
+{
+	short x;
+	short y;
+	short z;
+
+	void operator=(const iVector3& rhs) {
+		cout << "called vector operator=\n";
+		x = rhs.x;
+		y = rhs.y;
+		z = rhs.z;
+	}
+};
+
 struct sRotation3
 {
 	short pitch;
@@ -39,16 +53,20 @@ struct sRotation3
 struct Transform
 {
 	iVector3   position;
-	sRotation3 ratation;
+	sRotation3 rotation;
+	sVector3   scale;
 
 	void operator=(const Transform& rhs) {
 		cout << "called Transform operator=\n";
 		position.x = rhs.position.x;
 		position.y = rhs.position.y;
 		position.z = rhs.position.z;
-		ratation.pitch = rhs.ratation.pitch;
-		ratation.yaw = rhs.ratation.yaw;
-		ratation.roll = rhs.ratation.roll;
+		rotation.pitch = rhs.rotation.pitch;
+		rotation.yaw = rhs.rotation.yaw;
+		rotation.roll = rhs.rotation.roll;
+		scale.x = rhs.scale.x;
+		scale.y = rhs.scale.y;
+		scale.z = rhs.scale.z;
 	}
 };
 

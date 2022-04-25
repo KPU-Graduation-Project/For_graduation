@@ -6,11 +6,12 @@
 #include "User.h"
 
 unordered_map<unsigned int, cRoom*> cRoomManager::m_rooms;
+cObjectPool<cGameObject>       cRoomManager::m_object_pool(500);
+cObjectPool<cCharacter>        cRoomManager::m_character_pool(MAX_USER/2); // 메모리풀 확장 확인을 위해 절반만
 
 void cRoomManager::Init()
 {
 	m_last_id = 0;
-	InitializeCriticalSection(&m_last_id_cs);	
 };
 
 void cRoomManager::InitRooms()
@@ -27,12 +28,9 @@ void cRoomManager::InitRooms()
 //success: return room_id / fail: return MAX_ROOM 
 unsigned int cRoomManager::CreateRoom(const unsigned int _user_id)
 {
-	EnterCriticalSection(&m_last_id_cs);
 	if (m_last_id < MAX_ROOM)
 	{
 		unsigned short new_id = m_last_id++;
-		LeaveCriticalSection(&m_last_id_cs);
-
 
 		m_rooms.emplace(new_id,new cRoom( new_id, room_state::IN_ROBBY_CREATED, _user_id));
 
@@ -45,9 +43,6 @@ unsigned int cRoomManager::CreateRoom(const unsigned int _user_id)
 	}
 
 	cout << "Failed to create new room(MAX_ROOM), by user [ " << _user_id << " ]\n";
-
-	LeaveCriticalSection(&m_last_id_cs);
-
 	return MAX_ROOM;
 }
 

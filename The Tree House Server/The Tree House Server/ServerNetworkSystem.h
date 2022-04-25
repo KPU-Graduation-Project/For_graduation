@@ -1,7 +1,9 @@
 #pragma once
+#include <iostream>
 #include <vector>
 #include <thread>
 #include <queue>
+#include <concurrent_priority_queue.h>
 #include <unordered_map>
 #include "IOCPServer.h"
 #include "ExpOver.h"
@@ -34,14 +36,13 @@ public:
 	void Disconnect();
 
 private:
-	static cUserManager*    m_user_manager;
-	static cRoomManager*    m_room_manager;
+	static cUserManager*  m_user_manager;
+	static cRoomManager*  m_room_manager;
+	static GameProcessor* m_game_processor;
 
-	static GameProcessor*   m_game_processor;
-	
-	cTimer*          m_clock;
+	cTimer* m_clock;
 	std::vector <std::thread> m_worker_threads;
 	thread           m_timer_thread;
 
-	std::priority_queue<cTimerEvent> m_timer_queue;
+
 };
