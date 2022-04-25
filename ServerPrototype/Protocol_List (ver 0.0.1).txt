@@ -1,0 +1,42 @@
+====================================
+                     CLIENT TO SERVER
+====================================
+------------------------in title-------------------------
+1. cs_packet_login 
+
+------------------------in lobby-----------------------
+1. cs_packet_play_random_matching
+2. cs_packet_create_matching_room
+3. cs_packet_join_matching_room	
+4. cs_packet_stop_matching
+
+-----------------in matching room-------------------
+1. cs_packet_change_character
+2. cs_packet_change_ready
+
+-----------------------in game------------------------
+
+====================================
+                     SERVER TO CLIENT
+====================================
+------------------------in title-------------------------
+1 .sc_packet_login_ok
+
+------------------------in lobby-----------------------
+1. sc_packet_start_random_matching
+2. sc_packet_matching_room_created
+3. sc_packet_joining_matching_room
+4. sc_packet_stop_matching
+5. sc_packet_player_matched
+
+
+-----------------in matching room-------------------
+1. sc_packet_change_character
+2. cs_packet_change_ready
+3. sc_packet_game_start
+
+-----------------------in game------------------------
+1. sc_packet_change_stage
+
+
+

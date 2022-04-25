@@ -1,21 +1,26 @@
 #pragma once
-#include <unordered_map>
 
-class cUser;
+class CUser;
 
-class cUserManager
+class CUserManager
 {
 public:
-	cUserManager();
-	~cUserManager();
+	CUserManager();
+	~CUserManager();
 
 	void Init();
-	void InitUsers();
 	unsigned int GetNewID();
+	void AddNewUser(const unsigned int& _user_id, SOCKET& _socket);
+	void UserInit(const unsigned int& _user_id);
 
-public: 
-	static unordered_map <unsigned int, cUser*> m_users;
+	void UserSend(const unsigned int& _user_id, int num_bytes, void* mess);
+	void UserRecv(const unsigned int& _user_id);
+
+	int GetPrevSize(const unsigned int& _user_id);
+
+	void SetPrevSize(const unsigned int& _user_id, int& _prev_size);
 
 private:
-	std::atomic<unsigned int>  m_last_id;
+	CUser* m_users;
+	unsigned int m_connected_user_num;
 };

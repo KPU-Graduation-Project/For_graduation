@@ -46,30 +46,6 @@
     <Filter Include="소스 파일\06 RoomManager">
       <UniqueIdentifier>{225cd005-cc33-486b-9ed4-fc2e5dd91318}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\96 Timer">
-      <UniqueIdentifier>{e862d3b1-a6ae-4c1f-991e-34b6b19752d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\08 GameObject">
-      <UniqueIdentifier>{cc7d033c-3cbf-4874-9c5d-3fde09e59310}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\08 GameObject\00 Character">
-      <UniqueIdentifier>{7d398fd0-2ecf-445b-9148-ae07236b3f0c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\08 GameObject\02 Monster">
-      <UniqueIdentifier>{9cd159e6-c1d0-4d34-b71b-8635a6559d33}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\08 GameObject\03 MapObject">
-      <UniqueIdentifier>{40722df2-0408-4610-bd97-b1f459b164d6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\08 GameObject\01 Bullet">
-      <UniqueIdentifier>{12158128-5c23-4821-a694-f420efa9dc18}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\95 ObjectPool">
-      <UniqueIdentifier>{a0f508eb-ed20-421a-acd0-37b180745e1c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\94 LevelDesignInfo">
-      <UniqueIdentifier>{ced6dec3-650b-4258-ba4d-e2a45216584f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ServerNetworkSystem.cpp">
@@ -101,24 +77,6 @@
     </ClCompile>
     <ClCompile Include="RoomManager.cpp">
       <Filter>소스 파일\06 RoomManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>소스 파일\96 Timer</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>소스 파일\08 GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>소스 파일\08 GameObject\00 Character</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelDesignInfo.cpp">
-      <Filter>소스 파일\94 LevelDesignInfo</Filter>
-    </ClCompile>
-    <ClCompile Include="ProtocolManager.cpp">
-      <Filter>소스 파일\97 Protocol</Filter>
-    </ClCompile>
-    <ClCompile Include="Bullet.cpp">
-      <Filter>소스 파일\08 GameObject\01 Bullet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,27 +112,6 @@
     </ClInclude>
     <ClInclude Include="struct.h">
       <Filter>소스 파일\99 Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="timer.h">
-      <Filter>소스 파일\96 Timer</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>소스 파일\08 GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>소스 파일\08 GameObject\00 Character</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectPool.h">
-      <Filter>소스 파일\95 ObjectPool</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelDesignInfo.h">
-      <Filter>소스 파일\94 LevelDesignInfo</Filter>
-    </ClInclude>
-    <ClInclude Include="ProtocolManager.h">
-      <Filter>소스 파일\97 Protocol</Filter>
-    </ClInclude>
-    <ClInclude Include="Bullet.h">
-      <Filter>소스 파일\08 GameObject\01 Bullet</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

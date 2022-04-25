@@ -4,15 +4,15 @@
 #include "ExpOver.h"
 
 
-class cIOCPServer
+class CIOCPServer
 {
 public:
-	cIOCPServer();
-	~cIOCPServer();
+	CIOCPServer();
+	~CIOCPServer();
 
 public:
-	void StartServer();
-	void CloseServer();
+	void Open();
+	void Close();
 	
 
 	void Disconnect();
@@ -21,9 +21,7 @@ private:
 	void BindAndListen(USHORT server_port);
 
 public:
-	HANDLE m_h_IOCP;
 	SOCKET m_listen_socket;
-	SOCKET m_client_socket;
-	CEXP_OVER m_accept_over;
+	HANDLE m_h_iocp;
 
 };

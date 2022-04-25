@@ -1,55 +1,33 @@
 #pragma once
 #include "ExpOver.h"
-#include "Character.h"
+#include "UserManager.h"
 
+enum E_USER_STATE { FREE = 0, IN_ROBBY = 1, IN_MATCHING_ROOM = 2, IN_GAME = 3 };
 
-
-namespace user_state
+class CUser
 {
-	enum eSTATE { FREE = 0, ACCEPTED = 1, IN_ROBBY = 2, IN_ROOM = 3,IN_LOADING=4, IN_GAME = 5 };
-}
+protected:
+	CUser();
+	~CUser();
 
-class cUser
-{
-public:
-	cUser();
-	cUser(unsigned int _id);
-	~cUser();
+	unsigned short GetID();
+	E_USER_STATE GetState();
+	unsigned short GetRoomNum();
 
-	void Init(const unsigned int& _id);
-
-	unsigned short GetID() { return m_id; }
-	user_state::eSTATE GetState() { return m_state; };
-	unsigned int GetRoomID() { return m_room_id; };
-	short GetPrevSize() { return m_prev_size; };
-		
-	void SetID(const unsigned int _id) { m_id = _id; };
-	void SetState(const user_state::eSTATE _state) { m_state = _state; };
-	void SetRoomID(const unsigned int _room_id) { m_room_id = _room_id; };
-	void SetPrevSize(const short _prev_size) { m_prev_size = _prev_size; };
-	void SetSocket(const SOCKET& _socket) { m_socket = _socket; };
-
-	void StateLock() { EnterCriticalSection(&m_state_cs); }
-	void StateUnlock() { LeaveCriticalSection(&m_state_cs); }
-
-	void Send(int num_bytes, void* mess);
-	void Recv();
-
-
-private:
-	unsigned int       m_id;
-	user_state::eSTATE m_state;
-	CRITICAL_SECTION   m_state_cs;
-	unsigned int       m_room_id;
-
-public:
-	// Use when the user in room
-	bool               m_is_ready;
-	char               m_selected_character;	
-	cCharacter*        m_character;
+	void SetID(const unsigned short _id);
+	void SetState(const E_USER_STATE _state);
+	void SetRoomNum(const unsigned short _room_num);
 
 private:
 	SOCKET             m_socket;
 	CEXP_OVER          m_recv_over;
-	short 		       m_prev_size;
+	int		           m_prev_size;
+
+	unsigned short     m_id;
+	E_USER_STATE       m_state;
+	unsigned short     m_room_num;
+
+	//mutex              m_state_lock;
+
+	friend CUserManager;
 };
