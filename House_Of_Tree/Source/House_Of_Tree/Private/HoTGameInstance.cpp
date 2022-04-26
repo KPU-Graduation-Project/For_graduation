@@ -103,73 +103,64 @@ void UHoTGameInstance::SetInfo()
 				// 블루프린트 에셋과 검색한 액터가 같다면 데이터 파일에 기록
 				if (bpSet.Contains(i->GetClass()))
 				{
-					UE_LOG(LogTemp, Warning, TEXT("%s"), *i->GetName());
-					out << "[" << 1 << "]";
+					FProperty* Property = i->GetClass()->FindPropertyByName(TEXT("Mesh ID"));
+					if (Property)
+					{
+						int *meshId = Property->ContainerPtrToValuePtr<int>(i);
 
-					
-					out	<< "[";
-					out.width(8);
-					out.fill('0');
-					out << bpSet[i->GetClass()];
-					out <<"]";
-					
-					out	<< "["
-						<< i->GetActorLocation().X << "/"
-						<< i->GetActorLocation().Y << "/"
-						<< i->GetActorLocation().Z
-						<< "]";
-					
-					out	<< "["
-						<< i->GetActorRotation().Pitch << "/"
-						<< i->GetActorRotation().Yaw << "/"
-						<< i->GetActorRotation().Roll
-						<< "]";
-					
-					out	<< "["
-						<< i->GetActorScale().X << "/"
-						<< i->GetActorScale().Y << "/"
-						<< i->GetActorScale().Z
-						<< "]";
-					
-					out	<< std::endl;
+						UE_LOG(LogTemp, Warning, TEXT("%s"), *i->GetName());
+
+						// Level
+						out << "[" << 1 << "]";
+
+						// Object ID
+						out << "[";
+						out.width(8);
+						out.fill('0');
+						out << bpSet[i->GetClass()];
+						out << "]";
+
+						// Mesh ID
+						out << "[" << *meshId << "]";
+
+						// Location
+						out << "["
+							<< static_cast<int>(i->GetActorLocation().X * 100) << "/"
+							<< static_cast<int>(i->GetActorLocation().Y * 100) << "/"
+							<< static_cast<int>(i->GetActorLocation().Z * 100)
+							<< "]";
+
+						// Rotation
+						out << "["
+							<< static_cast<int>(i->GetActorRotation().Pitch * 100) << "/"
+							<< static_cast<int>(i->GetActorRotation().Yaw * 100) << "/"
+							<< static_cast<int>(i->GetActorRotation().Roll * 100)
+							<< "]";
+
+						// Scale
+						out << "["
+							<< static_cast<int>(i->GetActorScale().X * 100) << "/"
+							<< static_cast<int>(i->GetActorScale().Y * 100) << "/"
+							<< static_cast<int>(i->GetActorScale().Z * 100)
+							<< "]";
+
+						// Any Other Variables
+						FProperty* variables = i->GetClass()->FindPropertyByName(TEXT("Actor"));
+						if (variables != nullptr)
+						{
+							UClass* target = variables->ContainerPtrToValuePtr<UClass>(i);
+							out << "[";
+							out.width(8);
+							out.fill('0');
+							out << bpSet[i->GetClass()];
+							out << "]";
+						}
+
+						out << std::endl;
+					}
 				}
 			}
 		}
-		//
-		// 	for (const auto& i : actorList)
-		// 	{
-		// 		UE_LOG(LogTemp, Warning, TEXT("%d, %s"), i.Key, *i.Value->GetName());
-		//
-		// 		FProperty* Property = i.Value->GetClass()->FindPropertyByName(TEXT("Mesh ID"));
-		// 		if (Property)
-		// 		{
-		// 			int *meshId = Property->ContainerPtrToValuePtr<int>(i.Value);
-		//
-		// 			if (meshId)
-		// 			{	// Level ID / Mesh ID / Transform(loc, rot, scale)
-		// 				out << "[" << i.Key << "]" << "[" << 1 << "]"
-		// 					<< "["
-		// 					<< *meshId
-		// 					<< "]"
-		// 					<< "["
-		// 					<< i.Value->GetActorLocation().X << "/"
-		// 					<< i.Value->GetActorLocation().Y << "/"
-		// 					<< i.Value->GetActorLocation().Z
-		// 					<< "]"
-		// 					<< "["
-		// 					<< i.Value->GetActorRotation().Pitch << "/"
-		// 					<< i.Value->GetActorRotation().Yaw << "/"
-		// 					<< i.Value->GetActorRotation().Roll
-		// 					<< "]"
-		// 					<< "["
-		// 					<< i.Value->GetActorScale().X << "/"
-		// 					<< i.Value->GetActorScale().Y << "/"
-		// 					<< i.Value->GetActorScale().Z
-		// 					<< "]"
-		// 					<< std::endl;	
-		// 			}
-		// 		}
-		// 	}
-		// }
+		out.close();
 	}
 }
