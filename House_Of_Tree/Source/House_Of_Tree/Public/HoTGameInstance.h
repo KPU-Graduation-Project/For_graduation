@@ -45,17 +45,28 @@ public:
 	UPROPERTY()
 	AVRPlayerController_Base *playerController;
 
+	//*********************************************************************************************/
+
 	// ID 리스트 파일을 새로 생성하라고 표시하는 명령어
-	UPROPERTY(EditDefaultsOnly, Category=ID, DisplayName="ID 리스트 생성")
+	UPROPERTY(EditDefaultsOnly, Category="ID", DisplayName="ID 리스트 생성")
 	bool makeIDList;
 
-	// ID와 액터를 짝지어 저장하는 맵 컨테이너
-	UPROPERTY()
-	TMap<int, AActor*> actorList;
-
 	// 사용하는 블루프린트 액터를 기록하는 컨테이너
-	UPROPERTY(EditDefaultsOnly)
-	TArray<UClass*> BPs;
+	UPROPERTY(EditDefaultsOnly, Category="Blueprint", DisplayName="Character")	// 001
+	TArray<UBlueprint*> BP_Char;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Blueprint", DisplayName="Monster")		// 002
+	TArray<UBlueprint*> BP_Monster;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Blueprint", DisplayName="Bullets")		// 003
+	TArray<UBlueprint*> BP_Bullet;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Blueprint", DisplayName="Dynamic Object")	// 004
+	TArray<UBlueprint*> BP_DyObj;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Blueprint", DisplayName="Passive Object")	// 005
+	TArray<UBlueprint*> BP_PasObj;
+	
 
 	UPROPERTY()
 	int playerID;

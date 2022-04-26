@@ -135,18 +135,18 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 			}
 			break;
 		
-		case SC_PACKET::SC_PUT_PLAYER:
-			{
-				sc_put_player_packet* packet = reinterpret_cast<sc_put_player_packet*>(RecvData);
+		//case SC_PACKET::SC_PUT_PLAYER:
+		//	{
+		//		sc_put_player_packet* packet = reinterpret_cast<sc_put_player_packet*>(RecvData);
 	
-				FVector location(packet->x / 100, packet->y / 100, packet->z / 100);
-				FRotator rotation(packet->pitch, packet->yaw, packet->roll);	// Need Rotation interpolation value
+		//		FVector location(packet->x / 100, packet->y / 100, packet->z / 100);
+		//		FRotator rotation(packet->pitch, packet->yaw, packet->roll);	// Need Rotation interpolation value
 
-				bool isPlayer = packet->id == gameInst->playerID? true: false;
-				
-				gameInst->playerController->PutPlayer(packet->character_type, isPlayer, location, rotation);
-			}
-			break;
+		//		bool isPlayer = packet->id == gameInst->playerID? true: false;
+		//		
+		//		gameInst->playerController->PutPlayer(packet->character_type, isPlayer, location, rotation);
+		//	}
+		//	break;
 		
 		case SC_PACKET::SC_PUT_OBJECT:
 			{

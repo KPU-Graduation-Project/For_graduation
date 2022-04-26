@@ -50,77 +50,126 @@ void UHoTGameInstance::SetInfo()
 		std::ofstream out(*path);
 
 		// 블루 프린트 에셋을 로드해와서 저장 (나중에 블루프린트에서 선택한 것을 가져오는 것으로 변경 할 예정)
-		BPs.Add(LoadObject<UClass>(NULL, TEXT("Blueprint'/Game/Asset/Actor/Object/BP_Target.BP_Target_C'")));
-		BPs.Add(LoadObject<UClass>(NULL, TEXT("Blueprint'/Game/Asset/Actor/Object/BP_Door.BP_Door_C'")));
-		BPs.Add(LoadObject<UClass>(NULL, TEXT("Blueprint'/Game/Asset/Actor/Object/BP_Box.BP_Box_C'")));
-		BPs.Add(LoadObject<UClass>(NULL, TEXT("Blueprint'/Game/Asset/Actor/Object/BP_Destructible.BP_Destructible_C'")));
-		BPs.Add(LoadObject<UClass>(NULL, TEXT("Blueprint'/Game/Asset/Actor/Object/BP_PlayzoneTarget.BP_PlayzoneTarget_C'")));
-		BPs.Add(LoadObject<UClass>(NULL, TEXT("Blueprint'/Game/Asset/Actor/Object/BP_TargetDoll.BP_TargetDoll_C'")));
-		
-		// 오브젝트 아이디를 저장할 저장소
-		TMap<UClass*, int> ids;
+		TMap<UClass*, int> bpSet;
 
-		// 월드에 스폰된 액터를 순회하면서 오브젝트를 검사
-		for (const auto& i : TActorRange<AActor>(GetWorld()))
+		int key = 1, id = 1;
+		for (const auto i : BP_Char)
 		{
-			// 블루프린트 에셋과 검색한 액터가 같다면 아이디를 부여하고 저장
-			if (BPs.Contains(i->GetClass()))
-			{
-				// 블루프린트 함수 호출 테스트 코드
-				if (i->GetClass() == BPs[0])
-				{
-					FOutputDeviceNull ar;
-					i->CallFunctionByNameWithArguments(TEXT("Test"), ar, NULL, true);
-				}
-				int& key = ids.FindOrAdd(i->GetClass());
-				key++;
-
-				int index;
-				BPs.Find(i->GetClass(), index);
-
-				actorList.Add(((index + 3) * 10000) + key, i);
-			}
+			bpSet.Add(i->GeneratedClass, (id * 10000) + key);
+			key++;
 		}
+
+		key = 1;
+		id++;
+		for (const auto i : BP_Monster)
+		{
+			bpSet.Add(i->GetBlueprintClass(), (id * 10000) + key);
+			key++;
+		}
+
+		key = 1;
+		id++;
+		for (const auto i : BP_Bullet)
+		{
+			bpSet.Add(i->GeneratedClass, (id * 10000) + key);
+			key++;
+		}
+
+		key = 1;
+		id++;
+		for (const auto i : BP_DyObj)
+		{
+			bpSet.Add(i->GeneratedClass, (id * 10000) + key);
+			key++;
+		}
+
+		key = 1;
+		id++;
+		for (const auto i : BP_PasObj)
+		{
+			bpSet.Add(i->GeneratedClass, (id * 10000) + key);
+			key++;
+		}
+
 		if (out.is_open())
 		{
-			// 캐릭터 정보 (나중에 정리 예정)
-			out << "[10001][1][0][-680/189.999/92][0/0/-90][1/1/1]" << std::endl;
-			out << "[20001][1][0][1712/216.999/92][0/0/-90][1/1/1]" << std::endl;
+			// 좌표값들 반올림해서 출력
+			// out << "[1][00100001][-680/189.999/92][0/0/-90][1/1/1]" << std::endl;
+			// out << "[1][00100002][1712/216.999/92][0/0/-90][1/1/1]" << std::endl;
 
-			for (const auto& i : actorList)
+			// 월드에 스폰된 액터를 순회하면서 오브젝트를 검사
+			for (const auto& i : TActorRange<AActor>(GetWorld()))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("%d, %s"), i.Key, *i.Value->GetName());
-
-				FProperty* Property = i.Value->GetClass()->FindPropertyByName(TEXT("Mesh ID"));
-				if (Property)
+				// 블루프린트 에셋과 검색한 액터가 같다면 데이터 파일에 기록
+				if (bpSet.Contains(i->GetClass()))
 				{
-					int *meshId = Property->ContainerPtrToValuePtr<int>(i.Value);
+					UE_LOG(LogTemp, Warning, TEXT("%s"), *i->GetName());
+					out << "[" << 1 << "]";
 
-					if (meshId)
-					{	// id / level id / mesh id / transform(loc, rot, scale)
-						out << "[" << i.Key << "]" << "[" << 1 << "]"
-							<< "["
-							<< *meshId
-							<< "]"
-							<< "["
-							<< i.Value->GetActorLocation().X << "/"
-							<< i.Value->GetActorLocation().Y << "/"
-							<< i.Value->GetActorLocation().Z
-							<< "]"
-							<< "["
-							<< i.Value->GetActorRotation().Pitch << "/"
-							<< i.Value->GetActorRotation().Yaw << "/"
-							<< i.Value->GetActorRotation().Roll
-							<< "]"
-							<< "["
-							<< i.Value->GetActorScale().X << "/"
-							<< i.Value->GetActorScale().Y << "/"
-							<< i.Value->GetActorScale().Z
-							<< "]"
-							<< std::endl;	
-					}
+					
+					out	<< "[";
+					out.width(8);
+					out.fill('0');
+					out << bpSet[i->GetClass()];
+					out <<"]";
+					
+					out	<< "["
+						<< i->GetActorLocation().X << "/"
+						<< i->GetActorLocation().Y << "/"
+						<< i->GetActorLocation().Z
+						<< "]";
+					
+					out	<< "["
+						<< i->GetActorRotation().Pitch << "/"
+						<< i->GetActorRotation().Yaw << "/"
+						<< i->GetActorRotation().Roll
+						<< "]";
+					
+					out	<< "["
+						<< i->GetActorScale().X << "/"
+						<< i->GetActorScale().Y << "/"
+						<< i->GetActorScale().Z
+						<< "]";
+					
+					out	<< std::endl;
 				}
 			}
 		}
+		//
+		// 	for (const auto& i : actorList)
+		// 	{
+		// 		UE_LOG(LogTemp, Warning, TEXT("%d, %s"), i.Key, *i.Value->GetName());
+		//
+		// 		FProperty* Property = i.Value->GetClass()->FindPropertyByName(TEXT("Mesh ID"));
+		// 		if (Property)
+		// 		{
+		// 			int *meshId = Property->ContainerPtrToValuePtr<int>(i.Value);
+		//
+		// 			if (meshId)
+		// 			{	// Level ID / Mesh ID / Transform(loc, rot, scale)
+		// 				out << "[" << i.Key << "]" << "[" << 1 << "]"
+		// 					<< "["
+		// 					<< *meshId
+		// 					<< "]"
+		// 					<< "["
+		// 					<< i.Value->GetActorLocation().X << "/"
+		// 					<< i.Value->GetActorLocation().Y << "/"
+		// 					<< i.Value->GetActorLocation().Z
+		// 					<< "]"
+		// 					<< "["
+		// 					<< i.Value->GetActorRotation().Pitch << "/"
+		// 					<< i.Value->GetActorRotation().Yaw << "/"
+		// 					<< i.Value->GetActorRotation().Roll
+		// 					<< "]"
+		// 					<< "["
+		// 					<< i.Value->GetActorScale().X << "/"
+		// 					<< i.Value->GetActorScale().Y << "/"
+		// 					<< i.Value->GetActorScale().Z
+		// 					<< "]"
+		// 					<< std::endl;	
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 }
