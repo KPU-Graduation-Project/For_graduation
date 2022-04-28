@@ -16,9 +16,6 @@
     <Filter Include="소스 파일\00 Main">
       <UniqueIdentifier>{bd7cd5c3-7e44-43be-b34e-08925165c899}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\03 GameProcessor">
-      <UniqueIdentifier>{1ba5276e-a493-4cc7-9a6d-316b3fa191c1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\99 Headers">
       <UniqueIdentifier>{1b46b1dd-454b-4db5-86e1-8b2f17e5ed5b}</UniqueIdentifier>
     </Filter>
@@ -70,13 +67,13 @@
     <Filter Include="소스 파일\02 IOCPBase">
       <UniqueIdentifier>{009579d6-b812-4706-ae7a-21690b738649}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\03 Session">
+      <UniqueIdentifier>{1ba5276e-a493-4cc7-9a6d-316b3fa191c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>소스 파일\00 Main</Filter>
-    </ClCompile>
-    <ClCompile Include="GameProcessor.cpp">
-      <Filter>소스 파일\03 GameProcessor</Filter>
     </ClCompile>
     <ClCompile Include="ExpOver.cpp">
       <Filter>소스 파일\98 ExpOver</Filter>
@@ -120,11 +117,11 @@
     <ClCompile Include="GameServer.cpp">
       <Filter>소스 파일\01 GameServer</Filter>
     </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>소스 파일\03 Session</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameProcessor.h">
-      <Filter>소스 파일\03 GameProcessor</Filter>
-    </ClInclude>
     <ClInclude Include="ExpOver.h">
       <Filter>소스 파일\98 ExpOver</Filter>
     </ClInclude>
@@ -175,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="GameServer.h">
       <Filter>소스 파일\01 GameServer</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>소스 파일\03 Session</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

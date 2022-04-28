@@ -6,19 +6,16 @@
 
  unordered_map <unsigned int, cUser*>cUserManager::m_users;
 
-cUserManager::cUserManager() { m_last_id = 0; };
-cUserManager::~cUserManager() {};
 
 void cUserManager::Init()
 {
-	m_last_id = 0;
+	
 	//m_users = new cUser[MAX_USER];
 	//this->InitUsers();
 };
 
 void cUserManager::InitUsers()
 {
-
 	for (int i = 0; i < MAX_USER; ++i)
 	{
 		//m_users[i].Init(i);
@@ -28,10 +25,12 @@ void cUserManager::InitUsers()
 // return user's new id. If server is full, return MAX_USER
 unsigned int cUserManager::GetNewID()
 {
-	if (m_last_id < MAX_USER)
+	static std::atomic<unsigned int>  last_id=0;
+
+	if (last_id < MAX_USER)
 	{
-		unsigned short new_id = m_last_id;
-		++m_last_id;
+		unsigned short new_id = last_id;
+		++last_id;
 
 		m_users.emplace(new_id, new cUser(new_id));
 		m_users[new_id]->SetState(user_state::ACCEPTED);

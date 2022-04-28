@@ -5,6 +5,9 @@
 #include "UserManager.h"
 #include "User.h"
 
+
+cRoomManager g_room_manager;
+
 unordered_map<unsigned int, cRoom*> cRoomManager::m_rooms;
 cObjectPool<cGameObject>       cRoomManager::m_object_pool(500);
 cObjectPool<cCharacter>        cRoomManager::m_character_pool(MAX_USER/2); // 메모리풀 확장 확인을 위해 절반만
@@ -12,7 +15,7 @@ cObjectPool<cCharacter>        cRoomManager::m_character_pool(MAX_USER/2); // 메
 
 void cRoomManager::Init()
 {
-	m_last_id = 0;
+	
 };
 
 void cRoomManager::InitRooms()
@@ -29,9 +32,11 @@ void cRoomManager::InitRooms()
 //success: return room_id / fail: return MAX_ROOM 
 unsigned int cRoomManager::CreateRoom(const unsigned int _user_id)
 {
-	if (m_last_id < MAX_ROOM)
+	static std::atomic<unsigned int> last_id=0;
+
+	if (last_id < MAX_ROOM)
 	{
-		unsigned short new_id = m_last_id++;
+		unsigned short new_id = last_id++;
 
 		m_rooms.emplace(new_id,new cRoom( new_id, room_state::IN_ROBBY_CREATED, _user_id));
 
@@ -80,6 +85,3 @@ bool cRoomManager::JoinRoom(const unsigned int _user_id, const unsigned int _roo
 //UsersInRoom CRoomManager::GetPlayersID(const unsigned char _room_id) { /*return m_rooms[_room_id].m_users;*/ }
 
 
-
-cRoomManager::cRoomManager() {};
-cRoomManager::~cRoomManager() {};

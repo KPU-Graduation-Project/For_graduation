@@ -59,11 +59,9 @@ void cGameServer::TimerThread()
 				case EVENT_TYPE::EV_SEND_WORLD_DATA:
 				{
 
-										break;
+					break;
 				}
-
 				}
-
 			}
 			else
 			{
@@ -104,7 +102,7 @@ void cGameServer::WorkerThread()
 				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 				(LPTSTR)&lpMsgBuf, 0, 0);
 			std::wcout << lpMsgBuf << std::endl;
-			while (true);
+			
 			LocalFree(lpMsgBuf);
 
 			cout << endl;
@@ -166,9 +164,18 @@ void cGameServer::Accept(CEXP_OVER* exp_over)
 		ZeroMemory(&exp_over->m_wsa_over, sizeof(exp_over->m_wsa_over));
 		c_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 		*(reinterpret_cast<SOCKET*>(exp_over->m_net_buf)) = c_socket;
-		AcceptEx(cIOCPBase::m_listen_socket, c_socket, exp_over->m_net_buf + 8, 0, sizeof(SOCKADDR_IN) + 16,
-			sizeof(SOCKADDR_IN) + 16, NULL, &exp_over->m_wsa_over);
-				
+		if (FALSE == AcceptEx(cIOCPBase::m_listen_socket, c_socket, exp_over->m_net_buf + 8, 0, sizeof(SOCKADDR_IN) + 16,
+			sizeof(SOCKADDR_IN) + 16, NULL, &exp_over->m_wsa_over))
+		{
+			cout << "AccpetEx Error\n";
+			int err_no = WSAGetLastError();
+			if (err_no == ERROR_INVALID_HANDLE)
+			{
+				cout << "handle_error" << endl;
+			}
+		}
+
+
 		sc_loginok_packet packet;
 		packet.size = sizeof(sc_loginok_packet);
 		packet.type = SC_PACKET::SC_LOGINOK;
@@ -179,15 +186,20 @@ void cGameServer::Accept(CEXP_OVER* exp_over)
 
 		// 로비 제작 전까지 접속 순서대로 Room 배정
 		static int last_room_id = MAX_ROOM;
+
 		if (last_room_id == MAX_ROOM)
+		{
 			last_room_id = m_room_manager->CreateRoom(new_id);
+			cout << "last room id:" << last_room_id << "\n";
+		}
 		else
 		{
 			bool ret = m_room_manager->JoinRoom(new_id, last_room_id);
+			cout << "last room id:" << last_room_id << "\n";
 			if (ret == true)
 				last_room_id = MAX_ROOM;
 		}
-		cout << "last room id:" << last_room_id << "\n";
+	
 	}
 	
 }

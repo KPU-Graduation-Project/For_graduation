@@ -15,7 +15,7 @@ struct iVector3
 	int z;
 
 	void operator=(const iVector3& rhs){
-		cout << "called vector operator=\n";
+		//cout << "called vector operator=\n";
 		x = rhs.x;
 		y = rhs.y;
 		z = rhs.z;
@@ -29,7 +29,7 @@ struct sVector3
 	short z;
 
 	void operator=(const iVector3& rhs) {
-		cout << "called vector operator=\n";
+		//cout << "called vector operator=\n";
 		x = rhs.x;
 		y = rhs.y;
 		z = rhs.z;
@@ -43,7 +43,7 @@ struct sRotation3
 	short roll;
 
 	void operator=(const sRotation3& rhs) {
-		cout << "called rotation operator=\n";
+	//	cout << "called rotation operator=\n";
 		pitch = rhs.pitch;
 		yaw = rhs.yaw;
 		roll = rhs.roll;
@@ -57,7 +57,7 @@ struct Transform
 	sVector3   scale;
 
 	void operator=(const Transform& rhs) {
-		cout << "called Transform operator=\n";
+		//cout << "called Transform operator=\n";
 		position.x = rhs.position.x;
 		position.y = rhs.position.y;
 		position.z = rhs.position.z;

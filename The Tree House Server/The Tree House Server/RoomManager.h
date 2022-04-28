@@ -10,9 +10,12 @@ class cRoom;
 
 class cRoomManager
 {
+	friend cRoom;
+
 public:
-	cRoomManager();
-	~cRoomManager();
+
+	cRoomManager() { Init(); };
+	~cRoomManager() {};
 
 	void Init();
 	void InitRooms();
@@ -27,8 +30,5 @@ protected:
 	static cObjectPool<cCharacter>        m_character_pool;
 	static cObjectPool<cBullet>           m_bullet_pool;
 private:
-	std::atomic<unsigned int>             m_last_id;
-
-	friend cRoom;
-
+	
 };

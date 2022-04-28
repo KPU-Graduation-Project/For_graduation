@@ -2,6 +2,7 @@
 #include "RoomManager.h"
 #include <unordered_map>
 #include <atomic>
+//#include <User.h>
 
 namespace room_state
 {
@@ -19,12 +20,12 @@ class cRoom
 	friend class cRoomManager;
 
 public:
-	cRoom();
+	cRoom() {};
 	cRoom(unsigned int _id, room_state::eSTATE _state, const unsigned int _host_id) :
 		m_id(_id), m_state(_state) {
 		m_user_id[user_type::HOST] = _host_id;
 	};
-	~cRoom();
+	~cRoom() {};
 
 	void InitObjects();
 	void StartGame();
@@ -47,6 +48,8 @@ protected:
 
 public:
 	unsigned int        m_user_id[2] = { MAX_USER,MAX_USER };
+	//cUser*              m_users[2];
+
 	unordered_map <unsigned int, cGameObject*> m_game_objects;
 
 private:

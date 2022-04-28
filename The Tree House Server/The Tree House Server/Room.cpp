@@ -8,8 +8,7 @@
 
 int cRoom::m_last_object_id = 0;
 
-cRoom::cRoom() {};
-cRoom::~cRoom() {};
+
 
 void cRoom::InitObjects()
 {
@@ -19,6 +18,7 @@ void cRoom::InitObjects()
 
 void cRoom::StartGame()
 {
+	
 	//월드 초기 설정
 
 
@@ -36,7 +36,7 @@ void cRoom::StartGame()
 
 		packet.size = sizeof(sc_put_object_packet);
 		packet.type = SC_PACKET::SC_PUT_OBJECT;
-		packet.object_type = 1;
+		packet.object_type = 100001;
 		packet.id = m_user_id[0];
 
 		Transform transform = character->GetTransform();
@@ -58,7 +58,7 @@ void cRoom::StartGame()
 		character->SetScale({ 1,1,1 });
 		character->SetCharacterTransform({ 1712,21700,9200 }, { 0,0,-9000 },
 			{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
-		character->m_object_type = 2;
+		character->m_object_type = 100002;
 		character->m_id = m_user_id[1];
 		cUserManager::m_users[m_user_id[1]]->m_character = character;
 
@@ -88,7 +88,7 @@ void cRoom::StartGame()
 	{
 		cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
 		game_object->SetTransform({ { -233838,-133995,48376 }, { 0,0,0 }, {131,131,131} });
-		game_object->m_object_type = 5;
+		game_object->m_object_type = 400002;
 		game_object->m_id = MAX_USER + m_last_object_id++;
 		game_object->m_mesh_id = 0;
 		m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
@@ -112,6 +112,8 @@ void cRoom::StartGame()
 
 		Broadcast(sizeof(sc_put_object_packet), &packet);
 	}
+
+	cout << "Room [ " << m_id << " ] Started Game\n";
 }
 
 void cRoom::UserLoadingComplete(const unsigned int _user_id)

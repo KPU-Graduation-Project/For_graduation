@@ -6,8 +6,8 @@ class cUser;
 class cUserManager
 {
 public:
-	cUserManager();
-	~cUserManager();
+	cUserManager() {};
+	~cUserManager() {};
 
 	void Init();
 	void InitUsers();
@@ -17,5 +17,5 @@ public:
 	static unordered_map <unsigned int, cUser*> m_users;
 
 private:
-	std::atomic<unsigned int>  m_last_id;
+	
 };
