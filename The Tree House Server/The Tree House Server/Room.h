@@ -32,6 +32,8 @@ public:
 	void UserLoadingComplete(const unsigned int _user_id);
 	void SendOtherPlayerTransform();
 	void SendAllObjectData();
+	void ShootBullet(const unsigned int& _user_id, iVector3 _source_position, sRotation3 _rotation);
+
 	void Broadcast(int _size, void* _mess);
 
 	void StateLock() { EnterCriticalSection(&m_state_cs); }

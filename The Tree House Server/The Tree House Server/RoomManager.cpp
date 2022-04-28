@@ -8,6 +8,7 @@
 unordered_map<unsigned int, cRoom*> cRoomManager::m_rooms;
 cObjectPool<cGameObject>       cRoomManager::m_object_pool(500);
 cObjectPool<cCharacter>        cRoomManager::m_character_pool(MAX_USER/2); // 메모리풀 확장 확인을 위해 절반만
+ cObjectPool<cBullet>           cRoomManager::m_bullet_pool(500);
 
 void cRoomManager::Init()
 {

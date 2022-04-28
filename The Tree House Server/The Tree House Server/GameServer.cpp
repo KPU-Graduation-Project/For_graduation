@@ -1,6 +1,6 @@
 #include < bitset>
 #include "stdafx.h"
-#include "ServerNetworkSystem.h"
+#include "GameServer.h"
 #include "ExpOver.h"
 #include "RoomManager.h"
 #include "Room.h"
@@ -13,11 +13,11 @@
 
 using namespace std;
 
-cUserManager* cMainServer::m_user_manager;
-cRoomManager* cMainServer::m_room_manager;
-GameProcessor* cMainServer::m_game_processor;
+cUserManager* cGameServer::m_user_manager;
+cRoomManager* cGameServer::m_room_manager;
+GameProcessor* cGameServer::m_game_processor;
 
-void cMainServer::Init()
+void cGameServer::Init()
 {
 	m_room_manager = new cRoomManager;
 
@@ -28,12 +28,12 @@ void cMainServer::Init()
 	m_clock->Init();
 }
 
-void cMainServer::Start()
+void cGameServer::Start()
 {
-	cIOCPServer::StartServer();
+	cIOCPBase::StartServer();
 
 	for (int i = 0; i < 1; ++i)
-		m_worker_threads.emplace_back(std::thread(&cMainServer::WorkerThread, this));
+		m_worker_threads.emplace_back(std::thread(&cGameServer::WorkerThread, this));
 	//m_timer_thread = thread{ &ServerNetworkSystem::TimerThread,this };
 
 	for (auto& th : m_worker_threads)
@@ -42,7 +42,7 @@ void cMainServer::Start()
 
 };
 
-void cMainServer::TimerThread()
+void cGameServer::TimerThread()
 {
 	while(true)
 	{
@@ -76,14 +76,14 @@ void cMainServer::TimerThread()
 	}
 }
 
-void cMainServer::WorkerThread()
+void cGameServer::WorkerThread()
 {
 	while (true)
 	{
 		DWORD num_byte;
 		LONG64 iocp_key;
 		WSAOVERLAPPED* p_over;
-		BOOL ret = GetQueuedCompletionStatus(cIOCPServer::m_h_IOCP, &num_byte, (PULONG_PTR)&iocp_key, &p_over, INFINITE);
+		BOOL ret = GetQueuedCompletionStatus(cIOCPBase::m_h_IOCP, &num_byte, (PULONG_PTR)&iocp_key, &p_over, INFINITE);
 		//std::cout << "GQCS returned.\n";
 		int client_id = static_cast<int>(iocp_key);
 		CEXP_OVER* exp_over = reinterpret_cast<CEXP_OVER*>(p_over);
@@ -150,7 +150,7 @@ void cMainServer::WorkerThread()
 	while (true) { cout << "Thread Loop End" << endl; };
 }
 
-void cMainServer::Accept(CEXP_OVER* exp_over)
+void cGameServer::Accept(CEXP_OVER* exp_over)
 {
 	unsigned short new_id = m_user_manager->GetNewID();
 
@@ -160,13 +160,13 @@ void cMainServer::Accept(CEXP_OVER* exp_over)
 		SOCKET c_socket = *(reinterpret_cast<SOCKET*>(exp_over->m_net_buf));
 		m_user_manager->m_users[new_id]->SetSocket(c_socket);
 
-		CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), cIOCPServer::m_h_IOCP, new_id, 0);
+		CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), cIOCPBase::m_h_IOCP, new_id, 0);
 		m_user_manager->m_users[new_id]->Recv();
 
 		ZeroMemory(&exp_over->m_wsa_over, sizeof(exp_over->m_wsa_over));
 		c_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 		*(reinterpret_cast<SOCKET*>(exp_over->m_net_buf)) = c_socket;
-		AcceptEx(cIOCPServer::m_listen_socket, c_socket, exp_over->m_net_buf + 8, 0, sizeof(SOCKADDR_IN) + 16,
+		AcceptEx(cIOCPBase::m_listen_socket, c_socket, exp_over->m_net_buf + 8, 0, sizeof(SOCKADDR_IN) + 16,
 			sizeof(SOCKADDR_IN) + 16, NULL, &exp_over->m_wsa_over);
 				
 		sc_loginok_packet packet;
@@ -192,12 +192,12 @@ void cMainServer::Accept(CEXP_OVER* exp_over)
 	
 }
 
-void cMainServer::Send(CEXP_OVER* exp_over)
+void cGameServer::Send(CEXP_OVER* exp_over)
 {
 
 }
 
-void cMainServer::Recv(CEXP_OVER* exp_over, const unsigned short _user_id, const DWORD num_byte)
+void cGameServer::Recv(CEXP_OVER* exp_over, const unsigned short _user_id, const DWORD num_byte)
 {
 
 	int remain_data = num_byte + m_user_manager->m_users[_user_id]->GetPrevSize();
@@ -220,13 +220,13 @@ void cMainServer::Recv(CEXP_OVER* exp_over, const unsigned short _user_id, const
 	m_user_manager->m_users[_user_id]->Recv();
 }
 
-void cMainServer::Disconnect()
+void cGameServer::Disconnect()
 {
 
 
 }
 
-void cMainServer::ProcessPacket(const unsigned short _user_id, unsigned char* _p)
+void cGameServer::ProcessPacket(const unsigned short _user_id, unsigned char* _p)
 {
 	unsigned char packet_type = _p[1];
 
@@ -426,6 +426,10 @@ void cMainServer::ProcessPacket(const unsigned short _user_id, unsigned char* _p
 	}
 	case CS_PACKET::CS_SHOOT_BULLET:
 	{
+		cs_shoot_bullet_packet* packet = reinterpret_cast<cs_shoot_bullet_packet*>(_p);
+		
+	
+		m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->ShootBullet(packet->id, { packet->x, packet->y, packet->z }, { packet->pitch, packet->yaw, packet->roll });
 
 		break;
 	}
@@ -440,5 +444,5 @@ void cMainServer::ProcessPacket(const unsigned short _user_id, unsigned char* _p
 }
 
 
-cMainServer::cMainServer() { };
-cMainServer::~cMainServer() {};
+cGameServer::cGameServer() { };
+cGameServer::~cGameServer() {};

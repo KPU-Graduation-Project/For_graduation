@@ -5,7 +5,7 @@
 #include <queue>
 #include <concurrent_priority_queue.h>
 #include <unordered_map>
-#include "IOCPServer.h"
+#include "IOCPBase.h"
 #include "ExpOver.h"
 
 
@@ -17,12 +17,12 @@ class cTimer;
 class cTimerEvent;
 
 
-class cMainServer:public cIOCPServer
+class cGameServer:public cIOCPBase
 {
 public:
 
-	cMainServer();
-	~cMainServer();
+	cGameServer();
+	~cGameServer();
 
 	void Init();
 	void Start();

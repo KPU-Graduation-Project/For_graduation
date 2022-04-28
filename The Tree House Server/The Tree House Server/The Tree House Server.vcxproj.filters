@@ -13,14 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\01 ServerNetworkSystem">
-      <UniqueIdentifier>{9c7ab5ca-f4c5-4a1d-9016-1bb43ec893b7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\00 Main">
       <UniqueIdentifier>{bd7cd5c3-7e44-43be-b34e-08925165c899}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\02 IOCPServer">
-      <UniqueIdentifier>{009579d6-b812-4706-ae7a-21690b738649}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\03 GameProcessor">
       <UniqueIdentifier>{1ba5276e-a493-4cc7-9a6d-316b3fa191c1}</UniqueIdentifier>
@@ -70,16 +64,16 @@
     <Filter Include="소스 파일\94 LevelDesignInfo">
       <UniqueIdentifier>{ced6dec3-650b-4258-ba4d-e2a45216584f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\01 GameServer">
+      <UniqueIdentifier>{9c7ab5ca-f4c5-4a1d-9016-1bb43ec893b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\02 IOCPBase">
+      <UniqueIdentifier>{009579d6-b812-4706-ae7a-21690b738649}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ServerNetworkSystem.cpp">
-      <Filter>소스 파일\01 ServerNetworkSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>소스 파일\00 Main</Filter>
-    </ClCompile>
-    <ClCompile Include="IOCPServer.cpp">
-      <Filter>소스 파일\02 IOCPServer</Filter>
     </ClCompile>
     <ClCompile Include="GameProcessor.cpp">
       <Filter>소스 파일\03 GameProcessor</Filter>
@@ -120,14 +114,14 @@
     <ClCompile Include="Bullet.cpp">
       <Filter>소스 파일\08 GameObject\01 Bullet</Filter>
     </ClCompile>
+    <ClCompile Include="IOCPBase.cpp">
+      <Filter>소스 파일\02 IOCPBase</Filter>
+    </ClCompile>
+    <ClCompile Include="GameServer.cpp">
+      <Filter>소스 파일\01 GameServer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ServerNetworkSystem.h">
-      <Filter>소스 파일\01 ServerNetworkSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="IOCPServer.h">
-      <Filter>소스 파일\02 IOCPServer</Filter>
-    </ClInclude>
     <ClInclude Include="GameProcessor.h">
       <Filter>소스 파일\03 GameProcessor</Filter>
     </ClInclude>
@@ -175,6 +169,12 @@
     </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>소스 파일\08 GameObject\01 Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="IOCPBase.h">
+      <Filter>소스 파일\02 IOCPBase</Filter>
+    </ClInclude>
+    <ClInclude Include="GameServer.h">
+      <Filter>소스 파일\01 GameServer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

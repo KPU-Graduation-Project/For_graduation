@@ -4,6 +4,7 @@
 #include "ObjectPool.h"
 #include "GameObject.h"
 #include "Character.h"
+#include "Bullet.h"
 
 class cRoom;
 
@@ -24,7 +25,7 @@ public:
 protected:
 	static cObjectPool<cGameObject>       m_object_pool;
 	static cObjectPool<cCharacter>        m_character_pool;
-
+	static cObjectPool<cBullet>           m_bullet_pool;
 private:
 	std::atomic<unsigned int>             m_last_id;
 

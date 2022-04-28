@@ -203,6 +203,11 @@ void cRoom::SendAllObjectData()
 	}
 
 }
+
+void cRoom::ShootBullet(const unsigned int& _user_id, iVector3 _source_position, sRotation3 _rotation)
+{
+
+}
 void cRoom::Broadcast(int _size, void* _mess)
 {
 	cUserManager::m_users[m_user_id[0]]->Send(_size, _mess);

@@ -4,11 +4,11 @@
 #include "ExpOver.h"
 
 
-class cIOCPServer
+class cIOCPBase
 {
 public:
-	cIOCPServer();
-	~cIOCPServer();
+	cIOCPBase();
+	~cIOCPBase();
 
 public:
 	void StartServer();

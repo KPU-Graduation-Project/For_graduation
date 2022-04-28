@@ -1,11 +1,11 @@
 #pragma once
 #include "stdafx.h"
-#include "IOCPServer.h"
+#include "IOCPBase.h"
 #include "ExpOver.h"
 
 using namespace std;
 
-void cIOCPServer::StartServer()
+void cIOCPBase::StartServer()
 {
 	WSADATA WSAData;
 	WSAStartup(MAKEWORD(2, 2), &WSAData);
@@ -13,12 +13,12 @@ void cIOCPServer::StartServer()
 	this->BindAndListen(SERVER_PORT);
 }
 
-void cIOCPServer::CloseServer()
+void cIOCPBase::CloseServer()
 {
 
 }
 
-void cIOCPServer::BindAndListen(USHORT server_port)
+void cIOCPBase::BindAndListen(USHORT server_port)
 {
 	m_listen_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 	SOCKADDR_IN server_addr;
@@ -55,11 +55,11 @@ void cIOCPServer::BindAndListen(USHORT server_port)
 	std::cout << "Server Launched\n";
 }
 
-void cIOCPServer::Disconnect()
+void cIOCPBase::Disconnect()
 {
 
 }
 
-cIOCPServer::cIOCPServer() {};
-cIOCPServer::~cIOCPServer() {};
+cIOCPBase::cIOCPBase() {};
+cIOCPBase::~cIOCPBase() {};
 
