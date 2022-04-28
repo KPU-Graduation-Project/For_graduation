@@ -86,11 +86,12 @@ private:
 	bool gameStart = true;
 
 public:
-	void SetPlayer(int playerId);
+	void SetPlayerID(int playerId);
 
 	UPROPERTY()
 	bool AllLoadComplete = false;
 
+	
 	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale);
 
 	bool IsIngame() {return AllLoadComplete;};

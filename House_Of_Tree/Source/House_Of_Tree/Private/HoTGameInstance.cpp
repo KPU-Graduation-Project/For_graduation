@@ -30,15 +30,11 @@ void UHoTGameInstance::Init()
 void UHoTGameInstance::OnStart()
 {
 	Super::OnStart();
-
-	if (ConnectNetwork)
-	{
-		InitSocket();
-	}
 }
 
 void UHoTGameInstance::InitSocket()
 {
+	if (!ConnectNetwork) return;
 	if (SocketInstance != nullptr) return;
 
 	SocketInstance = new ClientSocket(this);
@@ -46,49 +42,49 @@ void UHoTGameInstance::InitSocket()
 
 void UHoTGameInstance::SetInfo()
 {
+	// 블루 프린트 에셋을 로드해와서 저장
+	int key = 1, id = 1;
+	for (const auto i : BP_Char)
+	{
+		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		key++;
+	}
+
+	key = 1;
+	id++;
+	for (const auto i : BP_Monster)
+	{
+		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		key++;
+	}
+
+	key = 1;
+	id++;
+	for (const auto i : BP_Bullet)
+	{
+		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		key++;
+	}
+
+	key = 1;
+	id++;
+	for (const auto i : BP_DyObj)
+	{
+		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		key++;
+	}
+
+	key = 1;
+	id++;
+	for (const auto i : BP_PasObj)
+	{
+		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		key++;
+	}
+	
 	if (makeIDList)
 	{
 		std::ofstream out(*path);
-
-		// 블루 프린트 에셋을 로드해와서 저장
-		int key = 1, id = 1;
-		for (const auto i : BP_Char)
-		{
-			bpSet.Add((id * 100000) + key, i->GeneratedClass);
-			key++;
-		}
-
-		key = 1;
-		id++;
-		for (const auto i : BP_Monster)
-		{
-			bpSet.Add((id * 100000) + key, i->GeneratedClass);
-			key++;
-		}
-
-		key = 1;
-		id++;
-		for (const auto i : BP_Bullet)
-		{
-			bpSet.Add((id * 100000) + key, i->GeneratedClass);
-			key++;
-		}
-
-		key = 1;
-		id++;
-		for (const auto i : BP_DyObj)
-		{
-			bpSet.Add((id * 100000) + key, i->GeneratedClass);
-			key++;
-		}
-
-		key = 1;
-		id++;
-		for (const auto i : BP_PasObj)
-		{
-			bpSet.Add((id * 100000) + key, i->GeneratedClass);
-			key++;
-		}
 
 		if (out.is_open())
 		{
@@ -172,23 +168,26 @@ void UHoTGameInstance::SetInfo()
 	}
 }
 
-void UHoTGameInstance::SetPlayer(int playerId)
+void UHoTGameInstance::SetPlayerID(int playerId)
 {
-	playerController->SetPlayerCharacter(playerId, actorList[playerId]);
+	playerController->SetPlayerID(playerId);
 }
 
 void UHoTGameInstance::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale)
 {
+	UE_LOG(LogTemp, Error, TEXT("Actor ID: %d, ObjectID: %d"), actorID, objectID);
 	FTransform transform;
 	transform.SetLocation(location);
 	transform.SetRotation(rotation.Quaternion());
 	transform.SetScale3D(scale);
 	FActorSpawnParameters SpawnParams;
 
+	UE_LOG(LogTemp, Error, TEXT("Actor ID: %s"), *bpSet[objectID]->GetName());
+
 	actorList.Add(actorID, GetWorld()->SpawnActor(bpSet[objectID], &transform, SpawnParams));
 
-	if (objectID == 00100001 || objectID == 00100002)
+	if (actorID == playerController->GetPlayerID())
 	{
-		SetPlayer(actorID);
+		playerController->SetPlayerCharacter(actorList[actorID]);
 	}
 }

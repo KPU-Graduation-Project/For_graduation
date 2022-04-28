@@ -2,6 +2,9 @@
 
 
 #include "VRPlayerController_Base.h"
+
+#include <strmif.h>
+
 #include "VRCharacter_Base.h"
 #include "EngineUtils.h"
 #include "HoTGameInstance.h"
@@ -21,6 +24,7 @@ void AVRPlayerController_Base::BeginPlay()
 	if (gameInst)
 	{
 		gameInst->playerController = this;
+		gameInst->InitSocket();
 		gameInst->SetInfo();
 	}
 	
@@ -30,12 +34,9 @@ void AVRPlayerController_Base::BeginPlay()
 	}
 }
 
-void AVRPlayerController_Base::SetPlayerCharacter(int id, AActor* playerActor)
+void AVRPlayerController_Base::SetPlayerCharacter(AActor* playerActor)
 {
-	playerID = id;
-	
 	Possess(Cast<APawn>(playerActor));
-	
 	vrPlayer = Cast<AVRCharacter_Base>(GetCharacter());
 }
 

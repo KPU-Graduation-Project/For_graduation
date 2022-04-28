@@ -35,6 +35,7 @@ ClientSocket::~ClientSocket()
 bool ClientSocket::Init()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Thread has been initialized"));
+
 	return true;
 }
 
@@ -117,10 +118,10 @@ bool ClientSocket::Send(const int SendSize, void* SendData)
 
 void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Input %d"), RecvSize);
 
 	int packetSize = RecvSize;
 	char packetType = RecvData[1];
+	UE_LOG(LogTemp, Warning, TEXT("%d"), packetType);
 
 	while(packetSize > 0)
 	{
@@ -128,10 +129,11 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 		{
 		case SC_PACKET::SC_LOGINOK:
 			{
+			UE_LOG(LogTemp, Warning, TEXT("loginOK"));
 				// 플레이어 입력 패킷인데 일단 비워두기
 				sc_loginok_packet* packet = reinterpret_cast<sc_loginok_packet*>(RecvData);
 
-				gameInst->SetPlayer(packet->id);
+				gameInst->SetPlayerID(packet->id);
 			}
 			break;
 
@@ -153,15 +155,20 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 			break;
 
 		case SC_PACKET::SC_START_GAME:
+			UE_LOG(LogTemp, Warning, TEXT("SC_START_GAME"));
+
 			// 로비에서 인게임 로비 캠으로 전환
 			break;
 
 		case SC_PACKET::SC_ALL_USERS_LOADING_COMPLETE:
+			UE_LOG(LogTemp, Warning, TEXT("SC_ALL_USERS_LOADING_COMPLETE"));
+
 			gameInst->AllLoadComplete = true;
 			break;
 
 		case SC_PACKET::SC_PUT_OBJECT:
 			{
+			UE_LOG(LogTemp, Warning, TEXT("putobject"));
 				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(RecvData);
 				gameInst->PutObject(packet->id, packet->object_type, FVector(packet->x, packet->y, packet->z),
 					FRotator(packet->pitch, packet->yaw, packet->roll), FVector(0, 0, 0));
@@ -172,6 +179,7 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 			break;
 
 		case SC_PACKET::SC_PLAYER_DATA:
+			UE_LOG(LogTemp, Warning, TEXT("SC_PLAYER_DATA"));
 			break;
 		
 		default:

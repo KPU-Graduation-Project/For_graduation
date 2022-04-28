@@ -20,22 +20,25 @@ class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
 	GENERATED_BODY()
 
 	UPROPERTY()
-	UHoTGameInstance *gameInst;
+	UHoTGameInstance* gameInst;
 
 	UPROPERTY(EditDefaultsOnly, Category = "플레이어 캐릭터", DisplayName="캐릭터")
 	TArray<TSubclassOf<APawn>> Characters;
 
 	UPROPERTY()
 	int playerID;
-	
+
 	UPROPERTY()
-	AVRCharacter_Base *vrPlayer;
+	AVRCharacter_Base* vrPlayer;
 
 public:
-	void SetPlayerCharacter(int id, AActor* playerActor);
-	
+	void SetPlayerID(int id) { playerID = id; }
+	int GetPlayerID() const { return playerID; }
+
+	void SetPlayerCharacter(AActor* playerActor);
+
 	virtual void BeginPlay() override;
-	
+
 	AVRPlayerController_Base();
 	virtual void Tick(float DeltaSeconds) override;
 };
