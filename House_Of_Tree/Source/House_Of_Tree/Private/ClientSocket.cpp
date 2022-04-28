@@ -25,7 +25,7 @@ ClientSocket::~ClientSocket()
 	{
 		// 스레드 종료
 		Thread->WaitForCompletion();
-		Thread->Kill();	
+		Thread->Kill();
 		delete Thread;
 	}
 }
@@ -47,10 +47,11 @@ uint32 ClientSocket::Run()
 		int RecvLen = recv(Socket, reinterpret_cast<char*>(RecvBuff), BUFSIZE, 0);
 		if (RecvLen != SOCKET_ERROR)
 		{
-			ProcessPacket(RecvLen, RecvBuff);
+			//ProcessPacket(RecvLen, RecvBuff);
+			memcpy(gameInst->playerController->data, RecvBuff, RecvLen);
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -72,12 +73,14 @@ bool ClientSocket::ConnectServer()
 {
 	WSADATA wsaData;
 	int nRet = WSAStartup(MAKEWORD(2, 2), &wsaData);
-	if (nRet != 0) {
+	if (nRet != 0)
+	{
 		return false;
 	}
 
 	Socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
-	if (Socket == INVALID_SOCKET) {
+	if (Socket == INVALID_SOCKET)
+	{
 		return false;
 	}
 
@@ -85,7 +88,7 @@ bool ClientSocket::ConnectServer()
 
 	stServerAddr.sin_family = AF_INET;
 	stServerAddr.sin_port = htons(gameInst->Port);
-	
+
 	stServerAddr.sin_addr.s_addr = inet_addr(TCHAR_TO_ANSI(ToCStr(gameInst->ipAddr)));
 
 	nRet = connect(Socket, (sockaddr*)&stServerAddr, sizeof(sockaddr));
@@ -100,7 +103,8 @@ bool ClientSocket::ConnectServer()
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Success!")));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%i.%i"), wsaData.wVersion >> 8, wsaData.wVersion & 0xFF));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
+		                                 FString::Printf(TEXT("%i.%i"), wsaData.wVersion >> 8, wsaData.wVersion & 0xFF));
 		UE_LOG(LogTemp, Warning, TEXT("Socket Initialized"));
 		return true;
 	}
@@ -110,26 +114,25 @@ bool ClientSocket::Send(const int SendSize, void* SendData)
 {
 	char buff[BUFSIZE];
 	memcpy_s(buff, BUFSIZE, SendData, SendSize);
-	
+
 	int nSendLen = send(Socket, buff, buff[0], 0);
-	
+
 	return true;
 }
 
 void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 {
-
 	int packetSize = RecvSize;
 	char packetType = RecvData[1];
 	UE_LOG(LogTemp, Warning, TEXT("%d"), packetType);
 
-	while(packetSize > 0)
+	while (packetSize > 0)
 	{
 		switch (packetType)
 		{
 		case SC_PACKET::SC_LOGINOK:
 			{
-			UE_LOG(LogTemp, Warning, TEXT("loginOK"));
+				UE_LOG(LogTemp, Warning, TEXT("loginOK"));
 				// 플레이어 입력 패킷인데 일단 비워두기
 				sc_loginok_packet* packet = reinterpret_cast<sc_loginok_packet*>(RecvData);
 
@@ -144,7 +147,7 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 		case SC_PACKET::SC_USER_JOIN_ROOM:
 			break;
 
-			// SC 어디감;
+		// SC 어디감;
 		case SC_PACKET::USER_EXIT_ROOM:
 			break;
 
@@ -157,7 +160,7 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 		case SC_PACKET::SC_START_GAME:
 			UE_LOG(LogTemp, Warning, TEXT("SC_START_GAME"));
 
-			// 로비에서 인게임 로비 캠으로 전환
+		// 로비에서 인게임 로비 캠으로 전환
 			break;
 
 		case SC_PACKET::SC_ALL_USERS_LOADING_COMPLETE:
@@ -168,10 +171,10 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 
 		case SC_PACKET::SC_PUT_OBJECT:
 			{
-			UE_LOG(LogTemp, Warning, TEXT("putobject"));
+				UE_LOG(LogTemp, Warning, TEXT("putobject"));
 				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(RecvData);
 				gameInst->PutObject(packet->id, packet->object_type, FVector(packet->x, packet->y, packet->z),
-					FRotator(packet->pitch, packet->yaw, packet->roll), FVector(0, 0, 0));
+				                    FRotator(packet->pitch, packet->yaw, packet->roll), FVector(0, 0, 0));
 			}
 			break;
 
@@ -181,11 +184,11 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 		case SC_PACKET::SC_PLAYER_DATA:
 			UE_LOG(LogTemp, Warning, TEXT("SC_PLAYER_DATA"));
 			break;
-		
+
 		default:
 			break;
 		}
-	
+
 		packetSize -= RecvData[0];
 	}
 }

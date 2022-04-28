@@ -75,11 +75,11 @@ public:
 	UPROPERTY()
 	AVRPlayerController_Base* playerController;
 
-private:
+protected:
 	UPROPERTY()
 	TMap<int, AActor*> actorList;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	TMap<int, UClass*> bpSet;
 
 	UPROPERTY()

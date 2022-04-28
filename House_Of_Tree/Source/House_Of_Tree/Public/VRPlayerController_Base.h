@@ -32,6 +32,10 @@ class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
 	AVRCharacter_Base* vrPlayer;
 
 public:
+	char data[265];
+	void ProcessPacket();
+
+public:
 	void SetPlayerID(int id) { playerID = id; }
 	int GetPlayerID() const { return playerID; }
 

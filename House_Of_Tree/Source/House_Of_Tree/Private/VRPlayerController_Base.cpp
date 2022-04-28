@@ -34,6 +34,81 @@ void AVRPlayerController_Base::BeginPlay()
 	}
 }
 
+void AVRPlayerController_Base::ProcessPacket()
+{
+	int packetSize = data[0];
+	char packetType = data[1];
+	UE_LOG(LogTemp, Warning, TEXT("%d"), packetType);
+
+	while(packetSize > 0)
+	{
+		switch (packetType)
+		{
+		case SC_PACKET::SC_LOGINOK:
+			{
+				UE_LOG(LogTemp, Warning, TEXT("loginOK"));
+				// 플레이어 입력 패킷인데 일단 비워두기
+				sc_loginok_packet* packet = reinterpret_cast<sc_loginok_packet*>(data);
+
+				gameInst->SetPlayerID(packet->id);
+			}
+			break;
+
+		case SC_PACKET::SC_CREATE_ROOM:
+			break;
+		case SC_PACKET::SC_JOIN_ROOM:
+			break;
+		case SC_PACKET::SC_USER_JOIN_ROOM:
+			break;
+
+			// SC 어디감;
+			case SC_PACKET::USER_EXIT_ROOM:
+				break;
+
+		case SC_PACKET::SC_USER_READY_GAME:
+			break;
+
+		case SC_PACKET::SC_USER_CHANGE_SELECTED_CHARACTER:
+			break;
+
+		case SC_PACKET::SC_START_GAME:
+			UE_LOG(LogTemp, Warning, TEXT("SC_START_GAME"));
+
+			// 로비에서 인게임 로비 캠으로 전환
+			break;
+
+		case SC_PACKET::SC_ALL_USERS_LOADING_COMPLETE:
+			UE_LOG(LogTemp, Warning, TEXT("SC_ALL_USERS_LOADING_COMPLETE"));
+
+			gameInst->AllLoadComplete = true;
+			break;
+
+		case SC_PACKET::SC_PUT_OBJECT:
+			{
+				UE_LOG(LogTemp, Warning, TEXT("putobject"));
+				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(data);
+				gameInst->PutObject(packet->id, packet->object_type, FVector(packet->x/100, packet->y/100, packet->z/100),
+					FRotator(packet->pitch/100, packet->yaw/100, packet->roll/100), FVector(0, 0, 0));
+			}
+			break;
+
+		case SC_PACKET::SC_REMOVE_OBJECT:
+			break;
+
+		case SC_PACKET::SC_PLAYER_DATA:
+			UE_LOG(LogTemp, Warning, TEXT("SC_PLAYER_DATA"));
+			break;
+		
+		default:
+			break;
+		}
+	
+		memcpy(data, data + packetSize, 256-packetSize);
+		packetSize = data[0];
+
+	}
+}
+
 void AVRPlayerController_Base::SetPlayerCharacter(AActor* playerActor)
 {
 	Possess(Cast<APawn>(playerActor));
@@ -43,6 +118,8 @@ void AVRPlayerController_Base::SetPlayerCharacter(AActor* playerActor)
 void AVRPlayerController_Base::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	ProcessPacket();
 
 	if (gameInst->SocketInstance && gameInst->IsIngame())
 	{
