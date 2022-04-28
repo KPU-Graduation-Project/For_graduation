@@ -45,4 +45,10 @@ protected:
 	UCameraComponent* VR_Camera;
 
 	EControllerHand Hand_L, Hand_R;
+
+public:
+	FTransform GetHeadTransform() const {return VR_Camera->GetComponentTransform();}
+	FTransform GetRHTransform() const {return MotionController_R->GetComponentTransform();}
+	FTransform GetLHTransform() const {return MotionController_L->GetComponentTransform();}
+
 };

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HoTGameInstance.h"
 #include "GameFramework/PlayerController.h"
 #include "VRPlayerController_Base.generated.h"
 
@@ -11,6 +12,7 @@
  */
 
 class UHoTGameInstance;
+class AVRCharacter_Base;
 
 UCLASS()
 class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
@@ -24,17 +26,16 @@ class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
 	TArray<TSubclassOf<APawn>> Characters;
 
 	UPROPERTY()
-	APawn *MainPlayer;
+	int playerID;
 	
 	UPROPERTY()
-	APawn *OtherPlayer;
+	AVRCharacter_Base *vrPlayer;
 
 public:
+	void SetPlayerCharacter(int id, AActor* playerActor);
+	
 	virtual void BeginPlay() override;
 	
 	AVRPlayerController_Base();
 	virtual void Tick(float DeltaSeconds) override;
-
-	void PutPlayer(int PlayerType, bool IsPlayer, const FVector& Location, const FRotator& Rotation);
-	void MovePawn(const FVector& Location,  const FRotator& Rotation);
 };

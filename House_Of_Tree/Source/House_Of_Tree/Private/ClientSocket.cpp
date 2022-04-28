@@ -131,48 +131,47 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 				// 플레이어 입력 패킷인데 일단 비워두기
 				sc_loginok_packet* packet = reinterpret_cast<sc_loginok_packet*>(RecvData);
 
-				gameInst->playerID = packet->id;
+				gameInst->SetPlayer(packet->id);
 			}
 			break;
-		
-		//case SC_PACKET::SC_PUT_PLAYER:
-		//	{
-		//		sc_put_player_packet* packet = reinterpret_cast<sc_put_player_packet*>(RecvData);
-	
-		//		FVector location(packet->x / 100, packet->y / 100, packet->z / 100);
-		//		FRotator rotation(packet->pitch, packet->yaw, packet->roll);	// Need Rotation interpolation value
 
-		//		bool isPlayer = packet->id == gameInst->playerID? true: false;
-		//		
-		//		gameInst->playerController->PutPlayer(packet->character_type, isPlayer, location, rotation);
-		//	}
-		//	break;
-		
+		case SC_PACKET::SC_CREATE_ROOM:
+			break;
+		case SC_PACKET::SC_JOIN_ROOM:
+			break;
+		case SC_PACKET::SC_USER_JOIN_ROOM:
+			break;
+
+			// SC 어디감;
+		case SC_PACKET::USER_EXIT_ROOM:
+			break;
+
+		case SC_PACKET::SC_USER_READY_GAME:
+			break;
+
+		case SC_PACKET::SC_USER_CHANGE_SELECTED_CHARACTER:
+			break;
+
+		case SC_PACKET::SC_START_GAME:
+			// 로비에서 인게임 로비 캠으로 전환
+			break;
+
+		case SC_PACKET::SC_ALL_USERS_LOADING_COMPLETE:
+			gameInst->AllLoadComplete = true;
+			break;
+
 		case SC_PACKET::SC_PUT_OBJECT:
 			{
 				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(RecvData);
-	
-				// 아직 안만듬
+				gameInst->PutObject(packet->id, packet->object_type, FVector(packet->x, packet->y, packet->z),
+					FRotator(packet->pitch, packet->yaw, packet->roll), FVector(0, 0, 0));
 			}
 			break;
-	
+
 		case SC_PACKET::SC_REMOVE_OBJECT:
-			{
-				sc_remove_object_packet* packet = reinterpret_cast<sc_remove_object_packet*>(RecvData);
-	
-				// 아직 안만듬
-			}
 			break;
-		
+
 		case SC_PACKET::SC_PLAYER_DATA:
-			{
-				sc_player_data_packet* packet = reinterpret_cast<sc_player_data_packet*>(RecvData);
-	
-				FVector location(packet->x / 100, packet->y / 100, packet->z / 100);
-				FRotator rotation(packet->pitch, packet->yaw, packet->roll);
-				
-				gameInst->playerController->MovePawn(location, rotation);
-			}
 			break;
 		
 		default:

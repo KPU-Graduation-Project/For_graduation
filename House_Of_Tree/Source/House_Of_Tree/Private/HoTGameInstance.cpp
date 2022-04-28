@@ -3,6 +3,7 @@
 
 #include "HoTGameInstance.h"
 #include <fstream>
+#include "VRPlayerController_Base.h"
 #include "Misc/OutputDeviceNull.h"
 #include "EngineUtils.h"
 #include "Engine/BlueprintGeneratedClass.h"
@@ -49,13 +50,11 @@ void UHoTGameInstance::SetInfo()
 	{
 		std::ofstream out(*path);
 
-		// 블루 프린트 에셋을 로드해와서 저장 (나중에 블루프린트에서 선택한 것을 가져오는 것으로 변경 할 예정)
-		TMap<UClass*, int> bpSet;
-
+		// 블루 프린트 에셋을 로드해와서 저장
 		int key = 1, id = 1;
 		for (const auto i : BP_Char)
 		{
-			bpSet.Add(i->GeneratedClass, (id * 10000) + key);
+			bpSet.Add((id * 100000) + key, i->GeneratedClass);
 			key++;
 		}
 
@@ -63,7 +62,7 @@ void UHoTGameInstance::SetInfo()
 		id++;
 		for (const auto i : BP_Monster)
 		{
-			bpSet.Add(i->GetBlueprintClass(), (id * 10000) + key);
+			bpSet.Add((id * 100000) + key, i->GeneratedClass);
 			key++;
 		}
 
@@ -71,7 +70,7 @@ void UHoTGameInstance::SetInfo()
 		id++;
 		for (const auto i : BP_Bullet)
 		{
-			bpSet.Add(i->GeneratedClass, (id * 10000) + key);
+			bpSet.Add((id * 100000) + key, i->GeneratedClass);
 			key++;
 		}
 
@@ -79,7 +78,7 @@ void UHoTGameInstance::SetInfo()
 		id++;
 		for (const auto i : BP_DyObj)
 		{
-			bpSet.Add(i->GeneratedClass, (id * 10000) + key);
+			bpSet.Add((id * 100000) + key, i->GeneratedClass);
 			key++;
 		}
 
@@ -87,21 +86,25 @@ void UHoTGameInstance::SetInfo()
 		id++;
 		for (const auto i : BP_PasObj)
 		{
-			bpSet.Add(i->GeneratedClass, (id * 10000) + key);
+			bpSet.Add((id * 100000) + key, i->GeneratedClass);
 			key++;
 		}
 
 		if (out.is_open())
 		{
 			// 좌표값들 반올림해서 출력
-			// out << "[1][00100001][-680/189.999/92][0/0/-90][1/1/1]" << std::endl;
-			// out << "[1][00100002][1712/216.999/92][0/0/-90][1/1/1]" << std::endl;
+			out << "[1][0][00100001][-680/189.999/92][0/0/-90][1/1/1]" << std::endl;
+			out << "[1][0][00100002][1712/216.999/92][0/0/-90][1/1/1]" << std::endl;
+			// FActorSpawnParameters SpawnParams;
+			// GetWorld()->SpawnActor<AActor>(, FVector(0, 0, 0), FRotator(0, 0,0), SpawnParams);
 
 			// 월드에 스폰된 액터를 순회하면서 오브젝트를 검사
 			for (const auto& i : TActorRange<AActor>(GetWorld()))
 			{
 				// 블루프린트 에셋과 검색한 액터가 같다면 데이터 파일에 기록
-				if (bpSet.Contains(i->GetClass()))
+				//if (bpSet.Contains(i->GetClass()))
+				const int *objectID = bpSet.FindKey(i->GetClass());
+				if (objectID != nullptr)
 				{
 					FProperty* Property = i->GetClass()->FindPropertyByName(TEXT("Mesh ID"));
 					if (Property)
@@ -117,7 +120,8 @@ void UHoTGameInstance::SetInfo()
 						out << "[";
 						out.width(8);
 						out.fill('0');
-						out << bpSet[i->GetClass()];
+						//out << bpSet[i->GetClass()];
+						out << *objectID;
 						out << "]";
 
 						// Mesh ID
@@ -145,16 +149,19 @@ void UHoTGameInstance::SetInfo()
 							<< "]";
 
 						// Any Other Variables
-						FProperty* variables = i->GetClass()->FindPropertyByName(TEXT("Actor"));
-						if (variables != nullptr)
-						{
-							UClass* target = variables->ContainerPtrToValuePtr<UClass>(i);
-							out << "[";
-							out.width(8);
-							out.fill('0');
-							out << bpSet[i->GetClass()];
-							out << "]";
-						}
+						// FProperty* variables = i->GetClass()->FindPropertyByName(TEXT("Actor"));
+						// if (variables != nullptr)
+						// {
+						// 	UClass* target = variables->ContainerPtrToValuePtr<UClass>(i);
+						// 	const int *targetID = bpSet.FindKey(i->GetClass());
+						// 	
+						// 	out << "[";
+						// 	out.width(8);
+						// 	out.fill('0');
+						// 	//out << bpSet[i->GetClass()];
+						// 	out << *objectID;
+						// 	out << "]";
+						// }
 
 						out << std::endl;
 					}
@@ -162,5 +169,26 @@ void UHoTGameInstance::SetInfo()
 			}
 		}
 		out.close();
+	}
+}
+
+void UHoTGameInstance::SetPlayer(int playerId)
+{
+	playerController->SetPlayerCharacter(playerId, actorList[playerId]);
+}
+
+void UHoTGameInstance::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale)
+{
+	FTransform transform;
+	transform.SetLocation(location);
+	transform.SetRotation(rotation.Quaternion());
+	transform.SetScale3D(scale);
+	FActorSpawnParameters SpawnParams;
+
+	actorList.Add(actorID, GetWorld()->SpawnActor(bpSet[objectID], &transform, SpawnParams));
+
+	if (objectID == 00100001 || objectID == 00100002)
+	{
+		SetPlayer(actorID);
 	}
 }

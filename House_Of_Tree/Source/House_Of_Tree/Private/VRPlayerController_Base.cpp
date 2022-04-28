@@ -2,7 +2,7 @@
 
 
 #include "VRPlayerController_Base.h"
-
+#include "VRCharacter_Base.h"
 #include "EngineUtils.h"
 #include "HoTGameInstance.h"
 #include "GameFramework/Character.h"
@@ -18,67 +18,91 @@ void AVRPlayerController_Base::BeginPlay()
 
 	gameInst = Cast<UHoTGameInstance>(GetWorld()->GetGameInstance());
 
-	if (gameInst->ConnectNetwork == false)
-	{
-		// actor list에다가 캐릭터를 집어넣으면 되자나...?
-		MainPlayer = GetPawn();
-		gameInst->SetInfo();
-	}
-
-	if (!gameInst)
+	if (gameInst)
 	{
 		gameInst->playerController = this;
-		UE_LOG(LogTemp, Warning, TEXT("Get Gemainstance Error!"));
+		gameInst->SetInfo();
 	}
+	
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Get GameInstance Error!"));
+	}
+}
+
+void AVRPlayerController_Base::SetPlayerCharacter(int id, AActor* playerActor)
+{
+	playerID = id;
+	
+	Possess(Cast<APawn>(playerActor));
+	
+	vrPlayer = Cast<AVRCharacter_Base>(GetCharacter());
 }
 
 void AVRPlayerController_Base::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (gameInst->SocketInstance)
+	if (gameInst->SocketInstance && gameInst->IsIngame())
 	{
 		cs_player_data_packet sendPacket;
 		sendPacket.type = CS_PACKET::CS_PLAYER_DATA;
 		sendPacket.size = sizeof(sendPacket);
+		sendPacket.id = playerID;
 
-		const FVector pos = MainPlayer->GetActorLocation();
-		const FRotator rat = MainPlayer->GetActorRotation();
+		// Character Transform
+		FTransform trans = vrPlayer->GetTransform();
+		FVector pos = trans.GetLocation();
+		FRotator rat = trans.GetRotation().Rotator();
 
 		sendPacket.x = pos.X * 100;
 		sendPacket.y = pos.Y * 100;
 		sendPacket.z = pos.Z * 100;
 
-		// Need Rotation interpolation value
-		sendPacket.pitch = rat.Pitch;
-		sendPacket.yaw = rat.Yaw;
-		sendPacket.roll = rat.Roll;
+		sendPacket.pitch = rat.Pitch * 100;
+		sendPacket.yaw = rat.Yaw * 100;
+		sendPacket.roll = rat.Roll * 100;
 
+		// Head Transform
+		trans = vrPlayer->GetHeadTransform();
+		pos = trans.GetLocation();
+		rat = trans.GetRotation().Rotator();
+
+		sendPacket.head_x = pos.X * 100;
+		sendPacket.head_y = pos.Y * 100;
+		sendPacket.head_z = pos.Z * 100;
+
+		sendPacket.head_pitch = rat.Pitch * 100;
+		sendPacket.head_yaw = rat.Yaw * 100;
+		sendPacket.head_roll = rat.Roll * 100;
+
+		// RH Transform
+		trans = vrPlayer->GetRHTransform();
+		pos = trans.GetLocation();
+		rat = trans.GetRotation().Rotator();
+
+		sendPacket.rh_x = pos.X * 100;
+		sendPacket.rh_y = pos.Y * 100;
+		sendPacket.rh_z = pos.Z * 100;
+
+		sendPacket.rh_pitch = rat.Pitch * 100;
+		sendPacket.rh_yaw = rat.Yaw * 100;
+		sendPacket.rh_roll = rat.Roll * 100;
+
+		// LH Transform
+		trans = vrPlayer->GetRHTransform();
+		pos = trans.GetLocation();
+		rat = trans.GetRotation().Rotator();
+
+		sendPacket.lh_x = pos.X * 100;
+		sendPacket.lh_y = pos.Y * 100;
+		sendPacket.lh_z = pos.Z * 100;
+				   
+		sendPacket.lh_pitch = rat.Pitch * 100;
+		sendPacket.lh_yaw = rat.Yaw * 100;
+		sendPacket.lh_roll = rat.Roll * 100;
+
+		
 		gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
 	}
-}
-
-void AVRPlayerController_Base::PutPlayer(int PlayerType, bool IsPlayer, const FVector& Location,
-                                         const FRotator& Rotation)
-{
-	if (Characters[PlayerType])
-	{
-		APawn* pawn = GetWorld()->SpawnActor<APawn>(Characters[PlayerType]);
-		pawn->SetActorLocationAndRotation(Location, Rotation);
-
-		if (IsPlayer)
-		{
-			MainPlayer = pawn;
-			Possess(pawn);
-		}
-		else
-		{
-			OtherPlayer = pawn;
-		}
-	}
-}
-
-void AVRPlayerController_Base::MovePawn(const FVector& Location, const FRotator& Rotation)
-{
-	OtherPlayer->SetActorLocationAndRotation(Location, Rotation);
 }
