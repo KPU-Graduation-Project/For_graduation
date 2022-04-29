@@ -36,12 +36,16 @@ void AVRPlayerController_Base::BeginPlay()
 
 void AVRPlayerController_Base::ProcessPacket()
 {
-	char data[256];
+	char data[256] = {};
 	char* p =  data;
 	
-	if (!buffer.try_pop(data[0])) return;
 	int dataSize = bufferSize.load();
 	bufferSize -= dataSize;
+
+	for (int i = 0; i<dataSize; ++i)
+	{
+		buffer.try_pop(data[i]);
+	}
 
 	while(dataSize > 0)
 	{
@@ -96,8 +100,10 @@ void AVRPlayerController_Base::ProcessPacket()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("putobject"));
 				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(p);
-				PutObject(packet->id, packet->object_type, FVector(packet->x/100, packet->y/100, packet->z/100),
-					FRotator(packet->pitch/100, packet->yaw/100, packet->roll/100), FVector(0, 0, 0));
+				PutObject(packet->id, packet->object_type,
+					FVector(packet->x/100, packet->y/100, packet->z/100),
+					FRotator(packet->pitch/100, packet->yaw/100, packet->roll/100),
+					FVector(packet->scale_x / 100, packet->scale_y / 100, packet->scale_z / 100));
 			}
 			break;
 
