@@ -173,8 +173,11 @@ void ClientSocket::ProcessPacket(const int RecvSize, char* RecvData)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("putobject"));
 				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(RecvData);
-				gameInst->PutObject(packet->id, packet->object_type, FVector(packet->x, packet->y, packet->z),
-				                    FRotator(packet->pitch, packet->yaw, packet->roll), FVector(0, 0, 0));
+
+				gameInst->PutObject(packet->id, packet->object_type,
+					FVector(packet->x / 100, packet->y / 100, packet->z / 100),
+					FRotator(packet->pitch / 100, packet->yaw / 100, packet->roll / 100),
+					FVector(packet->scale_x / 100, packet->scale_y / 100, packet->scale_z / 100));
 			}
 			break;
 

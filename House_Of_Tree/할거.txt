@@ -1,0 +1,4 @@
+1. gameobject 관리를 player controller에서
+2. gameobject는 clientsocket와 맵 바꿀떄 옮길 액터들, 스폰할때 사용할 액터 정보만 저장하고 있음
+3. playercontroller가 메인임 이제
+4. 패킷 저장하는 컨테이너를 concurrent_queue로

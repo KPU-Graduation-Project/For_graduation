@@ -26,9 +26,6 @@ void AVRPlayerController_Base::BeginPlay()
 		gameInst->playerController = this;
 		gameInst->InitSocket();
 		gameInst->SetInfo();
-
-		gameInst->PutObject(1, int(100001), FVector(0, 0, 0),
-					FRotator(0, 0, 0), FVector(1, 1, 1));
 	}
 	
 	else
