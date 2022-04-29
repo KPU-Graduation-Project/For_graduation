@@ -3,7 +3,7 @@
 
 #include "VRPlayerController_Base.h"
 
-#include <strmif.h>
+#include <queue>
 
 #include "VRCharacter_Base.h"
 #include "EngineUtils.h"
@@ -36,21 +36,28 @@ void AVRPlayerController_Base::BeginPlay()
 
 void AVRPlayerController_Base::ProcessPacket()
 {
-	int packetSize = data[0];
-	char packetType = data[1];
-	UE_LOG(LogTemp, Warning, TEXT("%d"), packetType);
+	char data[256];
+	char* p =  data;
+	
+	if (!buffer.try_pop(data[0])) return;
+	int dataSize = bufferSize.load();
+	bufferSize -= dataSize;
 
-	while(packetSize > 0)
+	while(dataSize > 0)
 	{
+		int packetSize = p[0];
+		char packetType = p[1];
+	
+		UE_LOG(LogTemp, Warning, TEXT("%d"), packetType);
+		
 		switch (packetType)
 		{
 		case SC_PACKET::SC_LOGINOK:
 			{
 				UE_LOG(LogTemp, Warning, TEXT("loginOK"));
 				// 플레이어 입력 패킷인데 일단 비워두기
-				sc_loginok_packet* packet = reinterpret_cast<sc_loginok_packet*>(data);
-
-				gameInst->SetPlayerID(packet->id);
+				sc_loginok_packet* packet = reinterpret_cast<sc_loginok_packet*>(p);
+				playerID = packet->id;
 			}
 			break;
 
@@ -75,19 +82,21 @@ void AVRPlayerController_Base::ProcessPacket()
 			UE_LOG(LogTemp, Warning, TEXT("SC_START_GAME"));
 
 			// 로비에서 인게임 로비 캠으로 전환
+
+			gameInst->GameStart();
 			break;
 
 		case SC_PACKET::SC_ALL_USERS_LOADING_COMPLETE:
 			UE_LOG(LogTemp, Warning, TEXT("SC_ALL_USERS_LOADING_COMPLETE"));
 
-			gameInst->AllLoadComplete = true;
+			gameInst->AllLoadComplete();
 			break;
 
 		case SC_PACKET::SC_PUT_OBJECT:
 			{
 				UE_LOG(LogTemp, Warning, TEXT("putobject"));
-				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(data);
-				gameInst->PutObject(packet->id, packet->object_type, FVector(packet->x/100, packet->y/100, packet->z/100),
+				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(p);
+				PutObject(packet->id, packet->object_type, FVector(packet->x/100, packet->y/100, packet->z/100),
 					FRotator(packet->pitch/100, packet->yaw/100, packet->roll/100), FVector(0, 0, 0));
 			}
 			break;
@@ -102,17 +111,10 @@ void AVRPlayerController_Base::ProcessPacket()
 		default:
 			break;
 		}
-	
-		memcpy(data, data + packetSize, 256-packetSize);
-		packetSize = data[0];
 
+		p += packetSize;
+		dataSize -= packetSize;
 	}
-}
-
-void AVRPlayerController_Base::SetPlayerCharacter(AActor* playerActor)
-{
-	Possess(Cast<APawn>(playerActor));
-	vrPlayer = Cast<AVRCharacter_Base>(GetCharacter());
 }
 
 void AVRPlayerController_Base::Tick(float DeltaSeconds)
@@ -183,4 +185,28 @@ void AVRPlayerController_Base::Tick(float DeltaSeconds)
 		
 		gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
 	}
+}
+
+
+void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale)
+{
+	UE_LOG(LogTemp, Error, TEXT("Actor ID: %d, ObjectID: %d"), actorID, objectID);
+	FTransform transform;
+	transform.SetLocation(location);
+	transform.SetRotation(rotation.Quaternion());
+	transform.SetScale3D(scale);
+	FActorSpawnParameters SpawnParams;
+	
+	actorList.Add(actorID, GetWorld()->SpawnActor<AActor>(gameInst->GetActor(objectID), transform, SpawnParams));
+
+	if (playerID == actorID)
+	{
+		SetPlayerCharacter();
+	}
+}
+
+void AVRPlayerController_Base::SetPlayerCharacter()
+{
+	Possess(Cast<APawn>(actorList[playerID]));
+	vrPlayer = Cast<AVRCharacter_Base>(GetCharacter());
 }

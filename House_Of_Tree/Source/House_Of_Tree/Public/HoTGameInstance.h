@@ -25,11 +25,11 @@ public:
 	virtual ~UHoTGameInstance() override;
 
 	virtual void Init() override;
-	virtual void OnStart() override;
 
 	void InitSocket();
 
 	void SetInfo();
+	UClass* GetActor(int ObjectID);
 
 	ClientSocket* SocketInstance;
 
@@ -47,6 +47,9 @@ public:
 	//*********************************************************************************************/
 
 private:
+	UPROPERTY(EditAnywhere)
+	TMap<int, UClass*> bpSet;
+
 	// ID 리스트 파일을 새로 생성하라고 표시하는 명령어
 	UPROPERTY(EditDefaultsOnly, Category="ID", DisplayName="ID 리스트 생성")
 	bool makeIDList;
@@ -77,22 +80,14 @@ public:
 
 protected:
 	UPROPERTY()
-	TMap<int, AActor*> actorList;
-
-	UPROPERTY(EditAnywhere)
-	TMap<int, UClass*> bpSet;
-
-	UPROPERTY()
 	bool gameStart = true;
 
-public:
-	void SetPlayerID(int playerId);
-
 	UPROPERTY()
-	bool AllLoadComplete = false;
-
+	bool allLoadComplete = false;
 	
-	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale);
+public:
+	void GameStart() { gameStart = true; }
+	void AllLoadComplete() { allLoadComplete = true; }
 
-	bool IsIngame() {return AllLoadComplete;};
+	bool IsIngame() { return allLoadComplete; };
 };

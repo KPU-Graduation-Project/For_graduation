@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include <concurrent_queue.h>
+#include <atomic>
+
 #include "CoreMinimal.h"
 #include "HoTGameInstance.h"
 #include "GameFramework/PlayerController.h"
@@ -18,7 +21,10 @@ UCLASS()
 class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
 {
 	GENERATED_BODY()
+public:
+	AVRPlayerController_Base();
 
+protected:
 	UPROPERTY()
 	UHoTGameInstance* gameInst;
 
@@ -31,18 +37,24 @@ class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
 	UPROPERTY()
 	AVRCharacter_Base* vrPlayer;
 
+	UPROPERTY()
+	TMap<int, AActor*> actorList;
+	
+	void SetPlayerCharacter();
+	
+	// Network system
 public:
-	char data[265];
+	Concurrency::concurrent_queue<char> buffer;
+	std::atomic<int> bufferSize {0};
+
+protected:
 	void ProcessPacket();
 
+	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale);
+
 public:
-	void SetPlayerID(int id) { playerID = id; }
-	int GetPlayerID() const { return playerID; }
-
-	void SetPlayerCharacter(AActor* playerActor);
-
 	virtual void BeginPlay() override;
 
-	AVRPlayerController_Base();
 	virtual void Tick(float DeltaSeconds) override;
+
 };

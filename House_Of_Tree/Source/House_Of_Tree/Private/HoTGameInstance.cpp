@@ -27,11 +27,6 @@ void UHoTGameInstance::Init()
 	path.Append(TEXT("data.txt"));
 }
 
-void UHoTGameInstance::OnStart()
-{
-	Super::OnStart();
-}
-
 void UHoTGameInstance::InitSocket()
 {
 	if (!ConnectNetwork) return;
@@ -168,26 +163,7 @@ void UHoTGameInstance::SetInfo()
 	}
 }
 
-void UHoTGameInstance::SetPlayerID(int playerId)
+UClass* UHoTGameInstance::GetActor(int ObjectID)
 {
-	playerController->SetPlayerID(playerId);
-}
-
-void UHoTGameInstance::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale)
-{
-	UE_LOG(LogTemp, Error, TEXT("Actor ID: %d, ObjectID: %d"), actorID, objectID);
-	FTransform transform;
-	transform.SetLocation(location);
-	transform.SetRotation(rotation.Quaternion());
-	transform.SetScale3D(scale);
-	FActorSpawnParameters SpawnParams;
-
-	UE_LOG(LogTemp, Error, TEXT("Actor ID: %s"), *bpSet[objectID]->GetName());
-	
-	actorList.Add(actorID, GetWorld()->SpawnActor<AActor>(bpSet[objectID], transform, SpawnParams));
-
-	if (actorID == playerController->GetPlayerID())
-	{
-		playerController->SetPlayerCharacter(actorList[actorID]);
-	}
+	return bpSet[ObjectID];
 }
