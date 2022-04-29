@@ -100,10 +100,15 @@ void AVRPlayerController_Base::ProcessPacket()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("putobject"));
 				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(p);
+				// PutObject(packet->id, packet->object_type,
+				// 	FVector(packet->x/100, packet->y/100, packet->z/100),
+				// 	FRotator(packet->pitch/100, packet->yaw/100, packet->roll/100),
+				// 	FVector(packet->scale_x / 100, packet->scale_y / 100, packet->scale_z / 100));
+
 				PutObject(packet->id, packet->object_type,
 					FVector(packet->x/100, packet->y/100, packet->z/100),
 					FRotator(packet->pitch/100, packet->yaw/100, packet->roll/100),
-					FVector(packet->scale_x / 100, packet->scale_y / 100, packet->scale_z / 100));
+					FVector(packet->scale_x, packet->scale_y, packet->scale_z));
 			}
 			break;
 
@@ -131,6 +136,8 @@ void AVRPlayerController_Base::Tick(float DeltaSeconds)
 
 	if (gameInst->SocketInstance && gameInst->IsIngame())
 	{
+		UE_LOG(LogTemp, Error, TEXT("Send Packet"));
+
 		cs_player_data_packet sendPacket;
 		sendPacket.type = CS_PACKET::CS_PLAYER_DATA;
 		sendPacket.size = sizeof(sendPacket);
@@ -197,6 +204,7 @@ void AVRPlayerController_Base::Tick(float DeltaSeconds)
 void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale)
 {
 	UE_LOG(LogTemp, Error, TEXT("Actor ID: %d, ObjectID: %d"), actorID, objectID);
+	UE_LOG(LogTemp, Error, TEXT("Location: %lf %lf %lf, Rotation: %lf, %lf, %lf"), location.X, location.Y, location.Z, rotation.Pitch, rotation.Yaw, rotation.Roll);
 	FTransform transform;
 	transform.SetLocation(location);
 	transform.SetRotation(rotation.Quaternion());
@@ -215,4 +223,6 @@ void AVRPlayerController_Base::SetPlayerCharacter()
 {
 	Possess(Cast<APawn>(actorList[playerID]));
 	vrPlayer = Cast<AVRCharacter_Base>(GetCharacter());
+
+	gameInst->GameStart();
 }

@@ -80,7 +80,7 @@ public:
 
 protected:
 	UPROPERTY()
-	bool gameStart = true;
+	bool gameStart = false;
 
 	UPROPERTY()
 	bool allLoadComplete = false;
@@ -89,5 +89,5 @@ public:
 	void GameStart() { gameStart = true; }
 	void AllLoadComplete() { allLoadComplete = true; }
 
-	bool IsIngame() { return allLoadComplete; };
+	bool IsIngame() { return gameStart; };
 };

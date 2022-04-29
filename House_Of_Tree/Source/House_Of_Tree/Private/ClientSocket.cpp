@@ -117,9 +117,10 @@ bool ClientSocket::ConnectServer()
 bool ClientSocket::Send(const int SendSize, void* SendData)
 {
 	char buff[BUFSIZE];
-	memcpy_s(buff, BUFSIZE, SendData, SendSize);
+	memcpy(buff, SendData, SendSize);
 
 	int nSendLen = send(Socket, buff, buff[0], 0);
+	UE_LOG(LogTemp, Warning, TEXT("Packet SIZE %d"), buff[0]);
 
 	return true;
 }
