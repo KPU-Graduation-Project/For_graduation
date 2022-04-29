@@ -184,7 +184,7 @@ void UHoTGameInstance::PutObject(int actorID, int objectID, FVector location, FR
 
 	UE_LOG(LogTemp, Error, TEXT("Actor ID: %s"), *bpSet[objectID]->GetName());
 	
-	actorList.Add(actorID, GetWorld()->SpawnActor<AActor>(bpSet[objectID]->GetClass(), transform, SpawnParams));
+	actorList.Add(actorID, GetWorld()->SpawnActor<AActor>(bpSet[objectID], transform, SpawnParams));
 
 	if (actorID == playerController->GetPlayerID())
 	{
