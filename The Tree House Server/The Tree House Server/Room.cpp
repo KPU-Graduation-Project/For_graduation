@@ -25,10 +25,10 @@ void cRoom::StartGame()
 	//캐릭터 설정
 	{
 		cCharacter* character = cRoomManager::m_character_pool.PopObject();
-		character->SetScale({ 1,1,1 });
-		character->SetCharacterTransform({ -68000,19000,9200 }, { 0,0,-9000 },
+		character->SetScale({ 100,100,100 });
+		character->SetCharacterTransform({ -75000,19000,9200 }, { 0,0,0},
 			{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
-		character->m_object_type = 1;
+		character->m_object_type = 100001;
 		character->m_id = m_user_id[0];
 		cUserManager::m_users[m_user_id[0]]->m_character = character;
 
@@ -36,7 +36,7 @@ void cRoom::StartGame()
 
 		packet.size = sizeof(sc_put_object_packet);
 		packet.type = SC_PACKET::SC_PUT_OBJECT;
-		packet.object_type = 100001;
+		packet.object_type = character->m_object_type;
 		packet.id = m_user_id[0];
 
 		Transform transform = character->GetTransform();
@@ -55,8 +55,9 @@ void cRoom::StartGame()
 
 	{
 		cCharacter* character = cRoomManager::m_character_pool.PopObject();
-		character->SetScale({ 1,1,1 });
-		character->SetCharacterTransform({ 1712,21700,9200 }, { 0,0,-9000 },
+		character->SetScale({ 100,100,100 });
+		//character->SetCharacterTransform({ 1712,21700,9200 }, { 0,0,-9000 },			{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
+		character->SetCharacterTransform({ -60000,19000,9200 }, { 0,-18000,0 },
 			{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
 		character->m_object_type = 100002;
 		character->m_id = m_user_id[1];
@@ -66,7 +67,7 @@ void cRoom::StartGame()
 
 		packet.size = sizeof(sc_put_object_packet);
 		packet.type = SC_PACKET::SC_PUT_OBJECT;
-		packet.object_type = 2;
+		packet.object_type = character->m_object_type;
 		packet.id = m_user_id[1];
 
 		Transform transform = character->GetTransform();
@@ -113,6 +114,7 @@ void cRoom::StartGame()
 		Broadcast(sizeof(sc_put_object_packet), &packet);
 	}
 
+	m_state = room_state::INGAME;
 	cout << "Room [ " << m_id << " ] Started Game\n";
 }
 
@@ -125,12 +127,16 @@ void cRoom::UserLoadingComplete(const unsigned int _user_id)
 
 }
 
-void cRoom::SendOtherPlayerTransform()
+void cRoom::SendOtherPlayerTransform(const unsigned int _user_id)
 {
 	if (m_state == room_state::INGAME)
 	{
-		for (int i = 0; i < 2; ++i)
-		{
+		auto target_user_type = -1;
+		if (_user_id == m_user_id[user_type::HOST])
+			target_user_type = user_type::GUEST;
+		else
+			target_user_type = user_type::HOST;
+
 			/*cout << "send - user" << i << " position " << g_temp_position[i].x << "," << g_temp_position[i].y << ", " << g_temp_position[i].z
 				<< " // rotation " << g_temp_rotation[i].x << "," << g_temp_rotation[i].y << ", " << g_temp_rotation[i].z << endl;*/
 
@@ -138,9 +144,9 @@ void cRoom::SendOtherPlayerTransform()
 
 			packet.size = sizeof(sc_player_data_packet);
 			packet.type = SC_PACKET::SC_PLAYER_DATA;
-			packet.id = m_user_id[i];
+			packet.id = _user_id;
 
-			cCharacter* character = cUserManager::m_users[m_user_id[i]]->m_character;
+			cCharacter* character = cUserManager::m_users[m_user_id[target_user_type]]->m_character;
 
 			packet.x = character->m_transform.position.x;
 			packet.y = character->m_transform.position.y;
@@ -170,12 +176,12 @@ void cRoom::SendOtherPlayerTransform()
 			packet.lh_yaw = character->m_lh_rotation.yaw;
 			packet.lh_roll = character->m_lh_rotation.roll;
 
-			cout << "SC_PLAYER_DATA to User [ " << 1-i << " ] In Room [ "<<(int)m_id<<" ] // User [ "<<i 
+			cout << "SC_PLAYER_DATA to User [ " << _user_id << " ] In Room [ "<<(int)m_id<<" ] // User [ "<< m_user_id[target_user_type]
 				<<" ] position " << packet.x << "," << packet.y << ", " << packet.z
 				<< " // rotation " << packet.pitch << ", " << packet.yaw << "," << packet.roll  << endl;
 			
-			cUserManager::m_users[m_user_id[1-i]]->Send(sizeof(packet), &packet);
-		}
+			cUserManager::m_users[_user_id]->Send(sizeof(packet), &packet);
+	
 	}
 }
 

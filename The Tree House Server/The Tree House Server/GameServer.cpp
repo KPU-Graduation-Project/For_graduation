@@ -32,7 +32,7 @@ void cGameServer::Start()
 {
 	cIOCPBase::StartServer();
 
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 4; ++i)
 		m_worker_threads.emplace_back(std::thread(&cGameServer::WorkerThread, this));
 	//m_timer_thread = thread{ &ServerNetworkSystem::TimerThread,this };
 
@@ -88,7 +88,7 @@ void cGameServer::WorkerThread()
 
 		if (FALSE == ret) {
 			int err_no = WSAGetLastError();
-			cout << "GQCS Error : ";
+			cout <<"Client ID: "<< client_id<<" GQCS Error : ";
 			if (err_no == ERROR_INVALID_HANDLE)
 			{
 				cout << "handle_error" << endl;
@@ -115,7 +115,7 @@ void cGameServer::WorkerThread()
 
 		switch (exp_over->m_comp_op) {
 		case OP_RECV: {
-			//cout << "recv called\n";
+			cout << "recv called: "<<num_byte<<"byte \n";
 			Recv(exp_over, client_id, num_byte); 
 			
 			//SendGameState();
@@ -137,6 +137,7 @@ void cGameServer::WorkerThread()
 		case OP_ACCEPT: {
 			//cout << "accpet called\n";
 			Accept(exp_over);
+			break;
 					}
 		case OP_SEND_WORLD_DATA:
 		{
@@ -209,19 +210,30 @@ void cGameServer::Send(CEXP_OVER* exp_over)
 
 }
 
-void cGameServer::Recv(CEXP_OVER* exp_over, const unsigned short _user_id, const DWORD num_byte)
+void cGameServer::Recv(CEXP_OVER* exp_over, const unsigned int _user_id, const DWORD num_byte)
 {
 
-	int remain_data = num_byte + m_user_manager->m_users[_user_id]->GetPrevSize();
+	unsigned int remain_data = num_byte + m_user_manager->m_users[_user_id]->GetPrevSize();
 	unsigned char* packet_start = exp_over->m_net_buf;
-	int packet_size = packet_start[0];
+	unsigned int packet_size = packet_start[0];
 
-	cout << "packet_size - :" << packet_size << "  //  remain_data - :" << remain_data << endl;
+	//cout << "-------Recv-------\n";
+	//cout << "packet_size - :" << packet_size << "  //  remain_data - :" << remain_data << endl;
 	while (packet_size <= remain_data) {
 		ProcessPacket(_user_id, packet_start);
 		remain_data -= packet_size;
 		packet_start += packet_size;
-		if (remain_data > 0) packet_size = packet_start[0];
+		
+		if (remain_data > 0)
+		{
+			packet_size = packet_start[0];
+
+			
+			//cout << "\npacket_size: " << packet_size << endl;
+			//cout << " packet_start[0]: " << (int)packet_start[0] << endl;
+			cout << "remain_data: " << remain_data << "\n";
+			
+		}
 		else break;
 	}
 
@@ -230,6 +242,8 @@ void cGameServer::Recv(CEXP_OVER* exp_over, const unsigned short _user_id, const
 		memcpy(&exp_over->m_net_buf, packet_start, remain_data);
 	}
 	m_user_manager->m_users[_user_id]->Recv();
+
+	//cout << "----------------\n";
 }
 
 void cGameServer::Disconnect()
@@ -238,7 +252,7 @@ void cGameServer::Disconnect()
 
 }
 
-void cGameServer::ProcessPacket(const unsigned short _user_id, unsigned char* _p)
+void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 {
 	unsigned char packet_type = _p[1];
 
@@ -432,8 +446,8 @@ void cGameServer::ProcessPacket(const unsigned short _user_id, unsigned char* _p
 			{ packet->rh_x, packet->rh_y, packet->rh_z }, { packet->rh_pitch, packet->rh_yaw, packet->rh_roll },
 			{ packet->lh_x, packet->lh_y, packet->lh_z }, { packet->lh_pitch, packet->lh_yaw, packet->lh_roll });
 
-		m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->SendOtherPlayerTransform();
-		m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->SendAllObjectData();
+		m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->SendOtherPlayerTransform(_user_id);
+		//m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->SendAllObjectData();
 		break;
 	}
 	case CS_PACKET::CS_SHOOT_BULLET:

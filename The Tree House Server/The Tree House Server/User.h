@@ -21,12 +21,12 @@ public:
 	unsigned short GetID() { return m_id; }
 	user_state::eSTATE GetState() { return m_state; };
 	unsigned int GetRoomID() { return m_room_id; };
-	short GetPrevSize() { return m_prev_size; };
+	unsigned short GetPrevSize() { return m_prev_size; };
 		
 	void SetID(const unsigned int _id) { m_id = _id; };
 	void SetState(const user_state::eSTATE _state) { m_state = _state; };
 	void SetRoomID(const unsigned int _room_id) { m_room_id = _room_id; };
-	void SetPrevSize(const short _prev_size) { m_prev_size = _prev_size; };
+	void SetPrevSize(const unsigned short _prev_size) { m_prev_size = _prev_size; };
 	void SetSocket(const SOCKET& _socket) { m_socket = _socket; };
 
 	void StateLock() { EnterCriticalSection(&m_state_cs); }
@@ -51,5 +51,5 @@ public:
 private:
 	SOCKET             m_socket;
 	CEXP_OVER          m_recv_over;
-	short 		       m_prev_size;
+	unsigned short 	 m_prev_size;
 };

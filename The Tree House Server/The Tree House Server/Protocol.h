@@ -2,7 +2,7 @@
 
 
 constexpr short SERVER_PORT = 6000;
-constexpr int   BUFSIZE = 256;
+constexpr int   BUFSIZE = 1024;
 
 
 constexpr unsigned int  MAX_USER = 10;
@@ -241,7 +241,7 @@ struct sc_put_object_packet
 	unsigned char type;
 
 	unsigned int  id;
-	unsigned short object_type;	
+	unsigned int  object_type;	
 	unsigned char mesh_id;
 
 	int           x;

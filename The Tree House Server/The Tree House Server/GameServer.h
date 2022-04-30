@@ -28,11 +28,11 @@ public:
 	void Start();
 	void WorkerThread();
 	void TimerThread();
-	void ProcessPacket(const unsigned short _user_id, unsigned char* p);
+	void ProcessPacket(const unsigned int _user_id, unsigned char* p);
 
 	void Accept(CEXP_OVER* exp_over);
 	void Send(CEXP_OVER* exp_over);
-	void Recv(CEXP_OVER* exp_over, const unsigned short _user_id, const DWORD num_byte);
+	void Recv(CEXP_OVER* exp_over, const unsigned int _user_id, const DWORD num_byte);
 	void Disconnect();
 
 private:

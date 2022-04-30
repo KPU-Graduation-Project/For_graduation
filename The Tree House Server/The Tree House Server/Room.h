@@ -31,7 +31,7 @@ public:
 	void StartGame();
 
 	void UserLoadingComplete(const unsigned int _user_id);
-	void SendOtherPlayerTransform();
+	void SendOtherPlayerTransform(const unsigned int _user_id);
 	void SendAllObjectData();
 	void ShootBullet(const unsigned int& _user_id, iVector3 _source_position, sRotation3 _rotation);
 
