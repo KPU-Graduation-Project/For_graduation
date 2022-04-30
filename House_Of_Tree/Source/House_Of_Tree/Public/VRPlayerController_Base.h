@@ -49,6 +49,7 @@ public:
 
 protected:
 	void ProcessPacket();
+	void SendPlayerData();
 
 	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale);
 

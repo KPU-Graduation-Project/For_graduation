@@ -6,20 +6,21 @@
 // Sets default values
 AVRCharacter_Base::AVRCharacter_Base()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_Hand(TEXT("SkeletalMesh'/Game/Resource/Actor/Hand/MannequinHand_Right.MannequinHand_Right'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_Hand(
+		TEXT("SkeletalMesh'/Game/Resource/Actor/Hand/MannequinHand_Right.MannequinHand_Right'"));
 
 	VR_Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	VR_Camera->SetupAttachment(RootComponent);
-	
+
 	MotionController_L = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionContoller_L"));
 	HandMesh_L = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh_L"));
-	
+
 	MotionController_R = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionContoller_R"));
 	HandMesh_R = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh_R"));
-	
+
 	Hand_L = EControllerHand::Left;
 	Hand_R = EControllerHand::Right;
 
@@ -45,7 +46,7 @@ AVRCharacter_Base::AVRCharacter_Base()
 	HandMesh_R->CastShadow = false;
 
 	GetMesh()->SetOwnerNoSee(true);
-	
+
 	if (SK_Hand.Succeeded())
 	{
 		HandMesh_L->SetSkeletalMesh(SK_Hand.Object);
@@ -60,20 +61,30 @@ AVRCharacter_Base::AVRCharacter_Base()
 void AVRCharacter_Base::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void AVRCharacter_Base::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
 void AVRCharacter_Base::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
+void AVRCharacter_Base::SetLocationAndRotation(const FVector& location, const float& yaw)
+{
+	FRotator rotation = GetActorRotation();
+	rotation.Yaw = yaw;
+	SetActorLocationAndRotation(location, rotation);
+}
+
+void AVRCharacter_Base::SetHandLocationAndRotation(const FVector& locationLH, const FRotator& rotationLH,
+                                                   const FVector& locationRH, const FRotator& rotationRH)
+{
+	MotionController_L->SetWorldLocationAndRotation(locationLH, rotationLH);
+	MotionController_R->SetWorldLocationAndRotation(locationRH, rotationRH);
+}
