@@ -35,7 +35,6 @@ public:
 	bool ConnectServer();
 
 	bool Send(const int SendSize, void* SendData);
-	void ProcessPacket(const int RecvSize, char* RecvData);
 
 private:
 	FRunnableThread* Thread;
