@@ -31,13 +31,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "플레이어 캐릭터", DisplayName="캐릭터")
 	TArray<TSubclassOf<APawn>> Characters;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	int playerID;
 
 	UPROPERTY()
 	AVRCharacter_Base* vrPlayer;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	TMap<int, AActor*> actorList;
 	
 	void SetPlayerCharacter();

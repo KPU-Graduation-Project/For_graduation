@@ -82,9 +82,9 @@ void AVRCharacter_Base::SetLocationAndRotation(const FVector& location, const fl
 	SetActorLocationAndRotation(location, rotation);
 }
 
-void AVRCharacter_Base::SetHandLocationAndRotation(const FVector& locationLH, const FRotator& rotationLH,
-                                                   const FVector& locationRH, const FRotator& rotationRH)
+void AVRCharacter_Base::SetHandLocationAndRotation(const FVector& lhLocation, const FRotator& lhRotation,
+                                                   const FVector& rhLocationRH, const FRotator& rhRotation)
 {
-	MotionController_L->SetWorldLocationAndRotation(locationLH, rotationLH);
-	MotionController_R->SetWorldLocationAndRotation(locationRH, rotationRH);
+	MotionController_L->SetWorldLocationAndRotation(lhLocation, lhRotation);
+	MotionController_R->SetWorldLocationAndRotation(rhLocationRH, rhRotation);
 }
