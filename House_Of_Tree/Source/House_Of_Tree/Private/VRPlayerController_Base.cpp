@@ -3,7 +3,6 @@
 
 #include "VRPlayerController_Base.h"
 
-#include <queue>
 
 #include "VRCharacter_Base.h"
 #include "EngineUtils.h"

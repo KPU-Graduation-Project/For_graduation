@@ -47,7 +47,7 @@ public:
 	//*********************************************************************************************/
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	TMap<int, UClass*> bpSet;
 
 	// ID 리스트 파일을 새로 생성하라고 표시하는 명령어
