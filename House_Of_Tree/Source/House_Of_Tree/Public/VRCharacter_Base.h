@@ -45,4 +45,13 @@ protected:
 	UCameraComponent* VR_Camera;
 
 	EControllerHand Hand_L, Hand_R;
+
+public:
+	FTransform GetHeadTransform() const {return VR_Camera->GetComponentTransform();}
+	FTransform GetRHTransform() const {return MotionController_R->GetComponentTransform();}
+	FTransform GetLHTransform() const {return MotionController_L->GetComponentTransform();}
+
+	void SetLocationAndRotation(const FVector &location, const float &yaw);
+	void SetHandLocationAndRotation(const FVector &locationLH, const FRotator &rotationLH, const FVector &locationRH, const FRotator &rotationRH);
+	//void SetHeadRotation();
 };

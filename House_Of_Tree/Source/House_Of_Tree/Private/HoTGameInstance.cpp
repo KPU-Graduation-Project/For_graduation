@@ -2,8 +2,9 @@
 
 
 #include "HoTGameInstance.h"
-#include <iostream>
 #include <fstream>
+#include "VRPlayerController_Base.h"
+#include "Misc/OutputDeviceNull.h"
 #include "EngineUtils.h"
 #include "Engine/BlueprintGeneratedClass.h"
 
@@ -26,18 +27,9 @@ void UHoTGameInstance::Init()
 	path.Append(TEXT("data.txt"));
 }
 
-void UHoTGameInstance::OnStart()
-{
-	Super::OnStart();
-
-	if (ConnectNetwork)
-	{
-		InitSocket();
-	}
-}
-
 void UHoTGameInstance::InitSocket()
 {
+	if (!ConnectNetwork) return;
 	if (SocketInstance != nullptr) return;
 
 	SocketInstance = new ClientSocket(this);
@@ -45,69 +37,133 @@ void UHoTGameInstance::InitSocket()
 
 void UHoTGameInstance::SetInfo()
 {
+	// 블루 프린트 에셋을 로드해와서 저장
+	int key = 1, id = 1;
+	for (const auto i : BP_Char)
+	{
+		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		key++;
+	}
+
+	key = 1;
+	id++;
+	for (const auto i : BP_Monster)
+	{
+		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		key++;
+	}
+
+	key = 1;
+	id++;
+	for (const auto i : BP_Bullet)
+	{
+		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		key++;
+	}
+
+	key = 1;
+	id++;
+	for (const auto i : BP_DyObj)
+	{
+		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		key++;
+	}
+
+	key = 1;
+	id++;
+	for (const auto i : BP_PasObj)
+	{
+		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		key++;
+	}
+	
 	if (makeIDList)
 	{
 		std::ofstream out(*path);
 
-		// 기록할 스태틱 오브젝트들을 선언 (나중에 파싱하는 방식으로 변경)
-		TArray<FString> objests = {
-			TEXT("SM_box"), TEXT("SM_door_02"), TEXT("SM_door_03"), TEXT("SM_doorbranch_01"), TEXT("SM_branch_01"),
-			TEXT("SM_target_01"), TEXT("SM_targetdoll_01"), TEXT("SM_branch_02"), TEXT("SM_Target_Top")
-		};
-
-		// 블루 프린트 에셋을 로드해와서 저장 (나중에 블루프린트에서 선택한 것을 가져오는 것으로 변경 할 예정)
-		TArray<UBlueprintGeneratedClass*> LoadedBP = {
-			LoadObject<UBlueprintGeneratedClass>(
-				NULL, TEXT("Blueprint'/Game/Asset/Actor/Object/BP_Target.BP_Target_C'")),
-			LoadObject<UBlueprintGeneratedClass>(NULL, TEXT("Blueprint'/Game/Asset/Actor/Object/BP_Door.BP_Door_C'"))
-		};
-
-		// 오브젝트 아이디를 저장할 저장소
-		TMap<FString, int> ids;
-
-		UStaticMeshComponent* tempComponent = nullptr;
-		// 월드에 스폰된 액터를 순회하면서 오브젝트를 검사
-		for (const auto& i : TActorRange<AActor>(GetWorld()))
+		if (out.is_open())
 		{
-			// 블루프린트 에셋과 검색한 액터가 같다면 아이디를 부여하고 저장
-			if (LoadedBP.Contains(i->GetClass()))
+			// 좌표값들 반올림해서 출력
+			out << "[1][0][00100001][-680/189.999/92][0/0/-90][1/1/1]" << std::endl;
+			out << "[1][0][00100002][1712/216.999/92][0/0/-90][1/1/1]" << std::endl;
+			// FActorSpawnParameters SpawnParams;
+			// GetWorld()->SpawnActor<AActor>(, FVector(0, 0, 0), FRotator(0, 0,0), SpawnParams);
+
+			// 월드에 스폰된 액터를 순회하면서 오브젝트를 검사
+			for (const auto& i : TActorRange<AActor>(GetWorld()))
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("%lf %lf %lf"), i->GetActorTransform().GetLocation().X, i->GetActorTransform().GetLocation().Y, i->GetActorTransform().GetLocation().Z);
-
-				tempComponent = Cast<UStaticMeshComponent>(i->GetComponentByClass(UStaticMeshComponent::StaticClass()));
-				if (tempComponent && tempComponent->GetStaticMesh())
+				// 블루프린트 에셋과 검색한 액터가 같다면 데이터 파일에 기록
+				//if (bpSet.Contains(i->GetClass()))
+				const int *objectID = bpSet.FindKey(i->GetClass());
+				if (objectID != nullptr)
 				{
-					int& key = ids.FindOrAdd(*tempComponent->GetStaticMesh()->GetName());
-					key++;
+					FProperty* Property = i->GetClass()->FindPropertyByName(TEXT("Mesh ID"));
+					if (Property)
+					{
+						int *meshId = Property->ContainerPtrToValuePtr<int>(i);
 
-					int t = objests.Find(*tempComponent->GetStaticMesh()->GetName());
+						UE_LOG(LogTemp, Warning, TEXT("%s"), *i->GetName());
 
-					objList.Add(((t + 1) * 10000) + key, i);
+						// Level
+						out << "[" << 1 << "]";
+
+						// Object ID
+						out << "[";
+						out.width(8);
+						out.fill('0');
+						//out << bpSet[i->GetClass()];
+						out << *objectID;
+						out << "]";
+
+						// Mesh ID
+						out << "[" << *meshId << "]";
+
+						// Location
+						out << "["
+							<< static_cast<int>(i->GetActorLocation().X * 100) << "/"
+							<< static_cast<int>(i->GetActorLocation().Y * 100) << "/"
+							<< static_cast<int>(i->GetActorLocation().Z * 100)
+							<< "]";
+
+						// Rotation
+						out << "["
+							<< static_cast<int>(i->GetActorRotation().Pitch * 100) << "/"
+							<< static_cast<int>(i->GetActorRotation().Yaw * 100) << "/"
+							<< static_cast<int>(i->GetActorRotation().Roll * 100)
+							<< "]";
+
+						// Scale
+						out << "["
+							<< static_cast<int>(i->GetActorScale().X * 100) << "/"
+							<< static_cast<int>(i->GetActorScale().Y * 100) << "/"
+							<< static_cast<int>(i->GetActorScale().Z * 100)
+							<< "]";
+
+						// Any Other Variables
+						// FProperty* variables = i->GetClass()->FindPropertyByName(TEXT("Actor"));
+						// if (variables != nullptr)
+						// {
+						// 	UClass* target = variables->ContainerPtrToValuePtr<UClass>(i);
+						// 	const int *targetID = bpSet.FindKey(i->GetClass());
+						// 	
+						// 	out << "[";
+						// 	out.width(8);
+						// 	out.fill('0');
+						// 	//out << bpSet[i->GetClass()];
+						// 	out << *objectID;
+						// 	out << "]";
+						// }
+
+						out << std::endl;
+					}
 				}
 			}
 		}
-		if (out.is_open())
-		{
-			for (const auto& i : objList)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("%d, %s"), i.Key, *i.Value->GetName());
-
-				out << "[" << i.Key << "]" << "[" << 1 << "]"
-					<< "["
-					<< i.Value->GetActorLocation().X << "/"
-					<< i.Value->GetActorLocation().Y << "/"
-					<< i.Value->GetActorLocation().Z
-					<< "]"
-					<< "["
-					<< i.Value->GetActorRotation().Pitch << "/"
-					<< i.Value->GetActorRotation().Yaw << "/"
-					<< i.Value->GetActorRotation().Roll
-					<< "]"
-					<< "["
-					<< TCHAR_TO_ANSI(*i.Value->GetName())
-					<< "]"
-					<< std::endl;
-			}
-		}
+		out.close();
 	}
+}
+
+UClass* UHoTGameInstance::GetActor(int ObjectID)
+{
+	return bpSet[ObjectID];
 }
