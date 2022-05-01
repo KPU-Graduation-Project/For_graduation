@@ -35,13 +35,13 @@ AVRCharacter_Base::AVRCharacter_Base()
 	MotionController_R->SetTrackingSource(Hand_R);
 
 	HandMesh_L->SetupAttachment(MotionController_L);
-	HandMesh_L->SetRelativeRotation(FRotator(-80.0f, 0.0f, -90.0f));
+	HandMesh_L->SetRelativeRotation(FRotator(-30.0f, 0.0f, -90.0f));
 	HandMesh_L->SetRelativeScale3D(FVector(1.0f, -1.0f, 1.0f));
 	HandMesh_L->SetCollisionProfileName(TEXT("NoCollision"));
 	HandMesh_L->CastShadow = false;
 
 	HandMesh_R->SetupAttachment(MotionController_R);
-	HandMesh_R->SetRelativeRotation(FRotator(-80.0f, 0.0f, 90.0f));
+	HandMesh_R->SetRelativeRotation(FRotator(-30.0f, 0.0f, 90.0f));
 	HandMesh_R->SetCollisionProfileName(TEXT("NoCollision"));
 	HandMesh_R->CastShadow = false;
 
