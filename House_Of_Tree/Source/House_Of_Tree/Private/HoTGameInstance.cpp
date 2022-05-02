@@ -39,44 +39,52 @@ void UHoTGameInstance::SetInfo()
 {
 	// 블루 프린트 에셋을 로드해와서 저장
 	int key = 1, id = 1;
+	UE_LOG(LogTemp, Warning, TEXT("BP_CHAR %d"), BP_Char.Num());
 	for (const auto i : BP_Char)
 	{
-		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		bpSet.Add((id * 100000) + key, i.Get());
 		key++;
 	}
 
 	key = 1;
 	id++;
+	UE_LOG(LogTemp, Warning, TEXT("BP_Monster"));
+
 	for (const auto i : BP_Monster)
 	{
-		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		bpSet.Add((id * 100000) + key, i.Get());
 		key++;
 	}
 
 	key = 1;
 	id++;
+	UE_LOG(LogTemp, Warning, TEXT("BP_BULLET"));
 	for (const auto i : BP_Bullet)
 	{
-		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		bpSet.Add((id * 100000) + key, i.Get());
 		key++;
 	}
 
 	key = 1;
 	id++;
+	UE_LOG(LogTemp, Warning, TEXT("BP_DYOBJ"));
 	for (const auto i : BP_DyObj)
 	{
-		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		bpSet.Add((id * 100000) + key, i.Get());
 		key++;
 	}
 
 	key = 1;
 	id++;
+	UE_LOG(LogTemp, Warning, TEXT("BP_PasOBJ"));
 	for (const auto i : BP_PasObj)
 	{
-		bpSet.Add((id * 100000) + key, i->GeneratedClass);
+		bpSet.Add((id * 100000) + key, i.Get());
 		key++;
 	}
 	
+	UE_LOG(LogTemp, Warning, TEXT("Load BPs"));
+
 	if (makeIDList)
 	{
 		std::ofstream out(*path);

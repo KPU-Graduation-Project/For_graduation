@@ -120,7 +120,7 @@ bool ClientSocket::Send(const int SendSize, void* SendData)
 	memcpy(buff, SendData, SendSize);
 
 	int nSendLen = send(Socket, buff, buff[0], 0);
-	UE_LOG(LogTemp, Warning, TEXT("Packet SIZE %d"), buff[0]);
+	UE_LOG(LogTemp, Warning, TEXT("Packet SIZE %d"), nSendLen);
 
 	return true;
 }

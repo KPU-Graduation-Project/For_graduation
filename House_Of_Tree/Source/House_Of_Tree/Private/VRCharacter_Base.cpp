@@ -51,9 +51,11 @@ AVRCharacter_Base::AVRCharacter_Base()
 	{
 		HandMesh_L->SetSkeletalMesh(SK_Hand.Object);
 		HandMesh_L->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+		HandMesh_L->SetOnlyOwnerSee(true);
 
 		HandMesh_R->SetSkeletalMesh(SK_Hand.Object);
 		HandMesh_R->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+		HandMesh_R->SetOnlyOwnerSee(true);
 	}
 }
 
@@ -77,6 +79,8 @@ void AVRCharacter_Base::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void AVRCharacter_Base::SetLocationAndRotation(const FVector& location, const float& yaw)
 {
+	UE_LOG(LogTemp, Warning, TEXT("%lf, %lf, %lf"), location.X, location.Y, location.Z);
+
 	FRotator rotation = GetActorRotation();
 	rotation.Yaw = yaw;
 	SetActorLocationAndRotation(location, rotation);

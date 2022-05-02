@@ -13,6 +13,7 @@ public class House_Of_Tree : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "HeadMountedDisplay" });
         
 		bEnableUndefinedIdentifierWarnings = false;
+		bEnableExceptions = true;
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

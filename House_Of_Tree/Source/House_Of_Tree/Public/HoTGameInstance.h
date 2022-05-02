@@ -14,6 +14,7 @@
  */
 
 class AVRPlayerController_Base;
+class AVRCharacter_Base;
 
 UCLASS()
 class HOUSE_OF_TREE_API UHoTGameInstance : public UGameInstance
@@ -55,20 +56,22 @@ private:
 	bool makeIDList;
 
 	// 사용하는 블루프린트 액터를 기록하는 컨테이너
+	// bpset을 안쓰고 나중에 그냥 type별로 직접 분리해서 스폰하게 수정
+	// 패킷 처리부분을 액터로 분리해서 사용
 	UPROPERTY(EditDefaultsOnly, Category="Blueprint", DisplayName="Character") // 001
-	TArray<UBlueprint*> BP_Char;
+	TArray<TSubclassOf<AActor>> BP_Char;
 
 	UPROPERTY(EditDefaultsOnly, Category="Blueprint", DisplayName="Monster") // 002
-	TArray<UBlueprint*> BP_Monster;
+	TArray<TSubclassOf<AActor>> BP_Monster;
 
 	UPROPERTY(EditDefaultsOnly, Category="Blueprint", DisplayName="Bullets") // 003
-	TArray<UBlueprint*> BP_Bullet;
+	TArray<TSubclassOf<AActor>> BP_Bullet;
 
 	UPROPERTY(EditDefaultsOnly, Category="Blueprint", DisplayName="Dynamic Object") // 004
-	TArray<UBlueprint*> BP_DyObj;
+	TArray<TSubclassOf<AActor>> BP_DyObj;
 
 	UPROPERTY(EditDefaultsOnly, Category="Blueprint", DisplayName="Passive Object") // 005
-	TArray<UBlueprint*> BP_PasObj;
+	TArray<TSubclassOf<AActor>> BP_PasObj;
 
 	UPROPERTY()
 	FString path;

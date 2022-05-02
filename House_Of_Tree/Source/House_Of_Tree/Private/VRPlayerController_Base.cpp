@@ -31,6 +31,11 @@ void AVRPlayerController_Base::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Get GameInstance Error!"));
 	}
+
+// 	PutObject(100, 100002,
+// 		FVector(-590.000000,-880.000000,85.998222),
+// 		FRotator(0, 0, 0),
+// 		FVector(1, 1, 1));
 }
 
 void AVRPlayerController_Base::Tick(float DeltaSeconds)
@@ -112,7 +117,7 @@ void AVRPlayerController_Base::SendPlayerData()
 void AVRPlayerController_Base::ProcessPacket()
 {
 	// 버퍼사이즈 보다 큰 패킷덩어리가 왔을때 터지는거 막아야 함.
-	char data[1024] = {};
+	char data[10000] = {};
 	char* p = data;
 
 	int dataSize = bufferSize.load();
@@ -206,7 +211,7 @@ void AVRPlayerController_Base::ProcessPacket()
 		case SC_PACKET::SC_PLAYER_DATA:
 			{
 				sc_player_data_packet* packet = reinterpret_cast<sc_player_data_packet*>(p);
-				UE_LOG(LogTemp, Warning, TEXT("SC_PLAYER_DATA %d"), packet->id);
+				UE_LOG(LogTemp, Warning, TEXT("PlayerID %d SC_PLAYER_DATA %d"), playerID, packet->id);
 
 				// 자신의 캐릭터의 정보거나 잘못된 id라면 취소
 				if (packet->id == playerID || actorList.Contains(packet->id) == false)
@@ -229,7 +234,7 @@ void AVRPlayerController_Base::ProcessPacket()
 				rotation.Yaw = static_cast<float>(packet->yaw) / 100;
 				rotation.Roll = static_cast<float>(packet->roll) / 100;
 
-				otherPlayer->SetActorLocationAndRotation(location, rotation);
+				otherPlayer->SetLocationAndRotation(location, rotation.Yaw);
 
 				FVector lhLocation, rhLocation;
 				FRotator lhRotation, rhRotation;
