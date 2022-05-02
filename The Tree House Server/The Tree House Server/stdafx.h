@@ -17,4 +17,4 @@ const unsigned int  WORLD_HEIGHT = 400;
 const unsigned int  WORLD_WIDTH = 400;
 const unsigned char  MAX_NAME_SIZE = 20;
 
-static concurrency::concurrent_priority_queue<cTimerEvent> g_timer_queue;
+static concurrency::concurrent_priority_queue<cTimerEvent*> g_timer_queue;

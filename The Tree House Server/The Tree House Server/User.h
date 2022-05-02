@@ -50,6 +50,6 @@ public:
 
 private:
 	SOCKET             m_socket;
-	CEXP_OVER          m_recv_over;
+	cExpOver          m_recv_over;
 	unsigned short 	 m_prev_size;
 };

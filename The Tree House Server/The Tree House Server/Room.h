@@ -21,9 +21,9 @@ class cRoom
 
 public:
 	cRoom() {};
-	cRoom(unsigned int _id, room_state::eSTATE _state, const unsigned int _host_id) :
+	cRoom(unsigned int _id, room_state::eSTATE _state, cUser* _user) :
 		m_id(_id), m_state(_state) {
-		m_user_id[user_type::HOST] = _host_id;
+		m_users[user_type::HOST] = _user;
 	};
 	~cRoom() {};
 
@@ -32,8 +32,9 @@ public:
 
 	void UserLoadingComplete(const unsigned int _user_id);
 	void SendOtherPlayerTransform(const unsigned int _user_id);
+	void SendPlayerData();
 	void SendAllObjectData();
-	void ShootBullet(const unsigned int& _user_id, iVector3 _source_position, sRotation3 _rotation);
+	void ShootBullet(cUser* _user, iVector3 _source_position, sRotation3 _rotation);
 
 	void Broadcast(int _size, void* _mess);
 
@@ -47,8 +48,8 @@ protected:
 	CRITICAL_SECTION    m_state_cs;
 
 public:
-	unsigned int        m_user_id[2] = { MAX_USER,MAX_USER };
-	//cUser*              m_users[2];
+	//unsigned int        m_user_id[2] = { MAX_USER,MAX_USER };
+	cUser* m_users[2] = { nullptr,nullptr };
 
 	unordered_map <unsigned int, cGameObject*> m_game_objects;
 

@@ -5,7 +5,7 @@
 using namespace std;
 using namespace chrono;
 
-enum EVENT_TYPE { NONE = 0, EV_SEND_WORLD_DATA };
+enum EVENT_TYPE { NONE = 0, EV_SEND_PLAYER_DATA };
 
 class cTimerEvent
 {
@@ -20,7 +20,7 @@ public:
 		return (m_excute_time > _Left.m_excute_time);
 	}
 
-	public :
+public:
 	unsigned int m_room_id;
 	unsigned int m_obj_id;
 	high_resolution_clock::time_point m_excute_time;

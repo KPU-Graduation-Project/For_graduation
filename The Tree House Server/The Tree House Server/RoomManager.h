@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Character.h"
 #include "Bullet.h"
+#include "User.h"
 
 class cRoom;
 
@@ -19,8 +20,8 @@ public:
 
 	void Init();
 	void InitRooms();
-	unsigned int CreateRoom(const unsigned int _user_id);
-	bool JoinRoom(const unsigned int _user_id, const unsigned int _room_id);
+	unsigned int CreateRoom(cUser* _user);
+	bool JoinRoom(cUser* _user, const unsigned int _room_id);
 
 public:
 	static unordered_map<unsigned int, cRoom*> m_rooms;
@@ -32,3 +33,5 @@ protected:
 private:
 	
 };
+
+extern cRoomManager g_room_manager;

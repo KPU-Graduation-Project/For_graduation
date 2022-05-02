@@ -4,20 +4,20 @@
 #include "protocol.h"
 #include <map>
 
-enum OP_TYPE { OP_RECV, OP_SEND, OP_ACCEPT,OP_SEND_WORLD_DATA };
+enum OP_TYPE { OP_RECV, OP_SEND, OP_ACCEPT,OP_SEND_PLAYER_DATA };
 
-class CEXP_OVER {
+class cExpOver {
 public:
 	WSAOVERLAPPED	m_wsa_over;
 	OP_TYPE			m_comp_op;
 	WSABUF			m_wsa_buf;
 	unsigned char	m_net_buf[BUFSIZE];
 public:
-	CEXP_OVER(OP_TYPE comp_op, char num_bytes, void* mess);
+	cExpOver(OP_TYPE comp_op, char num_bytes, void* mess);
 
-	CEXP_OVER(OP_TYPE comp_op);
+	cExpOver(OP_TYPE comp_op);
 
-	CEXP_OVER();
+	cExpOver();
 
-	~CEXP_OVER();
+	~cExpOver();
 };

@@ -3,7 +3,7 @@
 #include "RoomManager.h"
 #include "Room.h"
 #include "UserManager.h"
-#include "User.h"
+
 
 
 cRoomManager g_room_manager;
@@ -30,7 +30,7 @@ void cRoomManager::InitRooms()
 };
 
 //success: return room_id / fail: return MAX_ROOM 
-unsigned int cRoomManager::CreateRoom(const unsigned int _user_id)
+unsigned int cRoomManager::CreateRoom(cUser* _user)
 {
 	static std::atomic<unsigned int> last_id=0;
 
@@ -38,22 +38,22 @@ unsigned int cRoomManager::CreateRoom(const unsigned int _user_id)
 	{
 		unsigned short new_id = last_id++;
 
-		m_rooms.emplace(new_id,new cRoom( new_id, room_state::IN_ROBBY_CREATED, _user_id));
+		m_rooms.emplace(new_id,new cRoom( new_id, room_state::IN_ROBBY_CREATED, _user));
 
-		cUserManager::m_users[_user_id]->SetRoomID(new_id);
-		cUserManager::m_users[_user_id]->m_is_ready = false;
-		cUserManager::m_users[_user_id]->m_selected_character = 0;
+		_user->SetRoomID(new_id);
+		_user->m_is_ready = false;
+		_user->m_selected_character = 0;
 
-		cout << "Room [ " << new_id << " ] is created by User [ " << _user_id << " ]\n";
+		cout << "Room [ " << new_id << " ] is created by User [ " << _user->GetID() << " ]\n";
 		return new_id;
 	}
 
-	cout << "Failed to create new room(MAX_ROOM), by user [ " << _user_id << " ]\n";
+	cout << "Failed to create new room(MAX_ROOM), by user [ " << _user->GetID() << " ]\n";
 	return MAX_ROOM;
 }
 
 //success: return true / fail: return false
-bool cRoomManager::JoinRoom(const unsigned int _user_id, const unsigned int _room_id)
+bool cRoomManager::JoinRoom(cUser* _user, const unsigned int _room_id)
 {
 	//data race 위험 (스테이트 락 직전에 방 파괴) -> 컨테이너 락 등 방법 강구해야함
 	if (m_rooms.count(_room_id) != 0)
@@ -64,19 +64,19 @@ bool cRoomManager::JoinRoom(const unsigned int _user_id, const unsigned int _roo
 			m_rooms[_room_id]->m_state = room_state::IN_ROBBY_FULLED;
 			m_rooms[_room_id]->StateUnlock();
 
-			m_rooms[_room_id]->m_user_id[user_type::GUEST] = _user_id;
-			cUserManager::m_users[_user_id]->m_is_ready = false;
-			cUserManager::m_users[_user_id]->SetRoomID(_room_id);
-			cUserManager::m_users[_user_id]->m_selected_character = 1;
+			m_rooms[_room_id]->m_users[user_type::GUEST] = _user;
+			_user->m_is_ready = false;
+			_user->SetRoomID(_room_id);
+			_user->m_selected_character = 1;
 
 			// 로비 생성 전까지는 READY_GAME 패킷 안받고 바로 시작
 			m_rooms[_room_id]->StartGame();
 
-			cout << "User [ " << _user_id << " ] join in Room [ " << (int)_room_id << " ] \n";
+			cout << "User [ " << _user->GetID() << " ] join in Room [ " << (int)_room_id << " ] \n";
 
 			return true;
 		}
-		cout << "User [ " << _user_id << " ] failed to join in Room [ " << (int)_room_id << " ] \n";
+		cout << "User [ " << _user->GetID() << " ] failed to join in Room [ " << (int)_room_id << " ] \n";
 		return false;
 
 	}

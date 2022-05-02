@@ -67,7 +67,7 @@ void cUser::Recv()
 }
 void cUser::Send(int _size, void* _mess)
 {
-	CEXP_OVER* ex_over = new CEXP_OVER(OP_SEND, _size, _mess);
+	cExpOver* ex_over = new cExpOver(OP_SEND, _size, _mess);
 	int ret = WSASend(m_socket, &ex_over->m_wsa_buf, 1, 0, 0, &ex_over->m_wsa_over, NULL);
 
 	/*

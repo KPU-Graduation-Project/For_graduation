@@ -24,6 +24,6 @@ public:
 	HANDLE m_h_IOCP;
 	SOCKET m_listen_socket;
 	SOCKET m_client_socket;
-	CEXP_OVER m_accept_over;
+	cExpOver m_accept_over;
 
 };
