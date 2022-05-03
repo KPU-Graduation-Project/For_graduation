@@ -52,6 +52,6 @@ public:
 	FTransform GetLHTransform() const {return MotionController_L->GetComponentTransform();}
 
 	void SetLocationAndRotation(const FVector &location, const float &yaw);
-	void SetHandLocationAndRotation(const FVector &locationLH, const FRotator &rotationLH, const FVector &locationRH, const FRotator &rotationRH);
+	void SetHandLocationAndRotation(const FVector &lhLocation, const FRotator &lhRotation, const FVector &rhLocationRH, const FRotator &rhRotation);
 	//void SetHeadRotation();
 };

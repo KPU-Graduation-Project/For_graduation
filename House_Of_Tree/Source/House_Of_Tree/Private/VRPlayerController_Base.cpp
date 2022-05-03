@@ -3,7 +3,6 @@
 
 #include "VRPlayerController_Base.h"
 
-#include <queue>
 
 #include "VRCharacter_Base.h"
 #include "EngineUtils.h"
@@ -27,16 +26,16 @@ void AVRPlayerController_Base::BeginPlay()
 		gameInst->InitSocket();
 		gameInst->SetInfo();
 	}
-	
+
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Get GameInstance Error!"));
 	}
 
-	PutObject(100, 100002,
-		FVector(-590.000000,-880.000000,85.998222),
-		FRotator(0, 0, 0),
-		FVector(1, 1, 1));
+// 	PutObject(100, 100002,
+// 		FVector(-590.000000,-880.000000,85.998222),
+// 		FRotator(0, 0, 0),
+// 		FVector(1, 1, 1));
 }
 
 void AVRPlayerController_Base::Tick(float DeltaSeconds)
@@ -45,9 +44,6 @@ void AVRPlayerController_Base::Tick(float DeltaSeconds)
 
 	ProcessPacket();
 	SendPlayerData();
-
-	AVRCharacter_Base* otherPlayer = Cast<AVRCharacter_Base>(actorList[100]);
-	//therPlayer->SetHandLocationAndRotation(FVector())
 }
 
 void AVRPlayerController_Base::SendPlayerData()
@@ -101,7 +97,7 @@ void AVRPlayerController_Base::SendPlayerData()
 		sendPacket.rh_roll = rat.Roll * 100;
 
 		// LH Transform
-		trans = vrPlayer->GetRHTransform();
+		trans = vrPlayer->GetLHTransform();
 		pos = trans.GetLocation();
 		rat = trans.GetRotation().Rotator();
 
@@ -121,7 +117,7 @@ void AVRPlayerController_Base::SendPlayerData()
 void AVRPlayerController_Base::ProcessPacket()
 {
 	// 버퍼사이즈 보다 큰 패킷덩어리가 왔을때 터지는거 막아야 함.
-	char data[1024] = {};
+	char data[10000] = {};
 	char* p = data;
 
 	int dataSize = bufferSize.load();
@@ -142,13 +138,13 @@ void AVRPlayerController_Base::ProcessPacket()
 		switch (packetType)
 		{
 		case SC_PACKET::SC_LOGINOK:
-		{
-			UE_LOG(LogTemp, Warning, TEXT("loginOK"));
-			// 플레이어 입력 패킷인데 일단 비워두기
-			sc_loginok_packet* packet = reinterpret_cast<sc_loginok_packet*>(p);
-			playerID = packet->id;
-		}
-		break;
+			{
+				UE_LOG(LogTemp, Warning, TEXT("loginOK"));
+				// 플레이어 입력 패킷인데 일단 비워두기
+				sc_loginok_packet* packet = reinterpret_cast<sc_loginok_packet*>(p);
+				playerID = packet->id;
+			}
+			break;
 
 		case SC_PACKET::SC_CREATE_ROOM:
 			break;
@@ -157,7 +153,7 @@ void AVRPlayerController_Base::ProcessPacket()
 		case SC_PACKET::SC_USER_JOIN_ROOM:
 			break;
 
-			// SC 어디감;
+		// SC 어디감;
 		case SC_PACKET::USER_EXIT_ROOM:
 			break;
 
@@ -170,7 +166,7 @@ void AVRPlayerController_Base::ProcessPacket()
 		case SC_PACKET::SC_START_GAME:
 			UE_LOG(LogTemp, Warning, TEXT("SC_START_GAME"));
 
-			// 로비에서 인게임 로비 캠으로 전환
+		// 로비에서 인게임 로비 캠으로 전환
 
 			gameInst->GameStart();
 			break;
@@ -182,40 +178,84 @@ void AVRPlayerController_Base::ProcessPacket()
 			break;
 
 		case SC_PACKET::SC_PUT_OBJECT:
-		{
-			UE_LOG(LogTemp, Warning, TEXT("putobject"));
-			sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(p);
-			// PutObject(packet->id, packet->object_type,
-			// 	FVector(packet->x/100, packet->y/100, packet->z/100),
-			// 	FRotator(packet->pitch/100, packet->yaw/100, packet->roll/100),
-			// 	FVector(packet->scale_x / 100, packet->scale_y / 100, packet->scale_z / 100));
+			{
+				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(p);
+				// PutObject(packet->id, packet->object_type,
+				// 	FVector(packet->x/100, packet->y/100, packet->z/100),
+				// 	FRotator(packet->pitch/100, packet->yaw/100, packet->roll/100),
+				// 	FVector(packet->scale_x / 100, packet->scale_y / 100, packet->scale_z / 100));
+				UE_LOG(LogTemp, Warning, TEXT("putobject %s"), *gameInst->GetActor(packet->object_type)->GetName());
 
-			PutObject(packet->id, packet->object_type,
-				FVector(packet->x / 100, packet->y / 100, packet->z / 100),
-				FRotator(packet->pitch / 100, packet->yaw / 100, packet->roll / 100),
-				FVector(packet->scale_x, packet->scale_y, packet->scale_z));
-		}
-		break;
+				FVector location, scale;
+				FRotator rotation;
+
+				location.X = static_cast<float>(packet->x) / 100;
+				location.Y = static_cast<float>(packet->y) / 100;
+				location.Z = static_cast<float>(packet->z) / 100;
+
+				rotation.Pitch = static_cast<float>(packet->pitch) / 100;
+				rotation.Yaw = static_cast<float>(packet->yaw) / 100;
+				rotation.Roll = static_cast<float>(packet->roll) / 100;
+
+				scale.X = static_cast<float>(packet->scale_x) / 100;
+				scale.Y = static_cast<float>(packet->scale_y) / 100;
+				scale.Z = static_cast<float>(packet->scale_z) / 100;
+				
+				PutObject(packet->id, packet->object_type, location, rotation, scale);
+			}
+			break;
 
 		case SC_PACKET::SC_REMOVE_OBJECT:
 			break;
 
 		case SC_PACKET::SC_PLAYER_DATA:
-		{
-			UE_LOG(LogTemp, Warning, TEXT("SC_PLAYER_DATA"));
-			sc_player_data_packet* packet = reinterpret_cast<sc_player_data_packet*>(p);
+			{
+				sc_player_data_packet* packet = reinterpret_cast<sc_player_data_packet*>(p);
+				UE_LOG(LogTemp, Warning, TEXT("PlayerID %d SC_PLAYER_DATA %d"), playerID, packet->id);
 
-			if (packet->id == playerID) return;
-			/*AVRCharacter_Base* otherPlayer = Cast<AVRCharacter_Base>(actorList[packet->id]);
-			otherPlayer->SetActorLocation(FVector(packet->x / 100, packet->y / 100, packet->z / 100));
-			otherPlayer->SetActorRotation(FRotator(packet->pitch / 100, packet->yaw / 100, packet->roll / 100));
-			otherPlayer->VR_Camera->SetRelativeRotation(FRotator(packet->head_pitch / 100, packet->head_yaw / 100, packet->head_roll / 100).Quaternion());
-			otherPlayer->MotionController_L->SetWorldLocationAndRotation(FVector(packet->lh_x / 100, packet->lh_y / 100, packet->lh_z / 100),
-				FRotator(packet->lh_pitch / 100, packet->lh_yaw / 100, packet->lh_roll / 100).Quaternion());
-			otherPlayer->MotionController_R->SetWorldLocationAndRotation(FVector(packet->rh_x / 100, packet->rh_y / 100, packet->rh_z / 100),
-				FRotator(packet->rh_pitch / 100, packet->rh_yaw / 100, packet->rh_roll / 100).Quaternion());*/
-			break;
-		}
+				// 자신의 캐릭터의 정보거나 잘못된 id라면 취소
+				if (packet->id == playerID || actorList.Contains(packet->id) == false)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("It's you"));
+
+					return;
+				}
+				
+				AVRCharacter_Base* otherPlayer = Cast<AVRCharacter_Base>(actorList[packet->id]);
+
+				FVector location;
+				FRotator rotation;
+
+				location.X = static_cast<float>(packet->x) / 100;
+				location.Y = static_cast<float>(packet->y) / 100;
+				location.Z = static_cast<float>(packet->z) / 100;
+
+				rotation.Pitch = static_cast<float>(packet->pitch) / 100;
+				rotation.Yaw = static_cast<float>(packet->yaw) / 100;
+				rotation.Roll = static_cast<float>(packet->roll) / 100;
+
+				otherPlayer->SetLocationAndRotation(location, rotation.Yaw);
+
+				FVector lhLocation, rhLocation;
+				FRotator lhRotation, rhRotation;
+
+				lhLocation.X = static_cast<float>(packet->lh_x) / 100;
+				lhLocation.Y = static_cast<float>(packet->lh_y) / 100;
+				lhLocation.Z = static_cast<float>(packet->lh_z) / 100;
+				lhRotation.Pitch = static_cast<float>(packet->lh_pitch) / 100;
+				lhRotation.Yaw = static_cast<float>(packet->lh_yaw) / 100;
+				lhRotation.Roll = static_cast<float>(packet->lh_roll) / 100;
+				
+				rhLocation.X = static_cast<float>(packet->rh_x) / 100;
+				rhLocation.Y = static_cast<float>(packet->rh_y) / 100;
+				rhLocation.Z = static_cast<float>(packet->rh_z) / 100;
+				rhRotation.Pitch = static_cast<float>(packet->rh_pitch) / 100;
+				rhRotation.Yaw = static_cast<float>(packet->rh_yaw) / 100;
+				rhRotation.Roll = static_cast<float>(packet->rh_roll) / 100;
+
+				otherPlayer->SetHandLocationAndRotation(lhLocation, lhRotation, rhLocation, rhRotation);
+				break;
+			}
 		default:
 			break;
 		}
@@ -228,14 +268,10 @@ void AVRPlayerController_Base::ProcessPacket()
 void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale)
 {
 	UE_LOG(LogTemp, Error, TEXT("Actor ID: %d, ObjectID: %d"), actorID, objectID);
-	UE_LOG(LogTemp, Error, TEXT("Location: %lf %lf %lf, Rotation: %lf, %lf, %lf"), location.X, location.Y, location.Z, rotation.Pitch, rotation.Yaw, rotation.Roll);
-	FTransform transform;
-	transform.SetLocation(location);
-	transform.SetRotation(rotation.Quaternion());
-	transform.SetScale3D(scale);
 	FActorSpawnParameters SpawnParams;
-	
-	actorList.Add(actorID, GetWorld()->SpawnActor<AActor>(gameInst->GetActor(objectID), transform, SpawnParams));
+
+	actorList.Add(actorID, GetWorld()->SpawnActor<AActor>(gameInst->GetActor(objectID), location, rotation, SpawnParams));
+	actorList[actorID]->SetActorScale3D(scale);
 
 	if (playerID == actorID)
 	{
