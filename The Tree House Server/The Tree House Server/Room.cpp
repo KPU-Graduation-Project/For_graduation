@@ -8,7 +8,10 @@
 
 int cRoom::m_last_object_id = 0;
 
+void cRoom::Init()
+{
 
+}
 
 void cRoom::InitObjects()
 {
@@ -26,7 +29,7 @@ void cRoom::StartGame()
 	{
 		cCharacter* character = cRoomManager::m_character_pool.PopObject();
 		character->SetScale({ 100,100,100 });
-		character->SetCharacterTransform({ -75000,19000,9200 }, { 0,0,0},
+		character->SetCharacterTransform({ -68000,19000, 9200 }, { 0,0,0},
 			{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
 		character->m_object_type = 100001;
 		character->m_id = m_users[user_type::HOST]->GetID();
@@ -57,7 +60,7 @@ void cRoom::StartGame()
 		cCharacter* character = cRoomManager::m_character_pool.PopObject();
 		character->SetScale({ 100,100,100 });
 		//character->SetCharacterTransform({ 1712,21700,9200 }, { 0,0,-9000 },			{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
-		character->SetCharacterTransform({ -60000,19000,9200 }, { 0,-18000,0 },
+		character->SetCharacterTransform({ -68000,- 18000 ,9200 }, { 0,-18000,0 },
 			{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
 		character->m_object_type = 100002;
 		character->m_id = m_users[user_type::GUEST]->GetID();
@@ -127,64 +130,6 @@ void cRoom::UserLoadingComplete(const unsigned int _user_id)
 
 }
 
-void cRoom::SendOtherPlayerTransform(const unsigned int _user_id)
-{
-	if (m_state == room_state::INGAME)
-	{
-		//unsigned int target_user_id = -1;
-		//if (_user_id == m_user_id[user_type::HOST])
-		//	target_user_id = m_user_id[user_type::GUEST];
-		//else
-		//	target_user_id = m_user_id[user_type::HOST];
-
-		//	/*cout << "send - user" << i << " position " << g_temp_position[i].x << "," << g_temp_position[i].y << ", " << g_temp_position[i].z
-		//		<< " // rotation " << g_temp_rotation[i].x << "," << g_temp_rotation[i].y << ", " << g_temp_rotation[i].z << endl;*/
-
-		//	sc_player_data_packet packet;
-
-		//	packet.size = sizeof(sc_player_data_packet);
-		//	packet.type = SC_PACKET::SC_PLAYER_DATA;
-		//	packet.id = target_user_id;
-
-		//	cCharacter* character = cUserManager::m_users[target_user_id]->m_character;
-
-		//	packet.x = character->m_transform.position.x;
-		//	packet.y = character->m_transform.position.y;
-		//	packet.z = character->m_transform.position.z;
-		//	packet.pitch = character->m_transform.rotation.pitch;
-		//	packet.yaw = character->m_transform.rotation.yaw;
-		//	packet.roll = character->m_transform.rotation.roll;
-
-		//	packet.head_x = character->m_head_position.x;
-		//	packet.head_y = character->m_head_position.y;
-		//	packet.head_z = character->m_head_position.z;
-		//	packet.head_pitch = character->m_head_rotation.pitch;
-		//	packet.head_yaw = character->m_head_rotation.yaw;
-		//	packet.head_roll = character->m_head_rotation.roll;
-
-		//	packet.rh_x = character->m_rh_position.x;
-		//	packet.rh_y = character->m_rh_position.y;
-		//	packet.rh_z = character->m_rh_position.z;
-		//	packet.rh_pitch = character->m_rh_rotation.pitch;
-		//	packet.rh_yaw = character->m_rh_rotation.yaw;
-		//	packet.rh_roll = character->m_rh_rotation.roll;
-
-		//	packet.lh_x = character->m_lh_position.x;
-		//	packet.lh_y = character->m_lh_position.y;
-		//	packet.lh_z = character->m_lh_position.z;
-		//	packet.lh_pitch = character->m_lh_rotation.pitch;
-		//	packet.lh_yaw = character->m_lh_rotation.yaw;
-		//	packet.lh_roll = character->m_lh_rotation.roll;
-
-		//	cout << "SC_PLAYER_DATA to User [ " << _user_id << " ] In Room [ "<<(int)m_id<<" ] // User [ "<< target_user_id
-		//		<<" ] position " << packet.x << "," << packet.y << ", " << packet.z
-		//		<< " // rotation " << packet.pitch << ", " << packet.yaw << "," << packet.roll  << endl;
-		//	
-		//	cUserManager::m_users[_user_id]->Send(sizeof(packet), &packet);
-	
-	}
-}
-
 void cRoom::SendPlayerData()
 {
 	if (m_state == room_state::INGAME)
@@ -235,6 +180,7 @@ void cRoom::SendPlayerData()
 				<< " ] position " << packet.x << "," << packet.y << ", " << packet.z
 				<< " // rotation " << packet.pitch << ", " << packet.yaw << "," << packet.roll << endl;
 
+			cout << "size: " << sizeof(packet) << endl;
 			m_users[i]->Send(sizeof(packet), &packet);
 		}
 	}
@@ -267,7 +213,7 @@ void cRoom::SendAllObjectData()
 
 }
 
-void cRoom::ShootBullet(cUser* _user, iVector3 _source_position, sRotation3 _rotation)
+void cRoom::ShootBullet(UserRef _user, iVector3 _source_position, sRotation3 _rotation)
 {
 	sc_shoot_bullet_packet packet;
 	packet.type = SC_PACKET::SC_SHOOT_BULLET;

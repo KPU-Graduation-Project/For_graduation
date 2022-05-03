@@ -14,7 +14,7 @@ public:
 	unsigned int GetNewID();
 
 public: 
-	static unordered_map <unsigned int, cUser*> m_users;
+	static unordered_map <unsigned int, UserRef> m_users;
 
 private:
 	

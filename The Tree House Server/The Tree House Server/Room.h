@@ -2,7 +2,7 @@
 #include "RoomManager.h"
 #include <unordered_map>
 #include <atomic>
-//#include <User.h>
+#include "User.h"
 
 namespace room_state
 {
@@ -21,20 +21,23 @@ class cRoom
 
 public:
 	cRoom() {};
-	cRoom(unsigned int _id, room_state::eSTATE _state, cUser* _user) :
-		m_id(_id), m_state(_state) {
+	cRoom(unsigned int _id, room_state::eSTATE _state, UserRef _user)
+	{
+		m_id = _id;
+		m_state = _state;
 		m_users[user_type::HOST] = _user;
 	};
 	~cRoom() {};
+
+	void Init();
 
 	void InitObjects();
 	void StartGame();
 
 	void UserLoadingComplete(const unsigned int _user_id);
-	void SendOtherPlayerTransform(const unsigned int _user_id);
 	void SendPlayerData();
 	void SendAllObjectData();
-	void ShootBullet(cUser* _user, iVector3 _source_position, sRotation3 _rotation);
+	void ShootBullet(UserRef _user, iVector3 _source_position, sRotation3 _rotation);
 
 	void Broadcast(int _size, void* _mess);
 
@@ -49,7 +52,7 @@ protected:
 
 public:
 	//unsigned int        m_user_id[2] = { MAX_USER,MAX_USER };
-	cUser* m_users[2] = { nullptr,nullptr };
+	UserRef m_users[2] = { nullptr,nullptr };
 
 	unordered_map <unsigned int, cGameObject*> m_game_objects;
 

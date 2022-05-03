@@ -7,7 +7,7 @@
 #include "Bullet.h"
 #include "User.h"
 
-class cRoom;
+
 
 class cRoomManager
 {
@@ -20,11 +20,11 @@ public:
 
 	void Init();
 	void InitRooms();
-	unsigned int CreateRoom(cUser* _user);
-	bool JoinRoom(cUser* _user, const unsigned int _room_id);
+	unsigned int CreateRoom(UserRef _user);
+	bool JoinRoom(UserRef _user, const unsigned int _room_id);
 
 public:
-	static unordered_map<unsigned int, cRoom*> m_rooms;
+	static unordered_map<unsigned int, RoomRef> m_rooms;
 
 protected:
 	static cObjectPool<cGameObject>       m_object_pool;
@@ -34,4 +34,3 @@ private:
 	
 };
 
-extern cRoomManager g_room_manager;

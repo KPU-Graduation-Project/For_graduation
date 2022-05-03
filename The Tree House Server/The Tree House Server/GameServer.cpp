@@ -45,7 +45,7 @@ void cGameServer::TimerThread()
 	//ÃÖÃÊ 1È¸
 	cTimerEvent* new_event = new cTimerEvent;
 	new_event->m_event_type = EVENT_TYPE::EV_SEND_PLAYER_DATA;
-	new_event->m_excute_time = chrono::high_resolution_clock::now() + chrono::milliseconds(1000 / 60);
+	new_event->m_excute_time = chrono::high_resolution_clock::now() + chrono::milliseconds(1000 / 30);
 	g_timer_queue.push(new_event);
 
 	while(true)
@@ -157,7 +157,7 @@ void cGameServer::WorkerThread()
 					}
 		case OP_SEND_PLAYER_DATA:
 		{
-			for (const auto& room : g_room_manager.m_rooms)
+			for (const auto& room : g_room_manager->m_rooms)
 			{
 				room.second->SendPlayerData();
 			}
@@ -180,6 +180,9 @@ void cGameServer::Accept(cExpOver* exp_over)
 	if (new_id == MAX_USER) {/*server full*/}
 	else
 	{
+		m_user_manager->m_users.emplace(new_id, new cUser(new_id));
+		m_user_manager->m_users[new_id]->SetState(user_state::ACCEPTED);
+
 		SOCKET c_socket = *(reinterpret_cast<SOCKET*>(exp_over->m_net_buf));
 		m_user_manager->m_users[new_id]->SetSocket(c_socket);
 
@@ -208,12 +211,12 @@ void cGameServer::Accept(cExpOver* exp_over)
 		if (last_room_id == MAX_ROOM)
 		{
 
-			last_room_id = g_room_manager.CreateRoom(m_user_manager->m_users[new_id]);
+			last_room_id = g_room_manager->CreateRoom(m_user_manager->m_users[new_id]);
 			cout << "last room id:" << last_room_id << "\n";
 		}
 		else
 		{
-			bool ret = g_room_manager.JoinRoom(m_user_manager->m_users[new_id], last_room_id);
+			bool ret = g_room_manager->JoinRoom(m_user_manager->m_users[new_id], last_room_id);
 			cout << "last room id:" << last_room_id << "\n";
 			if (ret == true)
 				last_room_id = MAX_ROOM;
@@ -279,7 +282,7 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 	{
 		cs_create_room_packet* packet = reinterpret_cast<cs_create_room_packet*>(_p);
 		
-		unsigned int new_room_id = g_room_manager.CreateRoom(m_user_manager->m_users[_user_id]);
+		unsigned int new_room_id = g_room_manager->CreateRoom(m_user_manager->m_users[_user_id]);
 		if (new_room_id != MAX_USER)
 		{
 			sc_create_room_packet send_packet;
@@ -299,12 +302,12 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 	{
 		cs_join_room_packet* packet = reinterpret_cast<cs_join_room_packet*>(_p);
 
-		bool ret = g_room_manager.JoinRoom(m_user_manager->m_users[_user_id], packet->room_id);
+		bool ret = g_room_manager->JoinRoom(m_user_manager->m_users[_user_id], packet->room_id);
 		if (ret)
 		{
 			// for reduce cache miss after
 		
-			unsigned int host_user_id= g_room_manager.m_rooms[packet->room_id]->m_users[user_type::HOST]->GetID();
+			unsigned int host_user_id= g_room_manager->m_rooms[packet->room_id]->m_users[user_type::HOST]->GetID();
 	
 			{
 				sc_join_room_packet send_packet;
@@ -404,7 +407,7 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 			send_packet.is_ready = packet->is_ready;
 
 
-			g_room_manager.m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]
+			m_user_manager->m_users[_user_id]->GetRoom()
 				->Broadcast(sizeof(sc_user_ready_game_packet), &send_packet);
 		}
 		{
@@ -426,7 +429,7 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 			send_packet.selected_character = packet->selected_character;
 
 
-			g_room_manager.m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]
+			m_user_manager->m_users[_user_id]->GetRoom()
 				->Broadcast(sizeof(sc_user_change_selected_character), &send_packet);
 		}
 		break;
@@ -473,7 +476,7 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 		cs_shoot_bullet_packet* packet = reinterpret_cast<cs_shoot_bullet_packet*>(_p);
 		
 	
-		g_room_manager.m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->ShootBullet(m_user_manager->m_users[_user_id], { packet->x, packet->y, packet->z }, { packet->pitch, packet->yaw, packet->roll });
+		m_user_manager->m_users[_user_id]->GetRoom()->ShootBullet(m_user_manager->m_users[_user_id], { packet->x, packet->y, packet->z }, { packet->pitch, packet->yaw, packet->roll });
 
 		break;
 	}
@@ -486,7 +489,6 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 
 	}
 }
-
 
 cGameServer::cGameServer() { };
 cGameServer::~cGameServer() {};

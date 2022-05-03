@@ -4,42 +4,25 @@
 
 cUser::cUser()
 {
-	m_id = MAX_USER;
-	m_room_id = MAX_ROOM;
-	m_prev_size = 0;
-	m_state = user_state::FREE;
-
-	m_recv_over.m_comp_op = OP_RECV;
-	m_recv_over.m_wsa_buf.buf = reinterpret_cast<char*>(m_recv_over.m_net_buf);
-	m_recv_over.m_wsa_buf.len = sizeof(m_recv_over.m_net_buf);
-	ZeroMemory(&m_recv_over.m_wsa_over, sizeof(m_recv_over.m_wsa_over));
+	this->Init();
 };
 
 cUser::cUser(unsigned int _id)
 {
-	m_id = _id;
-	m_room_id = MAX_ROOM;
-	m_prev_size = 0;
-	m_state = user_state::FREE;
-
-	m_recv_over.m_comp_op = OP_RECV;
-	m_recv_over.m_wsa_buf.buf = reinterpret_cast<char*>(m_recv_over.m_net_buf);
-	m_recv_over.m_wsa_buf.len = sizeof(m_recv_over.m_net_buf);
-	ZeroMemory(&m_recv_over.m_wsa_over, sizeof(m_recv_over.m_wsa_over));
+	m_id = _id;	
+	this->Init();
 };
 
 cUser::~cUser() { cout << "delete user" << endl; };
 
 
-void cUser::Init(const unsigned int& _id)
+void cUser::Init()
 {
-	m_id = _id;
-	m_room_id = MAX_ROOM;
-	m_prev_size = 0;
 	m_state = user_state::FREE;
+	m_character = nullptr;
+	m_room = nullptr;
 
-
-
+	m_prev_size = 0;
 	m_recv_over.m_comp_op = OP_RECV;
 	m_recv_over.m_wsa_buf.buf = reinterpret_cast<char*>(m_recv_over.m_net_buf);
 	m_recv_over.m_wsa_buf.len = sizeof(m_recv_over.m_net_buf);

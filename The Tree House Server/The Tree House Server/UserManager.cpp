@@ -4,7 +4,7 @@
 #include <MSWSock.h>
 #include "User.h"
 
- unordered_map <unsigned int, cUser*>cUserManager::m_users;
+ unordered_map <unsigned int, UserRef>cUserManager::m_users;
 
 
 void cUserManager::Init()
