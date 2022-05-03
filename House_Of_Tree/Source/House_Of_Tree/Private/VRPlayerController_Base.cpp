@@ -9,6 +9,7 @@
 #include "HoTGameInstance.h"
 #include "GameFramework/Character.h"
 #include "Protocol.h"	// 차후 경로 변경해야함
+#include "Misc/OutputDeviceNull.h"
 
 AVRPlayerController_Base::AVRPlayerController_Base()
 {
@@ -201,7 +202,7 @@ void AVRPlayerController_Base::ProcessPacket()
 				scale.Y = static_cast<float>(packet->scale_y) / 100;
 				scale.Z = static_cast<float>(packet->scale_z) / 100;
 				
-				PutObject(packet->id, packet->object_type, location, rotation, scale);
+				PutObject(packet->id, packet->object_type, location, rotation, scale, packet->mesh_id);
 			}
 			break;
 
@@ -265,13 +266,18 @@ void AVRPlayerController_Base::ProcessPacket()
 	}
 }
 
-void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale)
+void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID)
 {
 	UE_LOG(LogTemp, Error, TEXT("Actor ID: %d, ObjectID: %d"), actorID, objectID);
 	FActorSpawnParameters SpawnParams;
 
 	actorList.Add(actorID, GetWorld()->SpawnActor<AActor>(gameInst->GetActor(objectID), location, rotation, SpawnParams));
 	actorList[actorID]->SetActorScale3D(scale);
+
+	//char funcCallBuf[1024];
+	FOutputDeviceNull ar;
+	//_snprintf_s(funcCallBuf, sizeof(funcCallBuf), "%s %d", "SetMesh", meshID);
+	actorList[actorID]->CallFunctionByNameWithArguments(TEXT("SetMesh ") + meshID, ar, NULL, true);
 
 	if (playerID == actorID)
 	{

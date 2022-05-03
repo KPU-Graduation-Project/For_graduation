@@ -39,7 +39,6 @@ void UHoTGameInstance::SetInfo()
 {
 	// 블루 프린트 에셋을 로드해와서 저장
 	int key = 1, id = 1;
-	UE_LOG(LogTemp, Warning, TEXT("BP_CHAR %d"), BP_Char.Num());
 	for (const auto i : BP_Char)
 	{
 		bpSet.Add((id * 100000) + key, i.Get());
@@ -48,8 +47,6 @@ void UHoTGameInstance::SetInfo()
 
 	key = 1;
 	id++;
-	UE_LOG(LogTemp, Warning, TEXT("BP_Monster"));
-
 	for (const auto i : BP_Monster)
 	{
 		bpSet.Add((id * 100000) + key, i.Get());
@@ -58,7 +55,6 @@ void UHoTGameInstance::SetInfo()
 
 	key = 1;
 	id++;
-	UE_LOG(LogTemp, Warning, TEXT("BP_BULLET"));
 	for (const auto i : BP_Bullet)
 	{
 		bpSet.Add((id * 100000) + key, i.Get());
@@ -67,7 +63,6 @@ void UHoTGameInstance::SetInfo()
 
 	key = 1;
 	id++;
-	UE_LOG(LogTemp, Warning, TEXT("BP_DYOBJ"));
 	for (const auto i : BP_DyObj)
 	{
 		bpSet.Add((id * 100000) + key, i.Get());
@@ -76,14 +71,11 @@ void UHoTGameInstance::SetInfo()
 
 	key = 1;
 	id++;
-	UE_LOG(LogTemp, Warning, TEXT("BP_PasOBJ"));
 	for (const auto i : BP_PasObj)
 	{
 		bpSet.Add((id * 100000) + key, i.Get());
 		key++;
 	}
-	
-	UE_LOG(LogTemp, Warning, TEXT("Load BPs"));
 
 	if (makeIDList)
 	{
@@ -92,8 +84,8 @@ void UHoTGameInstance::SetInfo()
 		if (out.is_open())
 		{
 			// 좌표값들 반올림해서 출력
-			out << "[1][0][00100001][-680/189.999/92][0/0/-90][1/1/1]" << std::endl;
-			out << "[1][0][00100002][1712/216.999/92][0/0/-90][1/1/1]" << std::endl;
+			out << "[1][00100001][0][-680/189.999/92][0/0/-90][1/1/1]" << std::endl;
+			out << "[1][00100002][0][1712/216.999/92][0/0/-90][1/1/1]" << std::endl;
 			// FActorSpawnParameters SpawnParams;
 			// GetWorld()->SpawnActor<AActor>(, FVector(0, 0, 0), FRotator(0, 0,0), SpawnParams);
 
