@@ -43,7 +43,6 @@ void AWeaponMatchBullet::BeginPlay()
 	{
 		gameInst = Cast<UHoTGameInstance>(GetWorld()->GetGameInstance());
 	}
-	ShootBullet();
 	
 	Speed = ProjectileMovementComponent->InitialSpeed;
 }
@@ -58,11 +57,6 @@ void AWeaponMatchBullet::Tick(float DeltaTime)
 
 	ProjectileMovementComponent->SetVelocityInLocalSpace(FVector(Speed + Acceleration, 0, 0));
 	Speed = Speed + Acceleration;
-}
-
-void AWeaponMatchBullet::FireInDirection(const FVector& ShootDirection)
-{
-	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
 }
 
 void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
@@ -102,28 +96,5 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 
 			gameInst->SocketInstance->Send(packet.size, &packet);
 		}
-	}
-}
-
-void AWeaponMatchBullet::ShootBullet()
-{
-	if (gameInst->CheckSend())
-	{
-		cs_shoot_bullet_packet packet;
-		packet.type = CS_PACKET::CS_SHOOT_BULLET;
-		packet.size = sizeof(packet);
-
-		FVector location = GetTransform().GetLocation();
-		FRotator rotation = GetTransform().GetRotation().Rotator();
-		
-		packet.x = location.X * 100;
-		packet.y = location.Y * 100;
-		packet.z = location.Z * 100;
-
-		packet.pitch = rotation.Pitch * 100;
-		packet.yaw = rotation.Yaw * 100;
-		packet.roll = rotation.Roll * 100;
-
-		gameInst->SocketInstance->Send(packet.size, &packet);
 	}
 }

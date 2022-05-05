@@ -25,6 +25,6 @@ protected:
 	UHoTGameInstance *gameInst;
 
 public:	
-	//UFUNCTION(BlueprintCallable, Category="Network")
-	//void ShootBullet(FVector);
+	UFUNCTION(BlueprintCallable, Category="Network")
+	void ShootBullet(FVector location, FRotator rotation);
 };

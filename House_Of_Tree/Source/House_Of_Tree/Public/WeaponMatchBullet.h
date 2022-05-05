@@ -22,8 +22,6 @@ protected:
 	UPROPERTY()
 	class UHoTGameInstance *gameInst;
 
-	void ShootBullet();
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -33,9 +31,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category = Movement)
 	class UProjectileMovementComponent* ProjectileMovementComponent;
-
-	UFUNCTION(BlueprintCallable)
-	void FireInDirection(const FVector& ShootDirection);
 	
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);

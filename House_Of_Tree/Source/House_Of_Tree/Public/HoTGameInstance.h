@@ -30,7 +30,7 @@ public:
 	void SetInfo();
 	UClass* GetActor(int ObjectID) { return *bpSet.Find(ObjectID); }
 
-	UClass* GetBullet(int index) {return BP_Bullet.IsValidIndex(index)? BP_Bullet[index].Get() : nullptr;}
+	UClass* GetBullet(int index) {return BP_Bullet.IsValidIndex(index - 1)? BP_Bullet[index - 1].Get() : nullptr;}
 
 	ClientSocket* SocketInstance;
 
