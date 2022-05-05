@@ -279,6 +279,7 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 	//_snprintf_s(funcCallBuf, sizeof(funcCallBuf), "%s %d", "SetMesh", meshID);
 	actorList[actorID]->CallFunctionByNameWithArguments(TEXT("SetMesh ") + meshID, ar, NULL, true);
 
+	UE_LOG(LogTemp, Warning, TEXT("player ID: %d, actor ID: %d"), playerID, actorID);
 	if (playerID == actorID)
 	{
 		SetPlayerCharacter();
@@ -287,7 +288,7 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 
 void AVRPlayerController_Base::SetPlayerCharacter()
 {
-	Possess(Cast<APawn>(actorList[playerID]));
+	Possess(Cast<AVRCharacter_Base>(actorList[playerID]));
 	vrPlayer = Cast<AVRCharacter_Base>(GetCharacter());
 
 	gameInst->GameStart();
