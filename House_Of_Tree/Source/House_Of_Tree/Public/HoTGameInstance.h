@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <unordered_map>
-
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "ClientSocket.h"
@@ -30,7 +28,9 @@ public:
 	void InitSocket();
 
 	void SetInfo();
-	UClass* GetActor(int ObjectID);
+	UClass* GetActor(int ObjectID) { return *bpSet.Find(ObjectID); }
+
+	UClass* GetBullet(int index) {return BP_Bullet.IsValidIndex(index)? BP_Bullet[index].Get() : nullptr;}
 
 	ClientSocket* SocketInstance;
 
@@ -87,10 +87,11 @@ protected:
 
 	UPROPERTY()
 	bool allLoadComplete = false;
-	
+
 public:
 	void GameStart() { gameStart = true; }
 	void AllLoadComplete() { allLoadComplete = true; }
-
 	bool IsIngame() { return gameStart; };
+	
+	bool CheckSend() {return SocketInstance != nullptr && IsIngame(); }
 };

@@ -39,13 +39,13 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	TMap<int, AActor*> actorList;
-	
+
 	void SetPlayerCharacter();
-	
+
 	// Network system
 public:
 	Concurrency::concurrent_queue<char> buffer;
-	std::atomic<int> bufferSize {0};
+	std::atomic<int> bufferSize{0};
 
 protected:
 	void ProcessPacket();
@@ -58,4 +58,9 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	AVRCharacter_Base* GetVRPlayer() { return vrPlayer; }
+	void AddActorList(int key, AActor* actor) { actorList.Add(key, actor); }
+
+	AActor* GetActorList(int key) { return *actorList.Find(key); }
+	const int* GetActorKey(AActor* actor) { return actorList.FindKey(actor); }
 };

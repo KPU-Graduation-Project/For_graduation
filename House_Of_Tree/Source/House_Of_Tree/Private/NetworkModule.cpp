@@ -3,6 +3,7 @@
 
 #include "NetworkModule.h"
 #include "HoTGameInstance.h"
+#include "VRPlayerController_Base.h"
 
 // Sets default values for this component's properties
 UNetworkModule::UNetworkModule()
@@ -24,11 +25,4 @@ void UNetworkModule::BeginPlay()
 	{
 		gameInst = Cast<UHoTGameInstance>(GetWorld()->GetGameInstance());
 	}
-	// ...
-	
-}
-
-void UNetworkModule::SendPacket()
-{
-	//gameInst->SocketInstance->Send();
 }

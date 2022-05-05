@@ -19,6 +19,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	class UHoTGameInstance *gameInst;
+
+	void ShootBullet();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

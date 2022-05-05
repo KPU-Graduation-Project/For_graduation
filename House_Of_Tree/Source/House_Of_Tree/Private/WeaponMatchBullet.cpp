@@ -2,6 +2,11 @@
 
 
 #include "WeaponMatchBullet.h"
+
+#include "HoTGameInstance.h"
+#include "Protocol.h"
+#include "VRCharacter_Base.h"
+#include "VRPlayerController_Base.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -34,7 +39,12 @@ AWeaponMatchBullet::AWeaponMatchBullet()
 void AWeaponMatchBullet::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if (GetWorld() != nullptr && GetWorld()->GetGameInstance() != nullptr)
+	{
+		gameInst = Cast<UHoTGameInstance>(GetWorld()->GetGameInstance());
+	}
+	ShootBullet();
+	
 	Speed = ProjectileMovementComponent->InitialSpeed;
 }
 
@@ -64,5 +74,56 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		Speed = 0;
 		Acceleration = 0;
 		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
+
+		if (gameInst->CheckSend() && gameInst->playerController->GetVRPlayer()->CheckisGirl())
+		{
+			const int* key = gameInst->playerController->GetActorKey(OtherActor);
+			if (key == nullptr)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Not a ActorObject"));
+				return;
+			}
+
+			cs_bullet_hit_packet packet;
+			packet.type = CS_PACKET::CS_BULLET_HIT;
+			packet.size = sizeof(packet);
+
+			packet.id = *key;
+			FVector location = GetTransform().GetLocation();
+			FRotator rotation = GetTransform().GetRotation().Rotator();
+		
+			packet.x = location.X * 100;
+			packet.y = location.Y * 100;
+			packet.z = location.Z * 100;
+
+			packet.pitch = rotation.Pitch * 100;
+			packet.yaw = rotation.Yaw * 100;
+			packet.roll = rotation.Roll * 100;
+
+			gameInst->SocketInstance->Send(packet.size, &packet);
+		}
+	}
+}
+
+void AWeaponMatchBullet::ShootBullet()
+{
+	if (gameInst->CheckSend())
+	{
+		cs_shoot_bullet_packet packet;
+		packet.type = CS_PACKET::CS_SHOOT_BULLET;
+		packet.size = sizeof(packet);
+
+		FVector location = GetTransform().GetLocation();
+		FRotator rotation = GetTransform().GetRotation().Rotator();
+		
+		packet.x = location.X * 100;
+		packet.y = location.Y * 100;
+		packet.z = location.Z * 100;
+
+		packet.pitch = rotation.Pitch * 100;
+		packet.yaw = rotation.Yaw * 100;
+		packet.roll = rotation.Roll * 100;
+
+		gameInst->SocketInstance->Send(packet.size, &packet);
 	}
 }

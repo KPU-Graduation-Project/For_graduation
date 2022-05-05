@@ -162,8 +162,3 @@ void UHoTGameInstance::SetInfo()
 		out.close();
 	}
 }
-
-UClass* UHoTGameInstance::GetActor(int ObjectID)
-{
-	return bpSet[ObjectID];
-}
