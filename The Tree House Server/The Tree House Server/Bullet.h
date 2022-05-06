@@ -5,7 +5,10 @@ class cBullet :public cGameObject
 {
 public:
 	cBullet() {};
-	~cBullet() {};
+	virtual ~cBullet() {};
+
+	virtual unsigned int GetObjectType();
+	virtual void  Update();
 private:
 	iVector3   m_launch_point;
 	sRotation3 m_launch_rotation;
@@ -14,9 +17,11 @@ private:
 class cMatch :public cBullet
 {
 public:
-	cMatch() {};
+		cMatch() {};
 	~cMatch() {};
 
+	virtual unsigned int GetObjectType();
+	virtual void  Update();
 private:
 	
 };
@@ -28,6 +33,8 @@ public:
 	cSap() {};
 	~cSap() {};
 
+	virtual unsigned int GetObjectType();
+	virtual void  Update();
 private:
 
 };

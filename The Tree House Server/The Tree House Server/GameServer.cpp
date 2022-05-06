@@ -15,7 +15,6 @@
 using namespace std;
 
 cUserManager* cGameServer::m_user_manager;
-GameProcessor* cGameServer::m_game_processor;
 
 void cGameServer::Init()
 {
@@ -88,8 +87,6 @@ void cGameServer::TimerThread()
 	}
 }
 
-
-
 void cGameServer::WorkerThread()
 {
 	while (true)
@@ -122,7 +119,7 @@ void cGameServer::WorkerThread()
 			LocalFree(lpMsgBuf);
 
 			cout << endl;
-			//DoDisconnect(client_id);
+			Disconnect(client_id);
 			if (exp_over->m_comp_op == OP_SEND)
 				delete exp_over;
 			continue;
@@ -173,7 +170,7 @@ void cGameServer::WorkerThread()
 void cGameServer::Accept(cExpOver* exp_over)
 {
 
-	static std::atomic<unsigned int> id_generator = 0;
+	static std::atomic<unsigned int> id_generator = 1;
 
 	unsigned int new_id = id_generator++;
 
@@ -226,6 +223,15 @@ void cGameServer::Accept(cExpOver* exp_over)
 	
 }
 
+void cGameServer::Disconnect(const unsigned int _user_id)
+{
+	// 방에 들어가 있으면 
+	if (m_user_manager->m_users[_user_id]->m_room != nullptr)
+	{
+		m_user_manager->m_users[_user_id]->m_room;
+	}
+}
+
 void cGameServer::Send(cExpOver* exp_over)
 {
 
@@ -247,13 +253,7 @@ void cGameServer::Recv(cExpOver* exp_over, const unsigned int _user_id, const DW
 		
 		if (remain_data > 0)
 		{
-			packet_size = packet_start[0];
-
-			
-			//cout << "\npacket_size: " << packet_size << endl;
-			//cout << " packet_start[0]: " << (int)packet_start[0] << endl;
-			cout << "remain_data: " << remain_data << "\n";
-			
+			packet_size = packet_start[0];			
 		}
 		else break;
 	}
@@ -267,20 +267,14 @@ void cGameServer::Recv(cExpOver* exp_over, const unsigned int _user_id, const DW
 	//cout << "----------------\n";
 }
 
-void cGameServer::Disconnect()
+void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _recv_pkt)
 {
-
-
-}
-
-void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
-{
-	unsigned char packet_type = _p[1];
+	unsigned char packet_type = _recv_pkt[1];
 
 	switch (packet_type) {
 	case CS_PACKET::CS_CREATE_ROOM:
 	{
-		cs_create_room_packet* packet = reinterpret_cast<cs_create_room_packet*>(_p);
+		cs_create_room_packet* packet = reinterpret_cast<cs_create_room_packet*>(_recv_pkt);
 		
 		unsigned int new_room_id = g_room_manager->CreateRoom(m_user_manager->m_users[_user_id]);
 		if (new_room_id != MAX_USER)
@@ -300,14 +294,14 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 	}
 	case CS_PACKET::CS_JOIN_ROOM:
 	{
-		cs_join_room_packet* packet = reinterpret_cast<cs_join_room_packet*>(_p);
+		cs_join_room_packet* packet = reinterpret_cast<cs_join_room_packet*>(_recv_pkt);
 
 		bool ret = g_room_manager->JoinRoom(m_user_manager->m_users[_user_id], packet->room_id);
 		if (ret)
 		{
 			// for reduce cache miss after
 		
-			unsigned int host_user_id= g_room_manager->m_rooms[packet->room_id]->m_users[user_type::HOST]->GetID();
+			unsigned int host_user_id= g_room_manager->m_rooms[packet->room_id]->m_users[HOST]->GetID();
 	
 			{
 				sc_join_room_packet send_packet;
@@ -347,7 +341,7 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 	}
 	case CS_PACKET::CS_JOIN_RANDOM_ROOM: //미완
 	{
-		cs_join_random_room_packet* packet = reinterpret_cast<cs_join_random_room_packet*>(_p);
+		cs_join_random_room_packet* packet = reinterpret_cast<cs_join_random_room_packet*>(_recv_pkt);
 
 		// 랜덤 방 입장 기능 추가 후 수정 필요
 		//bool ret = m_room_manager->JoinRoom(_user_id, packet->room_id);
@@ -395,7 +389,7 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 	}
 	case CS_PACKET::CS_READY_GAME:
 	{
-		cs_ready_game_packet* packet = reinterpret_cast<cs_ready_game_packet*>(_p);
+		cs_ready_game_packet* packet = reinterpret_cast<cs_ready_game_packet*>(_recv_pkt);
 
 		m_user_manager->m_users[_user_id]->m_is_ready = packet->is_ready;
 
@@ -418,7 +412,7 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 	}
 	case CS_PACKET::CS_CHANGE_SELECTED_CHARACTER:
 	{
-		cs_change_selected_character* packet = reinterpret_cast<cs_change_selected_character*>(_p);
+		cs_change_selected_character* packet = reinterpret_cast<cs_change_selected_character*>(_recv_pkt);
 
 		m_user_manager->m_users[_user_id]->m_selected_character = packet->selected_character;
 		{
@@ -436,14 +430,14 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 	}
 	case CS_PACKET::CS_START_GAME: //보류
 	{
-		cs_start_game_packet* packet = reinterpret_cast<cs_start_game_packet*>(_p);
+		cs_start_game_packet* packet = reinterpret_cast<cs_start_game_packet*>(_recv_pkt);
 
 		
 		break;
 	}
 	case CS_PACKET::CS_LOADING_COMPLETE:
 	{
-		cs_loading_complete_packet* packet = reinterpret_cast<cs_loading_complete_packet*>(_p);
+		cs_loading_complete_packet* packet = reinterpret_cast<cs_loading_complete_packet*>(_recv_pkt);
 
 		cout << "CS_LOADING_COMPLETE from User [ " << _user_id <<" ] \n";
 
@@ -455,7 +449,9 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 	}
 	case CS_PACKET::CS_PLAYER_DATA:
 	{
-		cs_player_data_packet* packet = reinterpret_cast<cs_player_data_packet*>(_p);
+		cs_player_data_packet* packet = reinterpret_cast<cs_player_data_packet*>(_recv_pkt);
+		
+		
 		
 		cout << "CS_PLAYER_DATA from User [ " << _user_id <<
 			" ] position " << packet->x << "," << packet->y << ", " << packet->z
@@ -473,7 +469,7 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 	}
 	case CS_PACKET::CS_SHOOT_BULLET:
 	{
-		cs_shoot_bullet_packet* packet = reinterpret_cast<cs_shoot_bullet_packet*>(_p);
+		cs_shoot_bullet_packet* packet = reinterpret_cast<cs_shoot_bullet_packet*>(_recv_pkt);
 		
 	
 		m_user_manager->m_users[_user_id]->GetRoom()->ShootBullet(m_user_manager->m_users[_user_id], { packet->x, packet->y, packet->z }, { packet->pitch, packet->yaw, packet->roll });
@@ -482,6 +478,8 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _p)
 	}
 	case CS_PACKET::CS_BULLET_HIT:
 	{
+		cs_bullet_hit_packet* packet= reinterpret_cast<cs_bullet_hit_packet*>(_recv_pkt);
+
 
 		break;
 	}

@@ -62,5 +62,18 @@ void cUser::Send(int _size, void* _mess)
 	*/
 }
 
+void cUser::Disconnect()
+{
+	/*reinterpret_cast<UserRef>(this)
+	if (m_room != nullptr)
+	{
+		m_room->Disconnect(reinterpret_cast<UserRef>(this));
 
+		
+	}
+	StateLock();
+	m_state = user_state::FREE;
+	StateUnlock();*/
+
+}
 

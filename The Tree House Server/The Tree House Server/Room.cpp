@@ -32,15 +32,15 @@ void cRoom::StartGame()
 		character->SetCharacterTransform({ -68000,19000, 9200 }, { 0,0,0},
 			{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
 		character->m_object_type = 100001;
-		character->m_id = m_users[user_type::HOST]->GetID();
-		m_users[user_type::HOST]->m_character = character;
+		character->m_id = m_users[HOST]->GetID();
+		m_users[HOST]->m_character = character;
 
 		sc_put_object_packet packet;
 
 		packet.size = sizeof(sc_put_object_packet);
 		packet.type = SC_PACKET::SC_PUT_OBJECT;
 		packet.object_type = character->m_object_type;
-		packet.id = m_users[user_type::HOST]->GetID();
+		packet.id = m_users[HOST]->GetID();
 
 		Transform transform = character->GetTransform();
 		packet.x = transform.position.x;
@@ -63,15 +63,15 @@ void cRoom::StartGame()
 		character->SetCharacterTransform({ -68000,- 18000 ,9200 }, { 0,-18000,0 },
 			{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
 		character->m_object_type = 100002;
-		character->m_id = m_users[user_type::GUEST]->GetID();
-		m_users[user_type::GUEST]->m_character = character;
+		character->m_id = m_users[GUEST]->GetID();
+		m_users[GUEST]->m_character = character;
 
 		sc_put_object_packet packet;
 
 		packet.size = sizeof(sc_put_object_packet);
 		packet.type = SC_PACKET::SC_PUT_OBJECT;
 		packet.object_type = character->m_object_type;
-		packet.id = m_users[user_type::GUEST]->GetID();
+		packet.id = m_users[GUEST]->GetID();
 
 		Transform transform = character->GetTransform();
 		packet.x = transform.position.x;
@@ -117,7 +117,7 @@ void cRoom::StartGame()
 		Broadcast(sizeof(sc_put_object_packet), &packet);
 	}
 
-	m_state = room_state::INGAME;
+	m_state = ROOM_STATE::INGAME;
 	cout << "Room [ " << m_id << " ] Started Game\n";
 }
 
@@ -132,19 +132,20 @@ void cRoom::UserLoadingComplete(const unsigned int _user_id)
 
 void cRoom::SendPlayerData()
 {
-	if (m_state == room_state::INGAME)
+	static char cnt[2] = {0,0};
+	if (m_state == ROOM_STATE::INGAME)
 	{
 		for (int i = 0; i < 2; ++i)
 		{
-
 			/*cout << "send - user" << i << " position " << g_temp_position[i].x << "," << g_temp_position[i].y << ", " << g_temp_position[i].z
 				<< " // rotation " << g_temp_rotation[i].x << "," << g_temp_rotation[i].y << ", " << g_temp_rotation[i].z << endl;*/
-
+		
+			
 			sc_player_data_packet packet;
 
 			packet.size = sizeof(sc_player_data_packet);
 			packet.type = SC_PACKET::SC_PLAYER_DATA;
-			packet.id = m_users[1-i]->GetID();
+			packet.id = m_users[1 - i]->GetID();
 
 			cCharacter* character = m_users[1 - i]->m_character;
 
@@ -176,9 +177,13 @@ void cRoom::SendPlayerData()
 			packet.lh_yaw = character->m_lh_rotation.yaw;
 			packet.lh_roll = character->m_lh_rotation.roll;
 
-			cout << "SC_PLAYER_DATA to User [ " << m_users[i]->GetID() << " ] In Room [ " << (int)m_id << " ] // User [ " << m_users[1 - i]->GetID()
-				<< " ] position " << packet.x << "," << packet.y << ", " << packet.z
-				<< " // rotation " << packet.pitch << ", " << packet.yaw << "," << packet.roll << endl;
+			if (cnt[i]++ == 60)
+			{
+				cout << "SC_PLAYER_DATA to User [ " << m_users[i]->GetID() << " ] In Room [ " << (int)m_id << " ] // User [ " << m_users[1 - i]->GetID()
+					<< " ] position " << packet.x << "," << packet.y << ", " << packet.z
+					<< " // rotation " << packet.pitch << ", " << packet.yaw << "," << packet.roll << endl;
+				cnt[i] = 0;
+			}
 
 			cout << "size: " << sizeof(packet) << endl;
 			m_users[i]->Send(sizeof(packet), &packet);
@@ -220,7 +225,7 @@ void cRoom::ShootBullet(UserRef _user, iVector3 _source_position, sRotation3 _ro
 	packet.size = sizeof(sc_shoot_bullet_packet);
 
 	// HOST = 여자캐릭터, GUEST = 남자캐릭터 기준. 로비 제작 후 캐릭터 선택 가능하게 되면 수정 필요
-	if (m_users[user_type::HOST] == _user)
+	if (m_users[HOST] == _user)
 		packet.bullet_type = 1;
 	else
 		packet.bullet_type = 2;
@@ -240,3 +245,16 @@ void cRoom::Broadcast(int _size, void* _mess)
 	m_users[1]->Send(_size, _mess);
 }
 
+void cRoom::Disconnect(UserRef _user)
+{
+	StateLock();
+	m_state = ROOM_STATE::DISCONNECTING;
+	// 방 상태 전환
+
+	// 유저 캐릭터 삭제
+	   // 유저 캐릭터 삭제 패킷 전송
+	   // 유저 캐릭터 메모리 해제
+
+	// 유저 삭제
+
+}

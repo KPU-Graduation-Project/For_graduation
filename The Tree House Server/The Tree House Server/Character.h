@@ -2,11 +2,12 @@
 #include <list>
 #include "GameObject.h"
 
+//------------------Character------------------//
 class cCharacter :public cGameObject
 {
 public:
-	cCharacter();
-	~cCharacter();
+	cCharacter() {};
+	virtual ~cCharacter() {};
 
 	void SetCharacterTransform(
 		const iVector3& _position, const sRotation3& _rotation,
@@ -14,6 +15,8 @@ public:
 		const iVector3& _rh_position, const sRotation3& _rh_rotation,
 		const iVector3& _lh_position, const sRotation3& _lh_rotation);
 	
+	virtual unsigned int GetObjectType() ;
+	virtual void  Update();
 	//list<unsigned short >m_view_list;
 public:
 	iVector3  m_head_position;
@@ -24,4 +27,30 @@ public:
 
 	iVector3  m_lh_position;
 	sRotation3 m_lh_rotation;
+};
+
+//----------------GirlCharacter----------------//
+class cGirlCharacter :public cCharacter
+{
+public:
+	cGirlCharacter() {};
+	virtual ~cGirlCharacter() {};
+
+	virtual unsigned int GetObjectType();
+	virtual void  Update();
+public:
+
+};
+
+//----------------BoyCharacter----------------//
+class cBoyCharacter :public cCharacter
+{
+public:
+	cBoyCharacter() {};
+	virtual ~cBoyCharacter() {};
+
+	virtual unsigned int GetObjectType() ;
+	virtual void  Update();
+public:
+
 };

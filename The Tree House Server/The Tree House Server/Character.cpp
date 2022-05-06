@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "Character.h"
 
-cCharacter::cCharacter() {};
-cCharacter::~cCharacter() {};
+
 
 
 void cCharacter::SetCharacterTransform(
@@ -20,3 +19,37 @@ void cCharacter::SetCharacterTransform(
 	m_lh_position = _lh_position;
 	m_lh_rotation = _lh_rotation;
 }
+
+unsigned int cCharacter::GetObjectType() 
+{
+	static unsigned int object_type = 10000;
+	return object_type;
+};
+void  cCharacter::Update() {};
+
+//----------------GirlCharacter----------------//
+unsigned int cGirlCharacter::GetObjectType()
+{
+	static unsigned int object_type = 10001;
+	return object_type;
+};
+
+void  cGirlCharacter::Update()
+{
+
+};
+
+
+
+//----------------BoyCharacter----------------//
+
+unsigned int cBoyCharacter::GetObjectType() 
+{
+	static unsigned int object_type = 10002;
+	return object_type;
+};
+
+void  cBoyCharacter::Update()
+{
+
+};

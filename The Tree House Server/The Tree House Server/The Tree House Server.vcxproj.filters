@@ -34,23 +34,29 @@
     <Filter Include="소스 파일\GameContents\GameObject">
       <UniqueIdentifier>{cc7d033c-3cbf-4874-9c5d-3fde09e59310}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\GameContents\GameObject\00 Character">
-      <UniqueIdentifier>{7d398fd0-2ecf-445b-9148-ae07236b3f0c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\GameContents\GameObject\02 Monster">
-      <UniqueIdentifier>{9cd159e6-c1d0-4d34-b71b-8635a6559d33}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\GameContents\GameObject\03 MapObject">
-      <UniqueIdentifier>{40722df2-0408-4610-bd97-b1f459b164d6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\GameContents\GameObject\01 Bullet">
-      <UniqueIdentifier>{12158128-5c23-4821-a694-f420efa9dc18}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Memory">
       <UniqueIdentifier>{a0f508eb-ed20-421a-acd0-37b180745e1c}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\Network">
       <UniqueIdentifier>{84122146-d790-4b96-a4e7-46aa8b519dcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameContents\GameObject\03 Bullet">
+      <UniqueIdentifier>{12158128-5c23-4821-a694-f420efa9dc18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameContents\GameObject\01 Character">
+      <UniqueIdentifier>{7d398fd0-2ecf-445b-9148-ae07236b3f0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameContents\GameObject\02 Monster">
+      <UniqueIdentifier>{9cd159e6-c1d0-4d34-b71b-8635a6559d33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameContents\GameObject\03 DynamicObject">
+      <UniqueIdentifier>{40722df2-0408-4610-bd97-b1f459b164d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameContents\GameObject\03 PassiveObject">
+      <UniqueIdentifier>{c010b860-bd47-4307-bb83-6268d226d5f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\GameContents\GameObject\00 GameObject">
+      <UniqueIdentifier>{32e720af-e2d9-4224-b553-4db8fc196c28}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,17 +69,14 @@
     <ClCompile Include="Timer.cpp">
       <Filter>소스 파일\96 Timer</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>소스 파일\GameContents\GameObject</Filter>
-    </ClCompile>
     <ClCompile Include="Character.cpp">
-      <Filter>소스 파일\GameContents\GameObject\00 Character</Filter>
+      <Filter>소스 파일\GameContents\GameObject\01 Character</Filter>
     </ClCompile>
     <ClCompile Include="ProtocolManager.cpp">
       <Filter>소스 파일\Network</Filter>
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
-      <Filter>소스 파일\GameContents\GameObject\01 Bullet</Filter>
+      <Filter>소스 파일\GameContents\GameObject\03 Bullet</Filter>
     </ClCompile>
     <ClCompile Include="IOCPBase.cpp">
       <Filter>소스 파일\02 IOCPBase</Filter>
@@ -105,6 +108,9 @@
     <ClCompile Include="Global.cpp">
       <Filter>소스 파일\00 Main</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>소스 파일\GameContents\GameObject\00 GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Protocol.h">
@@ -119,11 +125,8 @@
     <ClInclude Include="timer.h">
       <Filter>소스 파일\96 Timer</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>소스 파일\GameContents\GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="Character.h">
-      <Filter>소스 파일\GameContents\GameObject\00 Character</Filter>
+      <Filter>소스 파일\GameContents\GameObject\01 Character</Filter>
     </ClInclude>
     <ClInclude Include="ObjectPool.h">
       <Filter>소스 파일\Memory</Filter>
@@ -132,7 +135,7 @@
       <Filter>소스 파일\Network</Filter>
     </ClInclude>
     <ClInclude Include="Bullet.h">
-      <Filter>소스 파일\GameContents\GameObject\01 Bullet</Filter>
+      <Filter>소스 파일\GameContents\GameObject\03 Bullet</Filter>
     </ClInclude>
     <ClInclude Include="IOCPBase.h">
       <Filter>소스 파일\02 IOCPBase</Filter>
@@ -166,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="Global.h">
       <Filter>소스 파일\00 Main</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>소스 파일\GameContents\GameObject\00 GameObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

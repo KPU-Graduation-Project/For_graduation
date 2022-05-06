@@ -38,7 +38,7 @@ unsigned int cRoomManager::CreateRoom(UserRef _user)
 	{
 		unsigned short new_id = last_id++;
 
-		m_rooms.emplace(new_id,new cRoom( new_id, room_state::IN_ROBBY_CREATED, _user));
+		m_rooms.emplace(new_id,new cRoom( new_id, ROOM_STATE::IN_ROBBY_CREATED, _user));
 
 		_user->SetRoom(m_rooms[new_id]);
 		_user->m_is_ready = false;
@@ -59,12 +59,12 @@ bool cRoomManager::JoinRoom(UserRef _user, const unsigned int _room_id)
 	if (m_rooms.count(_room_id) != 0)
 	{
 		m_rooms[_room_id]->StateLock();
-		if ((m_rooms[_room_id]->m_state == room_state::IN_ROBBY_CREATED))
+		if ((m_rooms[_room_id]->m_state == ROOM_STATE::IN_ROBBY_CREATED))
 		{
-			m_rooms[_room_id]->m_state = room_state::IN_ROBBY_FULLED;
+			m_rooms[_room_id]->m_state = ROOM_STATE::IN_ROBBY_FULLED;
 			m_rooms[_room_id]->StateUnlock();
 
-			m_rooms[_room_id]->m_users[user_type::GUEST] = _user;
+			m_rooms[_room_id]->m_users[GUEST] = _user;
 			_user->m_is_ready = false;
 			_user->SetRoom(m_rooms[_room_id]);
 			_user->m_selected_character = 1;

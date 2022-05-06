@@ -9,13 +9,10 @@
 #include "ExpOver.h"
 
 
-
-class GameProcessor;
 class cUserManager;
 class cRoomManager;
 class cTimer;
 class cTimerEvent;
-
 
 class cGameServer:public cIOCPBase
 {
@@ -33,11 +30,10 @@ public:
 	void Accept(cExpOver* exp_over);
 	void Send(cExpOver* exp_over);
 	void Recv(cExpOver* exp_over, const unsigned int _user_id, const DWORD num_byte);
-	void Disconnect();
+	void Disconnect(const unsigned int _user_id);
 
 private:
 	static cUserManager*  m_user_manager;
-	static GameProcessor* m_game_processor;
 
 	cTimer* m_clock;
 	std::vector <std::thread> m_worker_threads;
