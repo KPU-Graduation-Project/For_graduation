@@ -51,7 +51,7 @@ void AVRPlayerController_Base::SendPlayerData()
 {
 	if (gameInst->CheckSend())
 	{
-		UE_LOG(LogTemp, Error, TEXT("Send Packet"));
+		//UE_LOG(LogTemp, Error, TEXT("Send Packet"));
 
 		cs_player_data_packet sendPacket;
 		sendPacket.type = CS_PACKET::CS_PLAYER_DATA;
@@ -193,7 +193,7 @@ void AVRPlayerController_Base::ProcessPacket()
 		case SC_PACKET::SC_PLAYER_DATA:
 			{
 				sc_player_data_packet* packet = reinterpret_cast<sc_player_data_packet*>(p);
-				UE_LOG(LogTemp, Warning, TEXT("PlayerID %d SC_PLAYER_DATA %d"), playerID, packet->id);
+				//UE_LOG(LogTemp, Warning, TEXT("PlayerID %d SC_PLAYER_DATA %d"), playerID, packet->id);
 
 				// 자신의 캐릭터의 정보거나 잘못된 id라면 취소
 				if (packet->id == playerID || actorList.Contains(packet->id) == false)
@@ -286,14 +286,26 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 	UE_LOG(LogTemp, Warning, TEXT("player ID: %d, actor ID: %d"), playerID, actorID);
 	if (playerID == actorID)
 	{
-		SetPlayerCharacter();
+		SetPlayerCharacter(objectID);
 	}
 }
 
-void AVRPlayerController_Base::SetPlayerCharacter()
+void AVRPlayerController_Base::SetPlayerCharacter(const int objectID)
 {
+	UnPossess();
 	Possess(Cast<AVRCharacter_Base>(actorList[playerID]));
 	vrPlayer = Cast<AVRCharacter_Base>(GetCharacter());
+
+	if (objectID % 10 == 1)
+	{
+		playertype = PLAYERTYPE::GIRL;
+		UE_LOG(LogTemp, Error, TEXT("GIRL"));
+	}
+	else
+	{
+		playertype = PLAYERTYPE::BOY;
+		UE_LOG(LogTemp, Error, TEXT("BOY"));
+	}
 
 	gameInst->GameStart();
 }

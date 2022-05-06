@@ -17,6 +17,13 @@
 class UHoTGameInstance;
 class AVRCharacter_Base;
 
+UENUM()
+enum class PLAYERTYPE
+{
+	GIRL,
+	BOY
+};
+
 UCLASS()
 class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
 {
@@ -40,7 +47,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TMap<int, AActor*> actorList;
 
-	void SetPlayerCharacter();
+	void SetPlayerCharacter(const int objectID);
+
+	UPROPERTY()
+	PLAYERTYPE playertype;
 
 	// Network system
 public:
@@ -63,4 +73,6 @@ public:
 
 	AActor* GetActorList(int key) { return *actorList.Find(key); }
 	const int* GetActorKey(AActor* actor) { return actorList.FindKey(actor); }
+
+	PLAYERTYPE GetPlayerType() { return playertype; }
 };

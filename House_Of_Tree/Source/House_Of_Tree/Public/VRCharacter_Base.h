@@ -46,9 +46,6 @@ protected:
 
 	EControllerHand Hand_L, Hand_R;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="성별 체크", DisplayName="여자 캐릭터면 선택")
-	bool isGirl;
-
 public:
 	FTransform GetHeadTransform() const {return VR_Camera->GetComponentTransform();}
 	FTransform GetRHTransform() const {return MotionController_R->GetComponentTransform();}
@@ -56,6 +53,4 @@ public:
 
 	void SetLocationAndRotation(const FVector &location, const float &yaw);
 	void SetHandLocationAndRotation(const FVector &lhLocation, const FRotator &lhRotation, const FVector &rhLocationRH, const FRotator &rhRotation);
-
-	bool CheckisGirl() { return isGirl; }
 };

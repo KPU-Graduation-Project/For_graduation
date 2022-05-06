@@ -57,7 +57,7 @@ void AWeaponCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 		ProjectileMovementComponent->SetVelocityInLocalSpace(FVector(0, 0, 0));
 		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
 
-		if (gameInst->CheckSend() && gameInst->playerController->GetVRPlayer()->CheckisGirl())
+		if (gameInst->CheckSend() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::BOY)
 		{
 			cs_bullet_hit_packet packet;
 			packet.type = CS_PACKET::CS_BULLET_HIT;
@@ -69,7 +69,9 @@ void AWeaponCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 			else
 				packet.object_id = *key;
 
-			packet.bullet_id = 2;
+			const int* actorID = gameInst->playerController->GetActorKey(this);
+			if (actorID == nullptr) return;
+			packet.bullet_id = *actorID;
 			
 			FVector location = GetTransform().GetLocation();
 			FRotator rotation = GetTransform().GetRotation().Rotator();

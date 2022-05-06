@@ -69,7 +69,7 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		Acceleration = 0;
 		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
 
-		if (gameInst->CheckSend() && gameInst->playerController->GetVRPlayer()->CheckisGirl())
+		if (gameInst->CheckSend() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::GIRL)
 		{
 			cs_bullet_hit_packet packet;
 			packet.type = CS_PACKET::CS_BULLET_HIT;
@@ -81,7 +81,9 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 			else
 				packet.object_id = *key;
 
-			packet.bullet_id = 1;
+			const int* actorID = gameInst->playerController->GetActorKey(this);
+			if (actorID == nullptr) return;
+			packet.bullet_id = *actorID;
 			
 			FVector location = GetTransform().GetLocation();
 			FRotator rotation = GetTransform().GetRotation().Rotator();
@@ -94,6 +96,7 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 			packet.yaw = rotation.Yaw * 100;
 			packet.roll = rotation.Roll * 100;
 
+			UE_LOG(LogTemp, Error, TEXT("Send onHit"));
 			gameInst->SocketInstance->Send(packet.size, &packet);
 		}
 	}
