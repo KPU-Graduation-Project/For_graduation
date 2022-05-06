@@ -107,8 +107,6 @@ void UHoTGameInstance::SetInfo()
 
 				int *meshId = Property->ContainerPtrToValuePtr<int>(i);
 				const int *objectID = bpSet.FindKey(i->GetClass());
-				
-				UE_LOG(LogTemp, Warning, TEXT("%s"), *i->GetName());
 
 				// Index
 				out << "[" << num++ << "]";
@@ -162,7 +160,7 @@ void UHoTGameInstance::SetInfo()
 				// If it is Enemy
 				if (BP_Monster.Find(i->GetClass()) != INDEX_NONE)
 				{
-					out << "[" << TCHAR_TO_ANSI(*i->GetName()) << "]";
+					out << " // " << TCHAR_TO_ANSI(*i->GetName());
 				}
 				out << std::endl;
 			}
