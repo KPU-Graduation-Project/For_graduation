@@ -128,7 +128,7 @@ void cGameServer::WorkerThread()
 
 		switch (exp_over->m_comp_op) {
 		case OP_RECV: {
-			cout << "recv called: "<<num_byte<<"byte \n";
+			//cout << "recv called: "<<num_byte<<"byte \n";
 			Recv(exp_over, client_id, num_byte); 
 
 			break;
@@ -450,9 +450,9 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _rec
 		
 		
 		
-		cout << "CS_PLAYER_DATA from User [ " << _user_id <<
+		/*cout << "CS_PLAYER_DATA from User [ " << _user_id <<
 			" ] position " << packet->x << "," << packet->y << ", " << packet->z
-			<< " // rotation " << packet->pitch << ", " << packet->yaw << "," << packet->roll << "\n";
+			<< " // rotation " << packet->pitch << ", " << packet->yaw << "," << packet->roll << "\n";*/
 
 		m_user_manager->m_users[_user_id]->m_character->SetCharacterTransform
 		({ packet->x, packet->y, packet->z }, { packet->pitch, packet->yaw, packet->roll },
@@ -468,7 +468,10 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _rec
 	{
 		cs_shoot_bullet_packet* packet = reinterpret_cast<cs_shoot_bullet_packet*>(_recv_pkt);
 		
-	
+		cout << "CS_SHOOT_BULLET from User [ " << _user_id <<
+			" ] position " << packet->x << "," << packet->y << ", " << packet->z
+			<< " // rotation " << packet->pitch << ", " << packet->yaw << "," << packet->roll << "\n";
+
 		m_user_manager->m_users[_user_id]->GetRoom()->ShootBullet(m_user_manager->m_users[_user_id], { packet->x, packet->y, packet->z }, { packet->pitch, packet->yaw, packet->roll });
 
 		break;
@@ -477,8 +480,14 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _rec
 	{
 		cs_bullet_hit_packet* packet= reinterpret_cast<cs_bullet_hit_packet*>(_recv_pkt);
 
+		
+			
+		cout << "CS_BULLET_HIT from User [ " << _user_id <<
+			" ] bullet [ "<< packet->bullet_id <<" ] to [ "<< packet->object_id<<" ], position " << packet->x << "," << packet->y << ", " << packet->z
+			<< " // rotation " << packet->pitch << ", " << packet->yaw << "," << packet->roll << "\n";
 
-		break;
+		m_user_manager->m_users[_user_id]->GetRoom()->BulletHit(packet->bullet_id, packet->object_id, { packet->x, packet->y, packet->z }, { packet->pitch, packet->yaw, packet->roll });
+			break;
 	}
 
 

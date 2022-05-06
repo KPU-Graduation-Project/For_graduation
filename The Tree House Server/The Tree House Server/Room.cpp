@@ -5,8 +5,9 @@
 #include "Character.h"
 #include "UserManager.h"
 #include "User.h"
+#include "Bullet.h"
 
-int cRoom::m_last_object_id = 0;
+
 
 void cRoom::Init()
 {
@@ -185,15 +186,13 @@ void cRoom::SendPlayerData()
 			packet.lh_yaw = character->m_lh_rotation.yaw;
 			packet.lh_roll = character->m_lh_rotation.roll;
 
-			if (cnt[i]++ == 60)
-			{
-				cout << "SC_PLAYER_DATA to User [ " << m_users[i]->GetID() << " ] In Room [ " << (int)m_id << " ] // User [ " << m_users[1 - i]->GetID()
+		
+			/*	cout << "SC_PLAYER_DATA to User [ " << m_users[i]->GetID() << " ] In Room [ " << (int)m_id << " ] // User [ " << m_users[1 - i]->GetID()
 					<< " ] position " << packet.x << "," << packet.y << ", " << packet.z
 					<< " // rotation " << packet.pitch << ", " << packet.yaw << "," << packet.roll << endl;
-				cnt[i] = 0;
-			}
+		*/
 
-			cout << "size: " << sizeof(packet) << endl;
+			//cout << "size: " << sizeof(packet) << endl;
 			m_users[i]->Send(sizeof(packet), &packet);
 		}
 	}
@@ -228,6 +227,23 @@ void cRoom::SendAllObjectData()
 
 void cRoom::ShootBullet(UserRef _user, iVector3 _source_position, sRotation3 _rotation)
 {
+	cBullet* new_bullet = cRoomManager::m_bullet_pool.PopObject();
+
+	new_bullet->m_id = m_last_object_id++;
+	new_bullet->m_mesh_id = 0;
+
+	// 수정 필요
+	if (m_users[HOST] == _user)
+		new_bullet->m_object_type = 30001;
+	else
+		new_bullet->m_object_type = 30002;
+	new_bullet->SetTransform({ _source_position,_rotation,{100,100,100} });
+
+	new_bullet->m_launch_position = _source_position;
+	new_bullet->m_launch_rotation = _rotation;
+	new_bullet->m_is_moving = true;
+	m_bullets.insert(pair<unsigned int, cBullet*>{new_bullet->m_id, new_bullet});
+
 	sc_shoot_bullet_packet packet;
 	packet.type = SC_PACKET::SC_SHOOT_BULLET;
 	packet.size = sizeof(sc_shoot_bullet_packet);
@@ -237,7 +253,7 @@ void cRoom::ShootBullet(UserRef _user, iVector3 _source_position, sRotation3 _ro
 		packet.bullet_type = 1;
 	else
 		packet.bullet_type = 2;
-
+	packet.id = new_bullet->m_id;
 	packet.x = _source_position.x;
 	packet.y = _source_position.y;
 	packet.z = _source_position.z;
@@ -247,6 +263,23 @@ void cRoom::ShootBullet(UserRef _user, iVector3 _source_position, sRotation3 _ro
 
 	Broadcast(sizeof(sc_shoot_bullet_packet), &packet);
 }
+
+void cRoom::BulletHit(unsigned int _bullet_id, unsigned int _hit_object_id, iVector3 _source_position, sRotation3 _rotation)
+{
+	// hit terrein
+	if (_hit_object_id == 0)
+	{
+
+	}
+	else
+	{
+
+
+
+	}
+
+
+};
 void cRoom::Broadcast(int _size, void* _mess)
 {
 	m_users[0]->Send(_size, _mess);

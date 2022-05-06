@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <atomic>
 #include "User.h"
-
+#include "Bullet.h"
 
 enum class ROOM_STATE
 {
@@ -40,6 +40,7 @@ public:
 	void SendPlayerData();
 	void SendAllObjectData();
 	void ShootBullet(UserRef _user, iVector3 _source_position, sRotation3 _rotation);
+	void BulletHit(unsigned int _bullet_id, unsigned int _hit_object_id, iVector3 _source_position, sRotation3 _rotation);
 
 	void Broadcast(int _size, void* _mess);
 
@@ -58,9 +59,9 @@ public:
 	UserRef m_users[2] = { nullptr,nullptr };
 
 	concurrency::concurrent_unordered_map <unsigned int, cGameObject*> m_game_objects;
-
+	concurrency::concurrent_unordered_map <unsigned int, cBullet*> m_bullets;
 private:
-	static int          m_last_object_id;
+	atomic <int>          m_last_object_id=MAX_USER;
 };
 
 

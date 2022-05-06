@@ -162,6 +162,7 @@ struct cs_login_packet
 		unsigned char size;
 		unsigned char type;
 
+		unsigned int bullet_id;
 		// id of hit object / if hit terrain: id = 0
 		unsigned int object_id;
 
