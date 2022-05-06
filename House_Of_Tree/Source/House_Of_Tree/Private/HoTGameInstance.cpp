@@ -2,11 +2,11 @@
 
 
 #include "HoTGameInstance.h"
-#include <fstream>
 #include "VRPlayerController_Base.h"
-#include "Misc/OutputDeviceNull.h"
 #include "EngineUtils.h"
-#include "Engine/BlueprintGeneratedClass.h"
+
+#include <fstream>
+
 
 UHoTGameInstance::UHoTGameInstance()
 {
@@ -25,6 +25,9 @@ void UHoTGameInstance::Init()
 
 	path = FPaths::ProjectUserDir();
 	path.Append(TEXT("data.txt"));
+
+	ipPath = FPaths::ProjectUserDir();
+	ipPath.Append(TEXT("IP_ADDRESS.txt"));
 }
 
 void UHoTGameInstance::InitSocket()
@@ -32,6 +35,20 @@ void UHoTGameInstance::InitSocket()
 	if (!ConnectNetwork) return;
 	if (SocketInstance != nullptr) return;
 
+	std::ifstream in(*ipPath);
+	if (in.is_open())
+	{
+		char a[100];
+		in >> a;
+		UE_LOG(LogTemp, Warning, TEXT("%s"), ToCStr(a));
+		ipAddr = ToCStr(a);
+	}
+	else
+	{
+		ipAddr = TEXT("127.0.0.1");
+	}
+	in.close();
+	
 	SocketInstance = new ClientSocket(this);
 }
 

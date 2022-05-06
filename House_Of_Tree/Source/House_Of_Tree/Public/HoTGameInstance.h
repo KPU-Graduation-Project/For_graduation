@@ -39,11 +39,15 @@ private:
 	bool ConnectNetwork;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category=Network, DisplayName="IP 주소", meta = (EditCondition = "ConnectNetwork"))
+	UPROPERTY()
 	FString ipAddr;
 
 	UPROPERTY(EditDefaultsOnly, Category=Network, DisplayName="포트번호", meta = (EditCondition = "ConnectNetwork"))
 	int Port;
+
+private:
+	UPROPERTY()
+	FString ipPath;
 
 	//*********************************************************************************************/
 
