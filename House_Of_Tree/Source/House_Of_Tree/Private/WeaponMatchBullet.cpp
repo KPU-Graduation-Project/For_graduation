@@ -77,16 +77,11 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 			
 			const int* key = gameInst->playerController->GetActorKey(OtherActor);
 			if (key == nullptr)
-			{
 				packet.object_id = 0;
-			}
 			else
-			{
 				packet.object_id = *key;
-			}
 
 			packet.bullet_id = 1;
-
 			
 			FVector location = GetTransform().GetLocation();
 			FRotator rotation = GetTransform().GetRotation().Rotator();

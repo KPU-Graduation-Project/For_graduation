@@ -19,6 +19,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	class UHoTGameInstance *gameInst;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -28,9 +31,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere,Category = Movement)
 	class UProjectileMovementComponent* ProjectileMovementComponent;
-
-	UFUNCTION(BlueprintCallable)
-	void FireInDirection(const FVector& ShootDirection);
 	
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);

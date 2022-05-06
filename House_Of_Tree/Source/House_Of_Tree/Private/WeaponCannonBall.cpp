@@ -2,6 +2,11 @@
 
 
 #include "WeaponCannonBall.h"
+
+#include "HoTGameInstance.h"
+#include "Protocol.h"
+#include "VRCharacter_Base.h"
+#include "VRPlayerController_Base.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -30,6 +35,10 @@ AWeaponCannonBall::AWeaponCannonBall()
 void AWeaponCannonBall::BeginPlay()
 {
 	Super::BeginPlay();
+	if (GetWorld() != nullptr && GetWorld()->GetGameInstance() != nullptr)
+	{
+		gameInst = Cast<UHoTGameInstance>(GetWorld()->GetGameInstance());
+	}
 	isAttached = false;
 }
 
@@ -40,11 +49,6 @@ void AWeaponCannonBall::Tick(float DeltaTime)
 
 }
 
-void AWeaponCannonBall::FireInDirection(const FVector& ShootDirection)
-{
-	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
-}
-
 void AWeaponCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -52,6 +56,34 @@ void AWeaponCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 	{
 		ProjectileMovementComponent->SetVelocityInLocalSpace(FVector(0, 0, 0));
 		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
+
+		if (gameInst->CheckSend() && gameInst->playerController->GetVRPlayer()->CheckisGirl())
+		{
+			cs_bullet_hit_packet packet;
+			packet.type = CS_PACKET::CS_BULLET_HIT;
+			packet.size = sizeof(packet);
+			
+			const int* key = gameInst->playerController->GetActorKey(OtherActor);
+			if (key == nullptr)
+				packet.object_id = 0;
+			else
+				packet.object_id = *key;
+
+			packet.bullet_id = 2;
+			
+			FVector location = GetTransform().GetLocation();
+			FRotator rotation = GetTransform().GetRotation().Rotator();
+		
+			packet.x = location.X * 100;
+			packet.y = location.Y * 100;
+			packet.z = location.Z * 100;
+
+			packet.pitch = rotation.Pitch * 100;
+			packet.yaw = rotation.Yaw * 100;
+			packet.roll = rotation.Roll * 100;
+
+			gameInst->SocketInstance->Send(packet.size, &packet);
+		}
 	}
 }
 
