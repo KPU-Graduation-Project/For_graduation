@@ -10,7 +10,7 @@ public:
 	virtual unsigned int GetObjectType();
 	virtual void  Update();
 private:
-	iVector3   m_launch_point;
+	iVector3   m_launch_position;
 	sRotation3 m_launch_rotation;
 };
 

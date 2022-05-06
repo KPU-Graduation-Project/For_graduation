@@ -27,6 +27,7 @@ public:
 	static unordered_map<unsigned int, RoomRef> m_rooms;
 
 protected:
+	// 메모리풀 이용해서 통일 무조건 필요
 	static cObjectPool<cGameObject>       m_object_pool;
 	static cObjectPool<cCharacter>        m_character_pool;
 	static cObjectPool<cBullet>           m_bullet_pool;

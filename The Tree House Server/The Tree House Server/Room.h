@@ -1,5 +1,6 @@
 #pragma once
 #include "RoomManager.h"
+#include <concurrent_unordered_map.h>
 #include <unordered_map>
 #include <atomic>
 #include "User.h"
@@ -56,7 +57,7 @@ public:
 	//unsigned int        m_user_id[2] = { MAX_USER,MAX_USER };
 	UserRef m_users[2] = { nullptr,nullptr };
 
-	unordered_map <unsigned int, cGameObject*> m_game_objects;
+	concurrency::concurrent_unordered_map <unsigned int, cGameObject*> m_game_objects;
 
 private:
 	static int          m_last_object_id;

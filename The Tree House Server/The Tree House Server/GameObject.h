@@ -24,10 +24,10 @@ public:
 public:
 	// have to be static
 	unsigned int  m_object_type;
-	unsigned char m_max_mesh_type;
 
 	unsigned int m_id;
-	unsigned short m_mesh_id;
+	unsigned char m_mesh_id;
+
 	unsigned char m_sector;
 
 	Transform m_transform;

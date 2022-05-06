@@ -39,8 +39,10 @@ void cRoom::StartGame()
 
 		packet.size = sizeof(sc_put_object_packet);
 		packet.type = SC_PACKET::SC_PUT_OBJECT;
-		packet.object_type = character->m_object_type;
 		packet.id = m_users[HOST]->GetID();
+		packet.object_type = character->m_object_type;		
+		packet.mesh_id = 0;
+		packet.parent_object_id = 0;
 
 		Transform transform = character->GetTransform();
 		packet.x = transform.position.x;
@@ -52,6 +54,8 @@ void cRoom::StartGame()
 		packet.scale_x = transform.scale.x;
 		packet.scale_y = transform.scale.y;
 		packet.scale_z = transform.scale.z;
+		unsigned char size;
+		unsigned char type;
 
 		Broadcast(sizeof(sc_put_object_packet), &packet);
 	}
@@ -70,8 +74,10 @@ void cRoom::StartGame()
 
 		packet.size = sizeof(sc_put_object_packet);
 		packet.type = SC_PACKET::SC_PUT_OBJECT;
-		packet.object_type = character->m_object_type;
 		packet.id = m_users[GUEST]->GetID();
+		packet.object_type = character->m_object_type;
+		packet.mesh_id = 0;
+		packet.parent_object_id = 0;
 
 		Transform transform = character->GetTransform();
 		packet.x = transform.position.x;
@@ -100,8 +106,10 @@ void cRoom::StartGame()
 
 		packet.size = sizeof(sc_put_object_packet);
 		packet.type = SC_PACKET::SC_PUT_OBJECT;
-		packet.object_type = game_object->m_object_type;
 		packet.id = game_object->m_id;
+		packet.object_type = game_object->m_object_type;	
+		packet.mesh_id = 0;
+		packet.parent_object_id = 0;
 
 		Transform transform = game_object->GetTransform();
 		packet.x = transform.position.x;

@@ -130,13 +130,10 @@ void cGameServer::WorkerThread()
 		case OP_RECV: {
 			cout << "recv called: "<<num_byte<<"byte \n";
 			Recv(exp_over, client_id, num_byte); 
-			
-			//SendGameState();
 
 			break;
 		}
 		case OP_SEND: {
-			//cout << "send called\n";
 			if (num_byte != exp_over->m_wsa_buf.len) {
 				cout << "send error" << endl;
 				//DoDisconnect(client_id);
