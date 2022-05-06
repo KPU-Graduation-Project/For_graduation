@@ -71,18 +71,23 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 
 		if (gameInst->CheckSend() && gameInst->playerController->GetVRPlayer()->CheckisGirl())
 		{
-			const int* key = gameInst->playerController->GetActorKey(OtherActor);
-			if (key == nullptr)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Not a ActorObject"));
-				return;
-			}
-
 			cs_bullet_hit_packet packet;
 			packet.type = CS_PACKET::CS_BULLET_HIT;
 			packet.size = sizeof(packet);
+			
+			const int* key = gameInst->playerController->GetActorKey(OtherActor);
+			if (key == nullptr)
+			{
+				packet.object_id = 0;
+			}
+			else
+			{
+				packet.object_id = *key;
+			}
 
-			packet.id = *key;
+			packet.bullet_id = 1;
+
+			
 			FVector location = GetTransform().GetLocation();
 			FRotator rotation = GetTransform().GetRotation().Rotator();
 		

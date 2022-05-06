@@ -280,9 +280,7 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 	actorList.Add(actorID, GetWorld()->SpawnActor<AActor>(gameInst->GetActor(objectID), location, rotation, SpawnParams));
 	actorList[actorID]->SetActorScale3D(scale);
 
-	//char funcCallBuf[1024];
 	FOutputDeviceNull ar;
-	//_snprintf_s(funcCallBuf, sizeof(funcCallBuf), "%s %d", "SetMesh", meshID);
 	actorList[actorID]->CallFunctionByNameWithArguments(TEXT("SetMesh ") + meshID, ar, NULL, true);
 
 	UE_LOG(LogTemp, Warning, TEXT("player ID: %d, actor ID: %d"), playerID, actorID);
