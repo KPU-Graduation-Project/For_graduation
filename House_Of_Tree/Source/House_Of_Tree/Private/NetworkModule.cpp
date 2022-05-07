@@ -33,6 +33,8 @@ void UNetworkModule::ShootBullet(FVector location, FRotator rotation)
 {
 	if (gameInst->CheckSend())
 	{
+		UE_LOG(LogTemp, Error, TEXT("ShootBullet"));
+		
 		cs_shoot_bullet_packet packet;
 		packet.type = CS_PACKET::CS_SHOOT_BULLET;
 		packet.size = sizeof(packet);
@@ -61,9 +63,9 @@ void UNetworkModule::TargetSpin(AActor *actor, bool forward)
 		packet.size = sizeof(packet);
 
 		packet.object_id = *key;
-		packet.direction = static_cast<char>(forward);
+		packet.direction = forward? 1 : 0;
 
 		gameInst->SocketInstance->Send(packet.size, &packet);
-		UE_LOG(LogTemp, Error, TEXT("Send TargetSpin %d"), *key);
+		UE_LOG(LogTemp, Error, TEXT("Send TargetSpin %d"), packet.direction);
 	}
 }

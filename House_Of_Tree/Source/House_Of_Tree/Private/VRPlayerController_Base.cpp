@@ -293,12 +293,13 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 	FString command = FString::Printf(TEXT("SetMesh %d"), meshID);
 	actorList[actorID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
 
-	// Set Child Actor
+	UE_LOG(LogTemp, Error, TEXT("%d"), parentID);
+	// Set Parent Actor
 	if (parentID != 0 && actorList.Contains(parentID))
 	{
 		UE_LOG(LogTemp, Error, TEXT("your parent %s"), *actorList[parentID]->GetName());
 
-		// 부모가 여럿이면 블루프린트에서 배열로 추가
+		// 부모의 자식이 여럿이면 블루프린트에서 배열을 추가하는 방식으로
 		command = FString::Printf(TEXT("SetChild %s"), *actorList[actorID]->GetName());
 		
 		actorList[parentID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
