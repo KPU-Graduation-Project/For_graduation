@@ -48,3 +48,22 @@ void UNetworkModule::ShootBullet(FVector location, FRotator rotation)
 		gameInst->SocketInstance->Send(packet.size, &packet);
 	}
 }
+
+void UNetworkModule::TargetSpin(AActor *actor, bool forward)
+{
+	if (gameInst->CheckSend() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::GIRL)
+	{
+		const int *key = gameInst->playerController->GetActorKey(actor);
+		if (key == nullptr) return;
+		
+		cs_object_update_packet packet;
+		packet.type = CS_PACKET::CS_OBJECT_UPDATE;
+		packet.size = sizeof(packet);
+
+		packet.object_id = *key;
+		packet.direction = static_cast<char>(forward);
+
+		gameInst->SocketInstance->Send(packet.size, &packet);
+		UE_LOG(LogTemp, Error, TEXT("Send TargetSpin %d"), *key);
+	}
+}

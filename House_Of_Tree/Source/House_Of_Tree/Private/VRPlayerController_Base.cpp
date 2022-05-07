@@ -32,11 +32,6 @@ void AVRPlayerController_Base::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Get GameInstance Error!"));
 	}
-
-// 	PutObject(100, 100002,
-// 		FVector(-590.000000,-880.000000,85.998222),
-// 		FRotator(0, 0, 0),
-// 		FVector(1, 1, 1));
 }
 
 void AVRPlayerController_Base::Tick(float DeltaSeconds)
@@ -183,7 +178,7 @@ void AVRPlayerController_Base::ProcessPacket()
 				scale.Y = static_cast<float>(packet->scale_y) / 100;
 				scale.Z = static_cast<float>(packet->scale_z) / 100;
 				
-				PutObject(packet->id, packet->object_type, location, rotation, scale, packet->mesh_id);
+				PutObject(packet->id, packet->object_type, location, rotation, scale, packet->mesh_id, packet->parent_object_id);
 			}
 			break;
 
@@ -260,6 +255,18 @@ void AVRPlayerController_Base::ProcessPacket()
 				actorList.Add(packet->id, GetWorld()->SpawnActor<AActor>(bullet, location, rotation, SpawnParams));
 			}
 			break;
+
+		case SC_PACKET::SC_OBJECT_UPDATE:
+			{
+				UE_LOG(LogTemp, Error, TEXT("SC_OBJECT_UPDATE"));
+				sc_object_update_packet* packet = reinterpret_cast<sc_object_update_packet*>(p);
+				
+				if (!actorList.Contains(packet->object_id)) break;
+
+				FOutputDeviceNull ar;
+				FString command = FString::Printf(TEXT("SetRotation %f"), packet->direction == 1 ? -120.0 : 120.0);
+				actorList[packet->object_id]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
+			}
 			
 		default:
 			break;
@@ -270,20 +277,36 @@ void AVRPlayerController_Base::ProcessPacket()
 	}
 }
 
-void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID)
+void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID, int parentID)
 {
 	if (gameInst->GetActor(objectID) == nullptr) return;
 	
 	UE_LOG(LogTemp, Error, TEXT("Actor ID: %d, ObjectID: %d"), actorID, objectID);
 	FActorSpawnParameters SpawnParams;
 
+	// Set Transform
 	actorList.Add(actorID, GetWorld()->SpawnActor<AActor>(gameInst->GetActor(objectID), location, rotation, SpawnParams));
 	actorList[actorID]->SetActorScale3D(scale);
 
+	// Set Mesh ID
 	FOutputDeviceNull ar;
-	actorList[actorID]->CallFunctionByNameWithArguments(TEXT("SetMesh ") + meshID, ar, NULL, true);
+	FString command = FString::Printf(TEXT("SetMesh %d"), meshID);
+	actorList[actorID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
 
+	// Set Child Actor
+	if (parentID != 0 && actorList.Contains(parentID))
+	{
+		UE_LOG(LogTemp, Error, TEXT("your parent %s"), *actorList[parentID]->GetName());
+
+		// 부모가 여럿이면 블루프린트에서 배열로 추가
+		command = FString::Printf(TEXT("SetChild %s"), *actorList[actorID]->GetName());
+		
+		actorList[parentID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
+	}
+	
 	UE_LOG(LogTemp, Warning, TEXT("player ID: %d, actor ID: %d"), playerID, actorID);
+
+	// character Possess
 	if (playerID == actorID)
 	{
 		SetPlayerCharacter(objectID);

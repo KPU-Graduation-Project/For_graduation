@@ -61,7 +61,7 @@ protected:
 	void ProcessPacket();
 	void SendPlayerData();
 
-	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID);
+	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID, int parentID);
 
 public:
 	virtual void BeginPlay() override;

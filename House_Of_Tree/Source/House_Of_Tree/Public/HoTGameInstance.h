@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category=Network, DisplayName="포트번호", meta = (EditCondition = "ConnectNetwork"))
 	int Port;
 
+	//UPROPERTY(EditDefaultsOnly, Category=Network, DisplayName="TEST", meta = (EditCondition = "ConnectNetwork"))
+	//int TEST;
+
 private:
 	UPROPERTY()
 	FString ipPath;

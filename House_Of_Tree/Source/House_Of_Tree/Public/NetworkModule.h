@@ -24,7 +24,10 @@ protected:
 	UPROPERTY()
 	UHoTGameInstance *gameInst;
 
-public:	
+public:
 	UFUNCTION(BlueprintCallable, Category="Network")
 	void ShootBullet(FVector location, FRotator rotation);
+
+	UFUNCTION(BlueprintCallable, Category="Network")
+	void TargetSpin(AActor *actor , bool forward);
 };
