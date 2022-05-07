@@ -35,7 +35,7 @@ public:
 	Transform GetTransform() { return m_transform; };
 
 	virtual unsigned int GetObjectType() { return 0; };
-	virtual void  Update() {};
+	virtual void  Update(float _delta_second) {};
 public:
 	unsigned int  m_id;
 	unsigned int  m_object_type;	

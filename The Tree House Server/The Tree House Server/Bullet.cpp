@@ -9,7 +9,7 @@ unsigned int cBullet::GetObjectType()
 	return object_type;
 };
 
-void cBullet::Update()
+void cBullet::Update(float _delta_second)
 {
 
 }
@@ -22,7 +22,7 @@ unsigned int cMatch::GetObjectType()
 	return object_type;
 };
 
-void cMatch::Update()
+void cMatch::Update(float _delta_second)
 {
 
 }
@@ -35,7 +35,7 @@ unsigned int cSap::GetObjectType()
 	return object_type;
 };
 
-void cSap::Update()
+void cSap::Update(float _delta_second)
 {
 
 };

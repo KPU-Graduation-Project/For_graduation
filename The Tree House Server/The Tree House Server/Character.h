@@ -16,7 +16,7 @@ public:
 		const iVector3& _lh_position, const sRotation3& _lh_rotation);
 	
 	virtual unsigned int GetObjectType() ;
-	virtual void  Update();
+	virtual void  Update(float _delta_second);
 	//list<unsigned short >m_view_list;
 public:
 	iVector3  m_head_position;
@@ -37,7 +37,7 @@ public:
 	virtual ~cGirlCharacter() {};
 
 	virtual unsigned int GetObjectType();
-	virtual void  Update();
+	virtual void  Update(float _delta_second);
 public:
 
 };
@@ -50,7 +50,7 @@ public:
 	virtual ~cBoyCharacter() {};
 
 	virtual unsigned int GetObjectType() ;
-	virtual void  Update();
+	virtual void  Update(float _delta_second);
 public:
 
 };

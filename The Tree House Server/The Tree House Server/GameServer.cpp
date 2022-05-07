@@ -43,8 +43,8 @@ void cGameServer::TimerThread()
 {
 	//최초 1회
 	cTimerEvent* new_event = new cTimerEvent;
-	new_event->m_event_type = EVENT_TYPE::EV_SEND_PLAYER_DATA;
-	new_event->m_excute_time = chrono::high_resolution_clock::now() + chrono::milliseconds(1000 / 30);
+	new_event->m_event_type = EVENT_TYPE::EV_TICK;
+	new_event->m_excute_time = chrono::high_resolution_clock::now() + chrono::milliseconds(1000 / 60);
 	g_timer_queue.push(new_event);
 
 	while(true)
@@ -59,11 +59,14 @@ void cGameServer::TimerThread()
 			{
 				switch (timer_event->m_event_type)
 				{
-				case EVENT_TYPE::EV_SEND_PLAYER_DATA:
+				case EVENT_TYPE::EV_TICK:
 				{
+
+					m_clock->UpdateCurrentTime();
+
 					// 오브젝트풀로 수정 필요
 					cExpOver* over = new cExpOver;
-					over->m_comp_op = OP_SEND_PLAYER_DATA;
+					over->m_comp_op = OP_TICK_EVENT;
 					// 특정 유저에게 보내는 것이 아닌 경우 KEY 어떻게?
 					PostQueuedCompletionStatus(m_h_IOCP, 1, NULL, &over->m_wsa_over);
 
@@ -80,10 +83,8 @@ void cGameServer::TimerThread()
 			{
 				g_timer_queue.push(timer_event);
 			}
-		}
-
-		m_clock->UpdateCurrentTime();
-		this_thread::sleep_for(5ms);
+		}		
+		this_thread::sleep_for(2ms);
 	}
 }
 
@@ -149,10 +150,12 @@ void cGameServer::WorkerThread()
 			Accept(exp_over);
 			break;
 					}
-		case OP_SEND_PLAYER_DATA:
+		case OP_TICK_EVENT:
 		{
+
 			for (const auto& room : g_room_manager->m_rooms)
-			{
+			{			
+				room.second->Update(m_clock->GetDeltaTimeSecond());
 				room.second->SendPlayerData();
 			}
 			delete exp_over;
@@ -488,6 +491,19 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _rec
 
 		m_user_manager->m_users[_user_id]->GetRoom()->BulletHit(packet->bullet_id, packet->object_id, { packet->x, packet->y, packet->z }, { packet->pitch, packet->yaw, packet->roll });
 			break;
+	}
+	case CS_PACKET::CS_OBJECT_UPDATE:
+	{
+		cs_object_update_packet* packet= reinterpret_cast<cs_object_update_packet*>(_recv_pkt);
+
+		sc_object_update_packet send_packet;
+
+		send_packet.size = sizeof(sc_object_update_packet);
+		send_packet.type = SC_PACKET::SC_OBJECT_UPDATE;
+		send_packet.object_id = packet->object_id;
+
+		m_user_manager->m_users[_user_id]->GetRoom()->Broadcast(sizeof(send_packet), &send_packet);
+		break;
 	}
 
 

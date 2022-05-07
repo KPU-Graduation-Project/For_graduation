@@ -5,7 +5,7 @@
 using namespace std;
 using namespace chrono;
 
-enum EVENT_TYPE { NONE = 0, EV_SEND_PLAYER_DATA };
+enum EVENT_TYPE { NONE = 0, EV_SEND_PLAYER_DATA, EV_TICK };
 
 class cTimerEvent
 {

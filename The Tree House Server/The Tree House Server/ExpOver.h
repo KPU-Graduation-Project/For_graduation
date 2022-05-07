@@ -4,7 +4,7 @@
 #include "protocol.h"
 #include <map>
 
-enum OP_TYPE { OP_RECV, OP_SEND, OP_ACCEPT, OP_SEND_PLAYER_DATA };
+enum OP_TYPE { OP_RECV, OP_SEND, OP_ACCEPT, OP_TICK_EVENT };
 
 class cExpOver {
 public:

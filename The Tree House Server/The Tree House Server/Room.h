@@ -41,6 +41,7 @@ public:
 	void SendAllObjectData();
 	void ShootBullet(UserRef _user, iVector3 _source_position, sRotation3 _rotation);
 	void BulletHit(unsigned int _bullet_id, unsigned int _hit_object_id, iVector3 _source_position, sRotation3 _rotation);
+	void Update(float _delta_second);
 
 	void Broadcast(int _size, void* _mess);
 

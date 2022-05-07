@@ -8,7 +8,7 @@ public:
 	virtual ~cBullet() {};
 
 	virtual unsigned int GetObjectType();
-	virtual void  Update();
+	virtual void  Update(float _delta_second);
 public:
 	iVector3   m_launch_position;
 	sRotation3 m_launch_rotation;
@@ -21,7 +21,7 @@ public:
 	~cMatch() {};
 
 	virtual unsigned int GetObjectType();
-	virtual void  Update();
+	virtual void  Update(float _delta_second);
 private:
 	
 };
@@ -34,7 +34,7 @@ public:
 	~cSap() {};
 
 	virtual unsigned int GetObjectType();
-	virtual void  Update();
+	virtual void  Update(float _delta_second);
 private:
 
 };

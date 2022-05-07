@@ -25,7 +25,7 @@ unsigned int cCharacter::GetObjectType()
 	static unsigned int object_type = 10000;
 	return object_type;
 };
-void  cCharacter::Update() {};
+void  cCharacter::Update(float _delta_second) {};
 
 //----------------GirlCharacter----------------//
 unsigned int cGirlCharacter::GetObjectType()
@@ -34,7 +34,7 @@ unsigned int cGirlCharacter::GetObjectType()
 	return object_type;
 };
 
-void  cGirlCharacter::Update()
+void  cGirlCharacter::Update(float _delta_second)
 {
 
 };
@@ -49,7 +49,7 @@ unsigned int cBoyCharacter::GetObjectType()
 	return object_type;
 };
 
-void  cBoyCharacter::Update()
+void  cBoyCharacter::Update(float _delta_second)
 {
 
 };

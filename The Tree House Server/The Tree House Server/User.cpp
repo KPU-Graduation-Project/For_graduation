@@ -29,8 +29,6 @@ void cUser::Init()
 	ZeroMemory(&m_recv_over.m_wsa_over, sizeof(m_recv_over.m_wsa_over));
 }
 
-
-
 void cUser::Recv()
 {
 	DWORD recv_flag = 0;

@@ -275,8 +275,8 @@ struct sc_put_object_packet
 	unsigned int  id;
 	unsigned int  object_type;
 	unsigned char mesh_id;
-	// id of parent object(if it's passive object) / if object is dynamic object: id = 0
-	unsigned int  parent_object_id; 
+	// id of child object ( if it has 'a' child object(which is passive object)) / if it doesn't have: = 0
+	unsigned int  child_object_id;
 
 	int           x;
 	int           y;
