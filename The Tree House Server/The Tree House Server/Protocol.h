@@ -15,7 +15,7 @@ namespace CS_PACKET
 		CS_LOGIN,
 		CS_CREATE_ROOM, CS_JOIN_ROOM, CS_JOIN_RANDOM_ROOM, CS_READY_GAME, CS_CHANGE_SELECTED_CHARACTER,
 		CS_START_GAME, CS_LOADING_COMPLETE,
-		CS_PLAYER_DATA, CS_SHOOT_BULLET, CS_BULLET_HIT
+		CS_PLAYER_DATA, CS_SHOOT_BULLET, CS_BULLET_HIT,CS_OBJECT_UPDATE
 	};
 };
 
@@ -28,7 +28,7 @@ namespace SC_PACKET
 		SC_LOGINOK,
 		SC_CREATE_ROOM, SC_JOIN_ROOM, SC_USER_JOIN_ROOM, USER_EXIT_ROOM, SC_USER_READY_GAME, SC_USER_CHANGE_SELECTED_CHARACTER,
 		SC_START_GAME, SC_ALL_USERS_LOADING_COMPLETE,
-		SC_PUT_OBJECT, SC_REMOVE_OBJECT,SC_DESTROY_OBJECT, SC_OBJECT_DATA, SC_PLAYER_DATA, SC_SHOOT_BULLET, SC_MOVE_SECTOR
+		SC_PUT_OBJECT, SC_REMOVE_OBJECT,SC_DESTROY_OBJECT, SC_OBJECT_DATA, SC_PLAYER_DATA, SC_SHOOT_BULLET, SC_MOVE_SECTOR, SC_OBJECT_UPDATE
 	};
 
 };
@@ -175,6 +175,14 @@ struct cs_login_packet
 		short roll;
 	};
 
+	struct cs_object_update_packet
+	{
+		unsigned char size;
+		unsigned char type;
+
+		unsigned int  object_id;
+		char direction; // 0 = reverse / 1 = forward
+	};
 
 //--------------------SC PACKET----------------------//
 //---------------------------------------------------//
@@ -384,4 +392,12 @@ struct sc_move_sector_packet
 	unsigned char  new_sector;
 };
 
+struct sc_object_update_packet
+{
+	unsigned char size;
+	unsigned char type;
+
+	unsigned int  object_id;
+	char direction; // 0 = reverse / 1 = forward
+};
 #pragma pack(pop)

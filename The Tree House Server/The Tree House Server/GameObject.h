@@ -1,6 +1,21 @@
 #pragma once
 #include "struct.h"
 
+enum class OBJECT_STATE
+{
+	FREE = 0, ALIVE = 1, STOP = 2, DESTROYING = 3
+};
+
+enum OBJECT_TYPE
+{
+	CHARACTER = 100000, GIRL, BOY,
+	MONSTER = 200000, PLAY_ZONE_TARGET, TARGET_DOLL,
+	BULLET = 300000, MATCH, SAP,
+	DYNAMIC_OBJECT = 400000, TARGET, BOX,DESTRUCTIBLE,
+	PASSIVE_OBJECT=500000,DOOR
+};
+
+
 class cGameObject
 {
 public:
@@ -22,13 +37,14 @@ public:
 	virtual unsigned int GetObjectType() { return 0; };
 	virtual void  Update() {};
 public:
-	// have to be static
-	unsigned int  m_object_type;
-
-	unsigned int m_id;
+	unsigned int  m_id;
+	unsigned int  m_object_type;	
 	unsigned char m_mesh_id;
 
+	OBJECT_STATE m_state;
+	
+	Transform m_transform;
 	unsigned char m_sector;
 
-	Transform m_transform;
+	unsigned int m_parent_object;
 };

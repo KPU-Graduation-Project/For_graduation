@@ -59,7 +59,6 @@ public:
 	UserRef m_users[2] = { nullptr,nullptr };
 
 	concurrency::concurrent_unordered_map <unsigned int, cGameObject*> m_game_objects;
-	concurrency::concurrent_unordered_map <unsigned int, cBullet*> m_bullets;
 private:
 	atomic <int>          m_last_object_id=MAX_USER;
 };

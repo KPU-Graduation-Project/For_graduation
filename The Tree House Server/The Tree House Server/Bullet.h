@@ -12,8 +12,6 @@ public:
 public:
 	iVector3   m_launch_position;
 	sRotation3 m_launch_rotation;
-
-	bool m_is_moving;
 };
 
 class cMatch :public cBullet

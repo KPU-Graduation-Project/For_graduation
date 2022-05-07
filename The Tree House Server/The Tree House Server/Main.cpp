@@ -8,9 +8,14 @@
 
 cGameServer* g_server = nullptr;
 
+#include <concurrent_unordered_map.h>
+#include "GameObject.h"
+#include "Bullet.h"
+
 int main()
 {
 	g_server = new cGameServer;
 	g_server->Init();
 	g_server->Start();
+
 }
