@@ -41,7 +41,7 @@ public:
 
 		return object;
 	}
-	void ReturnObject(T* _object)
+	void PushObject(T* _object)
 	{
 		m_objects.push(_object);
 	}
@@ -60,8 +60,7 @@ public:
 
 private:
 	Concurrency::concurrent_queue<T*> m_objects;
-	std::atomic<int>     m_max_size;
-
+	std::atomic<int>                  m_max_size;
 };
 
 

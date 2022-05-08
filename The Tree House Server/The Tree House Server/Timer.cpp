@@ -4,7 +4,7 @@
 using namespace chrono;
 
 
-void cTimerEvent::Init() {};
+//void cTimerEvent::Init() {};
 
 
 
@@ -17,15 +17,15 @@ cTimer::~cTimer() {};
 
 void cTimer::Init()
 {
-	m_started_time =high_resolution_clock::now();
+	m_started_time = system_clock::now();
 }
 
 void cTimer::UpdateCurrentTime()
 {
-	m_current_time = high_resolution_clock::now();
+	m_current_time = system_clock::now();
 }
 
-high_resolution_clock::time_point cTimer::GetTime()
+system_clock::time_point cTimer::GetTime()
 {
 	return m_current_time;
 }
@@ -33,5 +33,5 @@ high_resolution_clock::time_point cTimer::GetTime()
 float cTimer::GetDeltaTimeSecond()
 {
 
-	return duration_cast<seconds>(high_resolution_clock::now() - m_current_time).count();
+	return duration_cast<seconds>(system_clock::now() - m_current_time).count();
 }

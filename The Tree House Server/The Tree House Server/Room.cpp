@@ -35,7 +35,7 @@ void cRoom::StartGame()
 			character->m_mesh_id = 0;
 			character->m_state = OBJECT_STATE::ALIVE;
 			character->SetScale({ 100,100,100 });
-			character->SetCharacterTransform({ -68000,19000, 9200 }, { 0,0,0 },
+			character->SetCharacterTransform({ -68000,0, 9200 }, { 0,-9000,0 },
 				{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
 			character->m_sector = 1;
 			character->m_parent_id;
@@ -70,7 +70,7 @@ void cRoom::StartGame()
 			character->m_mesh_id = 0;
 			character->m_state = OBJECT_STATE::ALIVE;
 			character->SetScale({ 100,100,100 });
-			character->SetCharacterTransform({ 171200,21700,9200 }, { 0,0,-9000 }, { 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
+			character->SetCharacterTransform({ -68000,0,9200 }, { 0,-9000,0 }, { 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
 
 			character->m_sector = 1;
 			character->m_parent_id;
@@ -197,56 +197,57 @@ void cRoom::StartGame()
 			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
 			SendPutObject(game_object->m_id);
 					}
-		{
-			cMonster* game_object = cRoomManager::m_monster_pool.PopObject();
-			game_object->m_id = cRoomManager::m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::TARGET_DOLL;
-			game_object->m_mesh_id = 0;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			game_object->SetTransform({ { -564302,-342228,-104675 }, { 0,0,0 }, {246,246,246} });
-			game_object->m_sector = 1;
-			game_object->m_parent_id = 0;
-			game_object->m_behavior = cPlayZoneTarget::BEHAVIOR::BH1_NONE;
-			m_game_objects.insert(pair<unsigned int, cMonster*>{game_object->m_id, game_object});
-			SendPutObject(game_object->m_id);
-		}
-		{//10
-			cPlayZoneTarget* game_object = reinterpret_cast<cPlayZoneTarget*>(cRoomManager::m_monster_pool.PopObject());
-			game_object->m_id = cRoomManager::m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::PLAY_ZONE_TARGET;
-			game_object->m_mesh_id = 1;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			//game_object->SetTransform({ { -593700,-384900,55500 }, { 9000,1403,10403 }, {100,100,100} });
-			game_object->SetTransform({ {	 -71000, -18000, 9200  }, { 9000,-1403,7596 }, {100,100,100} });
-			game_object->m_sector = 1;
-			game_object->m_parent_id = 0;
-			game_object->m_behavior = cPlayZoneTarget::BEHAVIOR::BH2_NONE;
-			m_game_objects.insert(pair<unsigned int, cMonster*>{game_object->m_id, game_object});
-			SendPutObject(game_object->m_id);
+		//{
+		//	cMonster* game_object = cRoomManager::m_monster_pool.PopObject();
+		//	game_object->m_id = cRoomManager::m_last_object_id++;
+		//	game_object->m_object_type = OBJECT_TYPE::TARGET_DOLL;
+		//	game_object->m_mesh_id = 0;
+		//	game_object->m_state = OBJECT_STATE::ALIVE;
+		//	game_object->SetTransform({ { -564302,-342228,-104675 }, { 0,0,0 }, {246,246,246} });
+		//	game_object->m_sector = 1;
+		//	game_object->m_parent_id = 0;
+		//	game_object->m_behavior = cPlayZoneTarget::BEHAVIOR::BH1_NONE;
+		//	m_game_objects.insert(pair<unsigned int, cMonster*>{game_object->m_id, game_object});
+		//	SendPutObject(game_object->m_id);
+		//}
+		//{//10
+		//	cPlayZoneTarget* game_object = reinterpret_cast<cPlayZoneTarget*>(cRoomManager::m_monster_pool.PopObject());
+		//	game_object->m_id = cRoomManager::m_last_object_id++;
+		//	game_object->m_object_type = OBJECT_TYPE::PLAY_ZONE_TARGET;
+		//	game_object->m_mesh_id = 1;
+		//	game_object->m_state = OBJECT_STATE::ALIVE;
+		//	//game_object->SetTransform({ { -593700,-384900,55500 }, { 9000,1403,10403 }, {100,100,100} });
+		//	game_object->SetTransform({ {	 -71000, -18000, 9200  }, { 9000,-1403,7596 }, {100,100,100} });
+		//	game_object->m_sector = 1;
+		//	game_object->m_parent_id = 0;
+		//	game_object->m_behavior = cPlayZoneTarget::BEHAVIOR::BH2_NONE;
+		//	m_game_objects.insert(pair<unsigned int, cMonster*>{game_object->m_id, game_object});
+		//	SendPutObject(game_object->m_id);
 
-			game_object->ProgressNextBehavior();
-		}
-		{
-			cPlayZoneTarget* game_object = reinterpret_cast<cPlayZoneTarget*>(cRoomManager::m_monster_pool.PopObject());
-			game_object->m_id = cRoomManager::m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::PLAY_ZONE_TARGET;
-			game_object->m_mesh_id = 1;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			//game_object->SetTransform({ { -593700,-357600,40200 }, { 9000,-1403,7596 }, {100,100,100} });
-			game_object->SetTransform({ {	 -73000, -18000, 9200  }, { 9000,-1403,7596 }, {100,100,100} });
+		//	game_object->ProgressNextBehavior();
+		//}
+		//{
+		//	cPlayZoneTarget* game_object = reinterpret_cast<cPlayZoneTarget*>(cRoomManager::m_monster_pool.PopObject());
+		//	game_object->m_id = cRoomManager::m_last_object_id++;
+		//	game_object->m_object_type = OBJECT_TYPE::PLAY_ZONE_TARGET;
+		//	game_object->m_mesh_id = 1;
+		//	game_object->m_state = OBJECT_STATE::ALIVE;
+		//	//game_object->SetTransform({ { -593700,-357600,40200 }, { 9000,-1403,7596 }, {100,100,100} });
+		//	game_object->SetTransform({ {	 -73000, -18000, 9200  }, { 9000,-1403,7596 }, {100,100,100} });
 
-			game_object->m_sector = 1;
-			game_object->m_parent_id = 0;
-			game_object->m_behavior = cPlayZoneTarget::BEHAVIOR::BH1_NONE;
-			m_game_objects.insert(pair<unsigned int, cMonster*>{game_object->m_id, game_object});
-			SendPutObject(game_object->m_id);
+		//	game_object->m_sector = 1;
+		//	game_object->m_parent_id = 0;
+		//	game_object->m_behavior = cPlayZoneTarget::BEHAVIOR::BH1_NONE;
+		//	m_game_objects.insert(pair<unsigned int, cMonster*>{game_object->m_id, game_object});
+		//	SendPutObject(game_object->m_id);
 
-			game_object->ProgressNextBehavior();
-		}
+		//	game_object->ProgressNextBehavior();
+		//}
 	}
 
-	
+	StateLock();
 	m_state = ROOM_STATE::INGAME;
+	StateUnlock();
 	std::cout << "Room [ " << m_id << " ] Started Game\n";
 }
 

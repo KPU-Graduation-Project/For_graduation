@@ -27,32 +27,21 @@ void cPlayZoneTarget::ProgressNextBehavior()
 
 	case BEHAVIOR::BH1_NONE:
 	{
-		cout << "BH1\n";
 		ClearDeltaTransform();
 		SetDeltaPosition({ 0,-100000 / 2,0 });
 		++m_behavior;	
-
-		cTimerEvent new_event;
-		new_event.m_obj_id = m_id;
-		new_event.m_event_type = EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT;
-		new_event.m_excute_time = chrono::high_resolution_clock::now() + chrono::milliseconds(2000);
-		cout << "size: " << g_timer_queue.size()<<"\n";
-		g_timer_queue.push(new_event);
-		cout << "size: " << g_timer_queue.size() << "\n";
-		cout << "id: " << new_event.m_obj_id<<" type: "<<(int)new_event.m_event_type<<"\n";
+		
+		g_timer_queue.push(cTimerEvent{ m_id ,chrono::system_clock::now() + chrono::milliseconds(2000),EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT });
 		break;
 	}
 	// 타이머 이벤트 수정 필요 - 타이머 이벤트 풀 사용 및 함수화
 	case BEHAVIOR::BH1_MOVE_DOWN1:
 	{
 		ClearDeltaTransform();
-		++m_behavior;
+		++m_behavior			;
 
-		cTimerEvent new_event;
-		new_event.m_obj_id = m_id;
-		new_event.m_event_type = EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT;
-		new_event.SetExcuteTimeMS(5000);
-		g_timer_queue.push(new_event);
+		g_timer_queue.push(cTimerEvent{ m_id ,chrono::system_clock::now() + chrono::milliseconds(2000),EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT });
+
 		break;
 	}
 	case BEHAVIOR::BH1_HOLD1:
@@ -60,11 +49,7 @@ void cPlayZoneTarget::ProgressNextBehavior()
 		SetDeltaPosition({ 0,100000 / 2,0 });
 		++m_behavior;
 
-		cTimerEvent new_event;
-		new_event.m_obj_id = m_id;
-		new_event.m_event_type = EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT;
-		new_event.SetExcuteTimeMS(2000);
-		g_timer_queue.push(new_event);
+		g_timer_queue.push(cTimerEvent{ m_id ,chrono::system_clock::now() + chrono::milliseconds(2000),EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT });
 		break;
 	}
 	case BEHAVIOR::BH1_MOVE_UP1:
@@ -72,22 +57,14 @@ void cPlayZoneTarget::ProgressNextBehavior()
 		ClearDeltaTransform();
 		++m_behavior;
 
-		cTimerEvent new_event;
-		new_event.m_obj_id = m_id;
-		new_event.m_event_type = EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT;
-		new_event.SetExcuteTimeMS(5000);
-		g_timer_queue.push(new_event);
+		g_timer_queue.push(cTimerEvent{ m_id ,chrono::system_clock::now() + chrono::milliseconds(5000),EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT });
 		break;
 	}
 	case BEHAVIOR::BH1_HOLD2:
 	{
 		SetDeltaPosition({ 0,-100000 / 2,0 });
 
-		cTimerEvent new_event;
-		new_event.m_obj_id = m_id;
-		new_event.m_event_type = EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT;
-		new_event.SetExcuteTimeMS(2000);
-		g_timer_queue.push(new_event);
+		g_timer_queue.push(cTimerEvent{ m_id ,chrono::system_clock::now() + chrono::milliseconds(2000),EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT });
 		break;
 	}
 
@@ -98,11 +75,7 @@ void cPlayZoneTarget::ProgressNextBehavior()
 		SetDeltaRotation({ -24000/8,0,0 });
 		++m_behavior;
 
-		cTimerEvent new_event;
-		new_event.m_obj_id = m_id;
-		new_event.m_event_type = EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT;
-		new_event.SetExcuteTimeMS(8000);
-		g_timer_queue.push(new_event);
+		g_timer_queue.push(cTimerEvent{ m_id ,chrono::system_clock::now() + chrono::milliseconds(8000),EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT });
 		break;
 	}
 	case BEHAVIOR::BH2_ROTATE_PITCH_DOWN1:
@@ -111,24 +84,9 @@ void cPlayZoneTarget::ProgressNextBehavior()
 		SetDeltaRotation({ 24000 / 8,0,0 });
 		++m_behavior;
 
-		cTimerEvent new_event;
-		new_event.m_obj_id = m_id;
-		new_event.m_event_type = EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT;
-		new_event.SetExcuteTimeMS(8000);
-		g_timer_queue.push(new_event);
+		g_timer_queue.push(cTimerEvent{ m_id ,chrono::system_clock::now() + chrono::milliseconds(8000),EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT });
 		break;
 	}
-	/*case BEHAVIOR::BH2_HOLD1:
-	{
-		SetDeltaRotation({ 24000 / 2,0,0 });
-		++m_behavior;
-
-		cTimerEvent* new_event = new cTimerEvent;
-		new_event->m_obj_id = m_id;
-		new_event->m_event_type = EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT;
-		new_event->SetExcuteTimeMS(8000);
-		break;
-	}*/
 	case BEHAVIOR::BH2_ROTATE_PITCH_UP1:
 	{
 		//ClearDeltaTransform();
@@ -136,26 +94,9 @@ void cPlayZoneTarget::ProgressNextBehavior()
 		//++m_behavior;
 		m_behavior = BEHAVIOR::BH2_ROTATE_PITCH_DOWN1;
 
-		cTimerEvent new_event;
-		new_event.m_obj_id = m_id;
-		new_event.m_event_type = EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT;
-		new_event.SetExcuteTimeMS(8000);
-		g_timer_queue.push(new_event);
+		g_timer_queue.push(cTimerEvent{ m_id ,chrono::system_clock::now() + chrono::milliseconds(8000),EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT });
 		break;
-	}
-	//case BEHAVIOR::BH2_HOLD2:
-	//{
-	//	SetDeltaRotation({ -24000,0,0 });
-	//	m_behavior = BEHAVIOR::BH2_ROTATE_PITCH_DOWN1;
-
-	//	cTimerEvent* new_event = new cTimerEvent;
-	//	new_event->m_obj_id = m_id;
-	//	new_event->m_event_type = EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT;
-	//	new_event->SetExcuteTimeMS(8000);
-	//	break;
-	//}
-
-	
+	}	
 	}
 };
 
