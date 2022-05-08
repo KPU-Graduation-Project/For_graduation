@@ -7,6 +7,7 @@
 #include "Protocol.h"
 #include "VRCharacter_Base.h"
 #include "VRPlayerController_Base.h"
+#include "WeaponMatchBullet.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -59,6 +60,8 @@ void AWeaponCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 		ProjectileMovementComponent->SetVelocityInLocalSpace(FVector(0, 0, 0));
 		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
 
+		if (Cast<AWeaponMatchBullet>(OtherActor) || Cast<AVRCharacter_Base>(OtherActor)) return;
+		
 		if (gameInst->CheckSend() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::BOY)
 		{
 			cs_bullet_hit_packet packet;

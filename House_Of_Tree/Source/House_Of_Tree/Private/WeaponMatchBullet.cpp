@@ -13,8 +13,6 @@
 // Sets default values
 AWeaponMatchBullet::AWeaponMatchBullet()
 {
-	InitialLifeSpan = 5.0f;
-
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -96,7 +94,6 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 			packet.yaw = rotation.Yaw * 100;
 			packet.roll = rotation.Roll * 100;
 
-			UE_LOG(LogTemp, Error, TEXT("Send onHit"));
 			gameInst->SocketInstance->Send(packet.size, &packet);
 		}
 	}

@@ -35,6 +35,10 @@ public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
+	// Destory 함수를 전적으로 블루프린트화 시킴
+	UFUNCTION(BlueprintImplementableEvent)
+	void CallDestory();
+
 	UPROPERTY(EditAnywhere, Category = Weight)
 	float weight = 10.f;
 
