@@ -19,7 +19,9 @@ AWeaponCannonBall::AWeaponCannonBall()
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponet"));
 	CollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("CannonBall"));
 	CollisionComponent->OnComponentHit.AddDynamic(this, &AWeaponCannonBall::OnHit);
-	CollisionComponent->SetSphereRadius(15.0f);
+	CollisionComponent->SetSphereRadius(30.0f);
+	
+	RootComponent = CollisionComponent;
 	
 	// ProjectileMovementComponent 를 사용하여 이 발사체의 운동을 관장합니다.
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
