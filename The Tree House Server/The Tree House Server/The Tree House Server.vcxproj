@@ -164,6 +164,7 @@
     <ClCompile Include="ExpOver.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Global.cpp" />
+    <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="IOCPBase.cpp" />
     <ClCompile Include="LevelDesignInfo.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="MemoryPool.h" />
+    <ClInclude Include="Monster.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="IOCPBase.h" />
     <ClInclude Include="LevelDesignInfo.h" />

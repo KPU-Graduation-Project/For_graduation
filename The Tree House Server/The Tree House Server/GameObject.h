@@ -46,5 +46,5 @@ public:
 	Transform m_transform;
 	unsigned char m_sector;
 
-	unsigned int m_parent_object;
+	unsigned int m_parent_id;
 };

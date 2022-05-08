@@ -5,7 +5,7 @@
 using namespace std;
 using namespace chrono;
 
-enum EVENT_TYPE { NONE = 0, EV_SEND_PLAYER_DATA, EV_TICK };
+enum EVENT_TYPE { NONE = 0,  TICK_EVENT,PROGRESS_BEHAVIOR_EVENT };
 
 class cTimerEvent
 {
@@ -20,8 +20,9 @@ public:
 		return (m_excute_time > _Left.m_excute_time);
 	}
 
+	void SetExcuteTimeMS(const unsigned int& _excute_time){		m_excute_time = high_resolution_clock::now() + milliseconds(_excute_time);		}
+
 public:
-	unsigned int m_room_id;
 	unsigned int m_obj_id;
 	high_resolution_clock::time_point m_excute_time;
 	EVENT_TYPE m_event_type;

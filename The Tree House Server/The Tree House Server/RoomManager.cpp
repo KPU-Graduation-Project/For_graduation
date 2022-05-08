@@ -10,12 +10,13 @@
 
 unordered_map<unsigned int, RoomRef> cRoomManager::m_rooms;
 cObjectPool<cGameObject>       cRoomManager::m_object_pool(500);
-cObjectPool<cCharacter>        cRoomManager::m_character_pool(MAX_USER/2); // 메모리풀 확장 확인을 위해 절반만
- cObjectPool<cBullet>           cRoomManager::m_bullet_pool(500);
-
+cObjectPool<cCharacter>        cRoomManager::m_character_pool(MAX_USER / 2); // 메모리풀 확장 확인을 위해 절반만
+cObjectPool<cBullet>           cRoomManager::m_bullet_pool(500);
+cObjectPool<cMonster>          cRoomManager::m_monster_pool(50);
+atomic<unsigned int> cRoomManager::m_last_object_id = MAX_USER;
 void cRoomManager::Init()
 {
-	
+
 };
 
 void cRoomManager::InitRooms()

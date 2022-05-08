@@ -19,4 +19,4 @@ using namespace std;
 using UserRef = shared_ptr<class cUser>;
 using RoomRef = shared_ptr<class cRoom>;
 
-static concurrency::concurrent_priority_queue<cTimerEvent*> g_timer_queue;
+static concurrency::concurrent_priority_queue<cTimerEvent> g_timer_queue;

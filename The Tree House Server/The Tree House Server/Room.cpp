@@ -6,12 +6,12 @@
 #include "UserManager.h"
 #include "User.h"
 #include "Bullet.h"
-
+#include "Monster.h"
 
 
 void cRoom::Init()
 {
-
+	InitializeCriticalSection(&m_state_cs);
 }
 
 void cRoom::InitObjects()
@@ -38,9 +38,10 @@ void cRoom::StartGame()
 			character->SetCharacterTransform({ -68000,19000, 9200 }, { 0,0,0 },
 				{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
 			character->m_sector = 1;
+			character->m_parent_id;
 			m_users[HOST]->m_character = character;
 
-						sc_put_object_packet packet;
+			sc_put_object_packet packet;
 			packet.size = sizeof(sc_put_object_packet);
 			packet.type = SC_PACKET::SC_PUT_OBJECT;
 			packet.id = m_users[HOST]->GetID();
@@ -69,16 +70,16 @@ void cRoom::StartGame()
 			character->m_mesh_id = 0;
 			character->m_state = OBJECT_STATE::ALIVE;
 			character->SetScale({ 100,100,100 });
-			//character->SetCharacterTransform({ 1712,21700,9200 }, { 0,0,-9000 },			{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
-			character->SetCharacterTransform({ -68000,-18000 ,9200 }, { 0,-18000,0 },
-				{ 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
+			character->SetCharacterTransform({ 171200,21700,9200 }, { 0,0,-9000 }, { 0,0,0 }, { 0,0,0 }, { 0, 0, 0 }, { 0,0,0 }, { 0,0,0 }, { 0,0,0 });
+
 			character->m_sector = 1;
+			character->m_parent_id;
 			m_users[GUEST]->m_character = character;
 
 			sc_put_object_packet packet;
 			packet.size = sizeof(sc_put_object_packet);
 			packet.type = SC_PACKET::SC_PUT_OBJECT;
-			packet.id = m_users[HOST]->GetID();
+			packet.id = m_users[GUEST]->GetID();
 			packet.object_type = character->m_object_type;
 			packet.mesh_id = 0;
 			packet.parent_object_id = 0;
@@ -100,156 +101,153 @@ void cRoom::StartGame()
 
 	//월드 오브젝트
 	{
-		{  //1
+		{//12
 			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
-			game_object->m_id = m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::DOOR;		
-			game_object->m_mesh_id = 0;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			game_object->SetTransform({ { -68443,-170107,583 }, { 0,0,0 }, {159,159,159} });
-			game_object->m_sector = 1;
-			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});		
-		}
-		{
-			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
-			game_object->m_id = m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::BOX;
-			game_object->m_mesh_id = 0;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			game_object->SetTransform({ { -233838,-133995,48376 }, { 0,0,0 }, {131,131,131} });
-			game_object->m_sector = 1;
-			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
-		}
-		{//3
-			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
-			game_object->m_id = m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::DOOR;
-			game_object->m_mesh_id = 1;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			game_object->SetTransform({ { -219798,-166375,-224 }, { 0,-1000,0 }, {65,65,65} });
-			game_object->m_sector = 1;
-			game_object->m_child_object = (m_last_object_id - 2);
-			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
-										
-		}
-		{
-			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
-			game_object->m_id = m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::DESTRUCTIBLE;
-			game_object->m_mesh_id = 2;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			game_object->SetTransform({ { -229869,-432744,0 }, { 0,-14499,0 }, {246,246,246} });
-			game_object->m_sector = 1;
-			game_object->m_child_object = 0;
-			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
-					}
-		{//5
-			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
-			game_object->m_id = m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::DESTRUCTIBLE;
-			game_object->m_mesh_id = 1;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			game_object->SetTransform({ { -93807,-441730,0 }, { 0,999,0 }, {284,284,284} });
-			game_object->m_sector = 1;
-			game_object->m_child_object = 0; 
-			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
-					}
-		{
-			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
-			game_object->m_id = m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::DESTRUCTIBLE;
-			game_object->m_mesh_id = 1;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			game_object->SetTransform({ { -238294,-510670,0 }, { 0,0,0 }, {321,321,321} });
-			game_object->m_sector = 1;
-			game_object->m_child_object = 0;
-			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
-					}
-		{//7
-			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
-			game_object->m_id = m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::DESTRUCTIBLE;
-			game_object->m_mesh_id = 1;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			game_object->SetTransform({ { -156704,-568106,-1172 }, { 0,1000,0 }, {246,246,246} });
-			game_object->m_sector = 1;
-			game_object->m_child_object = 0;
-			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
-					}
-		{
-			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
-			game_object->m_id = m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::TARGET_DOLL;
-			game_object->m_mesh_id = 0;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			game_object->SetTransform({ { -564302,-342228,-104675 }, { 0,0,0 }, {246,246,246} });
-			game_object->m_sector = 1;
-			game_object->m_child_object = 0;
-			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
-		}
-		{//9
-			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
-			game_object->m_id = m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::PLAY_ZONE_TARGET;
-			game_object->m_mesh_id = 1;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			game_object->SetTransform({ { -593700,-384900,55500 }, { 9000,1403,10403 }, {100,100,100} });
-			game_object->m_sector = 1;
-			game_object->m_child_object = 0;
-			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
-		}
-		{
-			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
-			game_object->m_id = m_last_object_id++;
-			game_object->m_object_type = OBJECT_TYPE::PLAY_ZONE_TARGET;
-			game_object->m_mesh_id = 1;
-			game_object->m_state = OBJECT_STATE::ALIVE;
-			game_object->SetTransform({ { -593700,-357600,40200 }, { 9000,-1403,7596 }, {100,100,100} });
-			game_object->m_sector = 1;
-			game_object->m_child_object = 0;
-			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
-		}
-		{//11
-			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
-			game_object->m_id = m_last_object_id++;
+			game_object->m_id = cRoomManager::m_last_object_id++;
 			game_object->m_object_type = OBJECT_TYPE::TARGET;
 			game_object->m_mesh_id = 0;
 			game_object->m_state = OBJECT_STATE::ALIVE;
 			game_object->SetTransform({ { -74563,-135681,7747 }, { 0,0,0 }, {278,278,278} });
 			game_object->m_sector = 1;
-			game_object->m_child_object = 0;
+			game_object->m_parent_id = 0;
 			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
+			SendPutObject(game_object->m_id);
 		}
+		{  //2
+			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
+			game_object->m_id = cRoomManager::m_last_object_id++;
+			game_object->m_object_type = OBJECT_TYPE::DOOR;		
+			game_object->m_mesh_id = 0;
+			game_object->m_state = OBJECT_STATE::ALIVE;
+			game_object->SetTransform({ { -68443,-170107,583 }, { 0,0,0 }, {159,159,159} });
+			game_object->m_sector = 1;
+			game_object->m_parent_id = game_object->m_id-1;
+			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});	
+			SendPutObject(game_object->m_id);
+		}		
+		{//3
+			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
+			game_object->m_id = cRoomManager::m_last_object_id++;
+			game_object->m_object_type = OBJECT_TYPE::BOX;
+			game_object->m_mesh_id = 0;
+			game_object->m_state = OBJECT_STATE::ALIVE;
+			game_object->SetTransform({ { -233838,-133995,48376 }, { 0,0,0 }, {131,131,131} });
+			game_object->m_sector = 1;
+			game_object->m_parent_id = 0;
+			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
+			SendPutObject(game_object->m_id);
+		}
+		{//4
+			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
+			game_object->m_id = cRoomManager::m_last_object_id++;
+			game_object->m_object_type = OBJECT_TYPE::DOOR;
+			game_object->m_mesh_id = 1;
+			game_object->m_state = OBJECT_STATE::ALIVE;
+			game_object->SetTransform({ { -219798,-166375,-224 }, { 0,-1000,0 }, {65,65,65} });
+			game_object->m_sector = 1;
+			game_object->m_parent_id = (game_object->m_id-1);
+			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
+			SendPutObject(game_object->m_id);
+		}		
+		{//5
+			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
+			game_object->m_id = cRoomManager::m_last_object_id++;
+			game_object->m_object_type = OBJECT_TYPE::DESTRUCTIBLE;
+			game_object->m_mesh_id = 2;
+			game_object->m_state = OBJECT_STATE::ALIVE;
+			game_object->SetTransform({ { -229869,-432744,0 }, { 0,-14499,0 }, {246,246,246} });
+			game_object->m_sector = 1;
+			game_object->m_parent_id = 0;
+			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
+			SendPutObject(game_object->m_id);
+		}
+		{//6
+			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
+			game_object->m_id = cRoomManager::m_last_object_id++;
+			game_object->m_object_type = OBJECT_TYPE::DESTRUCTIBLE;
+			game_object->m_mesh_id = 1;
+			game_object->m_state = OBJECT_STATE::ALIVE;
+			game_object->SetTransform({ { -93807,-441730,0 }, { 0,999,0 }, {284,284,284} });
+			game_object->m_sector = 1;
+			game_object->m_parent_id = 0;
+			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
+			SendPutObject(game_object->m_id);
+					}
+		{
+			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
+			game_object->m_id = cRoomManager::m_last_object_id++;
+			game_object->m_object_type = OBJECT_TYPE::DESTRUCTIBLE;
+			game_object->m_mesh_id = 1;
+			game_object->m_state = OBJECT_STATE::ALIVE;
+			game_object->SetTransform({ { -238294,-510670,0 }, { 0,0,0 }, {321,321,321} });
+			game_object->m_sector = 1;
+			game_object->m_parent_id = 0;
+			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
+			SendPutObject(game_object->m_id);
+					}
+		{//8
+			cGameObject* game_object = cRoomManager::m_object_pool.PopObject();
+			game_object->m_id = cRoomManager::m_last_object_id++;
+			game_object->m_object_type = OBJECT_TYPE::DESTRUCTIBLE;
+			game_object->m_mesh_id = 1;
+			game_object->m_state = OBJECT_STATE::ALIVE;
+			game_object->SetTransform({ { -156704,-568106,-1172 }, { 0,1000,0 }, {246,246,246} });
+			game_object->m_sector = 1;
+			game_object->m_parent_id = 0;
+			m_game_objects.insert(pair<unsigned int, cGameObject*>{game_object->m_id, game_object});
+			SendPutObject(game_object->m_id);
+					}
+		{
+			cMonster* game_object = cRoomManager::m_monster_pool.PopObject();
+			game_object->m_id = cRoomManager::m_last_object_id++;
+			game_object->m_object_type = OBJECT_TYPE::TARGET_DOLL;
+			game_object->m_mesh_id = 0;
+			game_object->m_state = OBJECT_STATE::ALIVE;
+			game_object->SetTransform({ { -564302,-342228,-104675 }, { 0,0,0 }, {246,246,246} });
+			game_object->m_sector = 1;
+			game_object->m_parent_id = 0;
+			game_object->m_behavior = cPlayZoneTarget::BEHAVIOR::BH1_NONE;
+			m_game_objects.insert(pair<unsigned int, cMonster*>{game_object->m_id, game_object});
+			SendPutObject(game_object->m_id);
+		}
+		{//10
+			cPlayZoneTarget* game_object = reinterpret_cast<cPlayZoneTarget*>(cRoomManager::m_monster_pool.PopObject());
+			game_object->m_id = cRoomManager::m_last_object_id++;
+			game_object->m_object_type = OBJECT_TYPE::PLAY_ZONE_TARGET;
+			game_object->m_mesh_id = 1;
+			game_object->m_state = OBJECT_STATE::ALIVE;
+			//game_object->SetTransform({ { -593700,-384900,55500 }, { 9000,1403,10403 }, {100,100,100} });
+			game_object->SetTransform({ {	 -71000, -18000, 9200  }, { 9000,-1403,7596 }, {100,100,100} });
+			game_object->m_sector = 1;
+			game_object->m_parent_id = 0;
+			game_object->m_behavior = cPlayZoneTarget::BEHAVIOR::BH2_NONE;
+			m_game_objects.insert(pair<unsigned int, cMonster*>{game_object->m_id, game_object});
+			SendPutObject(game_object->m_id);
+
+			game_object->ProgressNextBehavior();
+		}
+		{
+			cPlayZoneTarget* game_object = reinterpret_cast<cPlayZoneTarget*>(cRoomManager::m_monster_pool.PopObject());
+			game_object->m_id = cRoomManager::m_last_object_id++;
+			game_object->m_object_type = OBJECT_TYPE::PLAY_ZONE_TARGET;
+			game_object->m_mesh_id = 1;
+			game_object->m_state = OBJECT_STATE::ALIVE;
+			//game_object->SetTransform({ { -593700,-357600,40200 }, { 9000,-1403,7596 }, {100,100,100} });
+			game_object->SetTransform({ {	 -73000, -18000, 9200  }, { 9000,-1403,7596 }, {100,100,100} });
+
+			game_object->m_sector = 1;
+			game_object->m_parent_id = 0;
+			game_object->m_behavior = cPlayZoneTarget::BEHAVIOR::BH1_NONE;
+			m_game_objects.insert(pair<unsigned int, cMonster*>{game_object->m_id, game_object});
+			SendPutObject(game_object->m_id);
+
+			game_object->ProgressNextBehavior();
+		}
+	}
+
 	
-	}
-
-	for (auto& object : m_game_objects)
-	{
-		sc_put_object_packet packet;
-		packet.size = sizeof(sc_put_object_packet);
-		packet.type = SC_PACKET::SC_PUT_OBJECT;
-		packet.id = object.second->m_id;
-		packet.object_type = object.second->m_object_type;
-		packet.mesh_id = object.second->m_mesh_id;
-		packet.parent_object_id = object.second->m_child_object;
-
-		Transform transform = object.second->GetTransform();
-
-		packet.x = transform.position.x;
-		packet.y = transform.position.y;
-		packet.z = transform.position.z;
-		packet.pitch = transform.rotation.pitch;
-		packet.yaw = transform.rotation.yaw;
-		packet.roll = transform.rotation.roll;
-		packet.scale_x = transform.scale.x;
-		packet.scale_y = transform.scale.y;
-		packet.scale_z = transform.scale.z;
-
-		Broadcast(sizeof(sc_put_object_packet), &packet);
-	}
-
 	m_state = ROOM_STATE::INGAME;
-	cout << "Room [ " << m_id << " ] Started Game\n";
+	std::cout << "Room [ " << m_id << " ] Started Game\n";
 }
 
 void cRoom::UserLoadingComplete(const unsigned int _user_id)
@@ -261,13 +259,34 @@ void cRoom::UserLoadingComplete(const unsigned int _user_id)
 
 }
 
-void cRoom::Update(float _delta_second)
+void cRoom::SendPutObject(const unsigned int _object_id)
 {
-	for (auto object : m_game_objects)
-	{
-		object.second->Update(_delta_second);
-	}
+	auto object = m_game_objects[_object_id];
+	sc_put_object_packet packet;
+	packet.size = sizeof(sc_put_object_packet);
+	packet.type = SC_PACKET::SC_PUT_OBJECT;
+	packet.id = object->m_id;
+	packet.object_type = object->m_object_type;
+	packet.mesh_id = object->m_mesh_id;
+	packet.parent_object_id = object->m_parent_id;
+
+	Transform transform = object->GetTransform();
+
+	packet.x = transform.position.x;
+	packet.y = transform.position.y;
+	packet.z = transform.position.z;
+	packet.pitch = transform.rotation.pitch;
+	packet.yaw = transform.rotation.yaw;
+	packet.roll = transform.rotation.roll;
+	packet.scale_x = transform.scale.x;
+	packet.scale_y = transform.scale.y;
+	packet.scale_z = transform.scale.z;
+
+	Broadcast(sizeof(sc_put_object_packet), &packet);
 }
+
+
+
 
 void cRoom::SendPlayerData()
 {
@@ -333,11 +352,14 @@ void cRoom::SendAllObjectData()
 	// 뷰리스트 등을 통한 최적화 필요
 	for (const auto& p : m_game_objects)
 	{
+		if (p.second->m_object_type / 100000 != 2)
+			continue;
+
 		sc_object_data_packet packet;
 
 		packet.size = sizeof(sc_object_data_packet);
 		packet.type = SC_PACKET::SC_OBJECT_DATA;
-		packet.id = p.first;
+		packet.id = p.second->m_id;
 
 		cGameObject* object = p.second;
 		packet.x = object->m_transform.position.x;
@@ -351,15 +373,18 @@ void cRoom::SendAllObjectData()
 		packet.scale_z = object->m_transform.position.z;
 
 		Broadcast(sizeof(sc_object_data_packet), &packet);
+
+		//cout << "Send SC_OBJECT_DATA: Object [ " << packet.id << " ] position: " << packet.x << ", " << packet.y << ", " << packet.z << "\n";
 	}
 
 }
+
 
 void cRoom::ShootBullet(UserRef _user, iVector3 _source_position, sRotation3 _rotation)
 {
 	cBullet* new_bullet = cRoomManager::m_bullet_pool.PopObject();
 
-	new_bullet->m_id = m_last_object_id++;
+	new_bullet->m_id = cRoomManager::m_last_object_id++;
 	new_bullet->m_mesh_id = 0;
 
 	// 수정 필요
@@ -431,7 +456,7 @@ void cRoom::BulletHit(unsigned int _bullet_id, unsigned int _hit_object_id, iVec
 			m_game_objects[_bullet_id]->m_transform.rotation = _rotation;
 			m_game_objects[_bullet_id]->m_state = OBJECT_STATE::STOP;
 		}
-		if (m_game_objects[_hit_object_id]->m_object_type == OBJECT_TYPE::MATCH);
+		else if (m_game_objects[_hit_object_id]->m_object_type == OBJECT_TYPE::MATCH);
 		//pass: match - sap hit check on match's side
 		else
 		{
@@ -442,9 +467,36 @@ void cRoom::BulletHit(unsigned int _bullet_id, unsigned int _hit_object_id, iVec
 		}
 
 	}
-	else  cout << "bullet hit error\n";
+	else  std::cout << "bullet hit error\n";
 
 };
+
+void cRoom::Update(float _delta_second)
+{
+	for (auto object : m_game_objects)
+	{
+		if (object.second->m_object_type / 100000 == 2)
+		{
+
+			switch (object.second->m_object_type)
+			{
+			case OBJECT_TYPE::PLAY_ZONE_TARGET:
+			{
+				reinterpret_cast<cPlayZoneTarget*>(object.second)->Update(_delta_second);
+				break;
+			}
+			case OBJECT_TYPE::TARGET_DOLL:
+			{
+				//reinterpret_cast<cTargetDoll*>(object->second)->ProgressNextBehavior();
+				break;
+			}
+			}
+		}
+		else
+		object.second->Update(_delta_second);
+	}
+}
+
 void cRoom::Broadcast(int _size, void* _mess)
 {
 	m_users[0]->Send(_size, _mess);

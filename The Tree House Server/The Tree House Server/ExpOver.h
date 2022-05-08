@@ -4,7 +4,7 @@
 #include "protocol.h"
 #include <map>
 
-enum OP_TYPE { OP_RECV, OP_SEND, OP_ACCEPT, OP_TICK_EVENT };
+enum OP_TYPE { OP_RECV, OP_SEND, OP_ACCEPT, OP_TICK_EVENT, OP_PROGRESS_BEHAVIOR};
 
 class cExpOver {
 public:

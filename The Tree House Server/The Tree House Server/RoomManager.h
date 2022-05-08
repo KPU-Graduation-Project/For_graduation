@@ -6,7 +6,7 @@
 #include "Character.h"
 #include "Bullet.h"
 #include "User.h"
-
+#include "Monster.h"
 
 
 class cRoomManager
@@ -31,6 +31,9 @@ protected:
 	static cObjectPool<cGameObject>       m_object_pool;
 	static cObjectPool<cCharacter>        m_character_pool;
 	static cObjectPool<cBullet>           m_bullet_pool;
+	static cObjectPool<cMonster>          m_monster_pool;
+
+	static atomic <unsigned int>          m_last_object_id;
 private:
 	
 };

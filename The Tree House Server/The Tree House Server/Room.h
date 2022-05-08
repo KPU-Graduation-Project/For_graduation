@@ -6,6 +6,7 @@
 #include "User.h"
 #include "Bullet.h"
 
+
 enum class ROOM_STATE
 {
 	FREE = 0, IN_ROBBY_CREATED = 1, IN_ROBBY_FULLED = 2, LOADING = 3, INGAME = 4, WAITING_FOR_RESET = 5,
@@ -22,9 +23,10 @@ class cRoom
 	friend class cRoomManager;
 
 public:
-	cRoom() {};
+	cRoom() { Init(); };
 	cRoom(unsigned int _id, ROOM_STATE _state, UserRef _user)
 	{
+		Init();
 		m_id = _id;
 		m_state = _state;
 		m_users[HOST] = _user;
@@ -36,7 +38,9 @@ public:
 	void InitObjects();
 	void StartGame();
 
+
 	void UserLoadingComplete(const unsigned int _user_id);
+	void SendPutObject(const unsigned int _object_id);
 	void SendPlayerData();
 	void SendAllObjectData();
 	void ShootBullet(UserRef _user, iVector3 _source_position, sRotation3 _rotation);
@@ -50,9 +54,11 @@ public:
 	
 	void Disconnect(UserRef _user);
 
-protected:
+public:
 	unsigned int        m_id;
 	ROOM_STATE          m_state;
+
+protected:
 	CRITICAL_SECTION    m_state_cs;
 
 public:
@@ -61,7 +67,7 @@ public:
 
 	concurrency::concurrent_unordered_map <unsigned int, cGameObject*> m_game_objects;
 private:
-	atomic <int>          m_last_object_id=MAX_USER;
+	
 };
 
 

@@ -42,27 +42,32 @@ void cGameServer::Start()
 void cGameServer::TimerThread()
 {
 	//최초 1회
-	cTimerEvent* new_event = new cTimerEvent;
-	new_event->m_event_type = EVENT_TYPE::EV_TICK;
-	new_event->m_excute_time = chrono::high_resolution_clock::now() + chrono::milliseconds(1000 / 60);
+	cTimerEvent new_event;
+	new_event.m_event_type = EVENT_TYPE::TICK_EVENT;
+	new_event.m_excute_time = chrono::high_resolution_clock::now() + chrono::milliseconds(1000 / 60);
 	g_timer_queue.push(new_event);
 
 	while(true)
 	{
 		while (true)
 		{
-			cTimerEvent* timer_event;
+			//cout << "g_timer_queue size: " << g_timer_queue.size() << endl;
+
+			cTimerEvent timer_event;
 			if (g_timer_queue.try_pop(timer_event) == false)
 				break;
 
-			if (timer_event->m_excute_time < chrono::high_resolution_clock::now())
-			{
-				switch (timer_event->m_event_type)
-				{
-				case EVENT_TYPE::EV_TICK:
-				{
+			if ((int)timer_event.m_event_type != 1)
+				cout << "event_type: " << (int)timer_event.m_event_type << endl;
 
-					m_clock->UpdateCurrentTime();
+			
+			if (timer_event.m_excute_time <= chrono::high_resolution_clock::now())
+			{
+				switch (timer_event.m_event_type)
+				{
+				case EVENT_TYPE::TICK_EVENT:
+				{
+					//m_clock->UpdateCurrentTime();
 
 					// 오브젝트풀로 수정 필요
 					cExpOver* over = new cExpOver;
@@ -70,21 +75,31 @@ void cGameServer::TimerThread()
 					// 특정 유저에게 보내는 것이 아닌 경우 KEY 어떻게?
 					PostQueuedCompletionStatus(m_h_IOCP, 1, NULL, &over->m_wsa_over);
 
-
-				
-					timer_event->m_excute_time += chrono::milliseconds(1000 / 60);
+					timer_event.m_excute_time += chrono::milliseconds(1000 / 60);
 					g_timer_queue.push(timer_event);
-					
+
+					break;
+				}
+				case EVENT_TYPE::PROGRESS_BEHAVIOR_EVENT:
+				{
+					cout << "zzzz progressssss\n";
+					// 오브젝트풀로 수정 필요
+					cExpOver* over = new cExpOver;
+					over->m_comp_op = OP_PROGRESS_BEHAVIOR;
+					PostQueuedCompletionStatus(m_h_IOCP,1, timer_event.m_obj_id, &over->m_wsa_over);
+
 						break;
 				}
 				}
 			}
 			else
 			{
+				
 				g_timer_queue.push(timer_event);
 			}
-		}		
-		this_thread::sleep_for(2ms);
+			
+		}
+		this_thread::sleep_for(5ms);
 	}
 }
 
@@ -102,7 +117,7 @@ void cGameServer::WorkerThread()
 
 		if (FALSE == ret) {
 			int err_no = WSAGetLastError();
-			cout <<"Client ID: "<< client_id<<" GQCS Error : ";
+			cout << "Client ID: " << client_id << " GQCS Error : ";
 			if (err_no == ERROR_INVALID_HANDLE)
 			{
 				cout << "handle_error" << endl;
@@ -116,7 +131,7 @@ void cGameServer::WorkerThread()
 				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 				(LPTSTR)&lpMsgBuf, 0, 0);
 			std::wcout << lpMsgBuf << std::endl;
-			
+
 			LocalFree(lpMsgBuf);
 
 			cout << endl;
@@ -130,7 +145,7 @@ void cGameServer::WorkerThread()
 		switch (exp_over->m_comp_op) {
 		case OP_RECV: {
 			//cout << "recv called: "<<num_byte<<"byte \n";
-			Recv(exp_over, client_id, num_byte); 
+			Recv(exp_over, client_id, num_byte);
 
 			break;
 		}
@@ -149,17 +164,60 @@ void cGameServer::WorkerThread()
 			//cout << "accpet called\n";
 			Accept(exp_over);
 			break;
-					}
+		}
 		case OP_TICK_EVENT:
 		{
-
 			for (const auto& room : g_room_manager->m_rooms)
-			{			
-				room.second->Update(m_clock->GetDeltaTimeSecond());
-				room.second->SendPlayerData();
+			{
+				room.second->StateLock();
+				if (room.second->m_state==ROOM_STATE::INGAME )
+				{
+					room.second->StateUnlock();
+					room.second->Update(m_clock->GetDeltaTimeSecond());
+					room.second->SendPlayerData();
+					room.second->SendAllObjectData();
+				}
+				else 	room.second->StateUnlock();
+
 			}
 			delete exp_over;
 			break;
+		}
+		case OP_PROGRESS_BEHAVIOR:
+		{
+			// zzzzzzzzz 
+			cout << "zzzz progress\n";
+			for (const auto& room : g_room_manager->m_rooms)
+			{
+				cout << "zzzz progress1\n";
+				room.second->StateLock();
+				if (room.second->m_state == ROOM_STATE::INGAME)
+				{
+					room.second->StateUnlock();
+					auto object = room.second->m_game_objects.find(client_id);
+					if (object != room.second->m_game_objects.end())
+					{
+						cout << "zzzz progress2\n";
+						switch (object->second->m_object_type)
+						{
+						case OBJECT_TYPE::PLAY_ZONE_TARGET:
+						{
+							cout << "zzzz progress3\n";
+							reinterpret_cast<cPlayZoneTarget*>(object->second)->ProgressNextBehavior();
+							break;
+						}
+						case OBJECT_TYPE::TARGET_DOLL:
+						{
+							//reinterpret_cast<cTargetDoll*>(object->second)->ProgressNextBehavior();
+							break;
+						}
+						}
+					}
+				}
+				else 	room.second->StateUnlock();
+				delete exp_over;
+				break;
+			}
 		}
 		}
 	}
@@ -455,13 +513,13 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _rec
 		
 		/*cout << "CS_PLAYER_DATA from User [ " << _user_id <<
 			" ] position " << packet->x << "," << packet->y << ", " << packet->z
-			<< " // rotation " << packet->pitch << ", " << packet->yaw << "," << packet->roll << "\n";*/
+			<< " // rotation " << packet->pitch << ", " << packet->yaw << "," << packet->roll << "\n";
 
 		m_user_manager->m_users[_user_id]->m_character->SetCharacterTransform
 		({ packet->x, packet->y, packet->z }, { packet->pitch, packet->yaw, packet->roll },
 			{ packet->head_x, packet->head_y, packet->head_z }, { packet->head_pitch, packet->head_yaw, packet->head_roll },
 			{ packet->rh_x, packet->rh_y, packet->rh_z }, { packet->rh_pitch, packet->rh_yaw, packet->rh_roll },
-			{ packet->lh_x, packet->lh_y, packet->lh_z }, { packet->lh_pitch, packet->lh_yaw, packet->lh_roll });
+			{ packet->lh_x, packet->lh_y, packet->lh_z }, { packet->lh_pitch, packet->lh_yaw, packet->lh_roll });*/
 
 		//g_room_manager.m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->SendOtherPlayerTransform(_user_id);
 		//m_room_manager->m_rooms[m_user_manager->m_users[_user_id]->GetRoomID()]->SendAllObjectData();
@@ -496,11 +554,14 @@ void cGameServer::ProcessPacket(const unsigned int _user_id, unsigned char* _rec
 	{
 		cs_object_update_packet* packet= reinterpret_cast<cs_object_update_packet*>(_recv_pkt);
 
+		cout << "CS_OBJECT_UPDATE from User [ " << _user_id << " ] object [ " << packet->object_id <<" , direction: "<<packet->direction << "\n";
+
 		sc_object_update_packet send_packet;
 
 		send_packet.size = sizeof(sc_object_update_packet);
 		send_packet.type = SC_PACKET::SC_OBJECT_UPDATE;
 		send_packet.object_id = packet->object_id;
+		send_packet.direction = packet->direction;
 
 		m_user_manager->m_users[_user_id]->GetRoom()->Broadcast(sizeof(send_packet), &send_packet);
 		break;

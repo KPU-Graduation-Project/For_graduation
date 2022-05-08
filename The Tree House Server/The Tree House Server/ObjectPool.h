@@ -12,11 +12,9 @@ public:
 	{
 		m_max_size = _max_size;
 
+		T* empty_objects = new T[_max_size];
 		for (int i = 0; i < m_max_size; ++i)
-		{
-			T* empty_object = new T();
-			m_objects.push(empty_object);
-		}
+			m_objects.push(&empty_objects[i]);
 	}
 	~cObjectPool() 
 	{
@@ -50,12 +48,11 @@ public:
 
 	void ExpandPool(int _size)
 	{
+		T* empty_objects = new T[_size];
 		for (int i = 0; i < _size; ++i)
-		{
-			T* empty_object = new T();
-			m_objects.push(empty_object);
-		}
-		std::cout << "Object Pool Expaned [ " << m_max_size << " ] -> [ " 
+			m_objects.push(&empty_objects[i]);
+
+		std::cout << "Object Pool Expaned [ " << m_max_size << " ] -> [ "
 			<< m_max_size + _size << " ]\n";
 
 		m_max_size += _size;
