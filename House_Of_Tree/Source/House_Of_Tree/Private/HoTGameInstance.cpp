@@ -188,11 +188,11 @@ void UHoTGameInstance::SetInfo()
 		out.close();
 	}
 
-	/*FWorldContext Context = GEngine->GetWorldContexts().Last();
+	FWorldContext Context = GEngine->GetWorldContexts().Last();
 	UWorld* World = Context.World();
 	const UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
 	const ANavigationData* NavData = NavSys->GetDefaultNavDataInstance();
 	const ARecastNavMesh* NavMesh = Cast<ARecastNavMesh>(NavData);
-	NavMesh->GetGenerator()->ExportNavigationData(FString(TEXT("C:\\Users\\schau\\Testnavmesh.obj")));
-	UE_LOG(LogTemp, Warning, TEXT("NavMeshExported"));*/
+	NavMesh->GetGenerator()->ExportNavigationData(FString(TEXT("C:\\Users\\Kclient\\Testnavmesh.obj")));
+	UE_LOG(LogTemp, Warning, TEXT("NavMeshExported"));
 }
