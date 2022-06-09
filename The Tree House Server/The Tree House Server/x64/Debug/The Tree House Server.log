@@ -1,7 +1,0 @@
-﻿  ExpOver.cpp
-  GameProcessor.cpp
-  IOCPServer.cpp
-  Main.cpp
-  ServerNetworkSystem.cpp
-C:\Users\dncks\Desktop\The Tree house Server\The Tree House Server\The Tree House Server\ServerNetworkSystem.cpp(11,32): error C2027: 정의되지 않은 형식 'IOCPServer'을(를) 사용했습니다.
-C:\Users\dncks\Desktop\The Tree house Server\The Tree House Server\The Tree House Server\ServerNetworkSystem.h(6): message : 'IOCPServer' 선언을 참조하십시오.
