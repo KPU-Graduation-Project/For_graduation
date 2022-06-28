@@ -1,33 +1,57 @@
 #pragma once
 #include "ExpOver.h"
-#include "UserManager.h"
+#include "Character.h"
+#include "Room.h"
 
-enum E_USER_STATE { FREE = 0, IN_ROBBY = 1, IN_MATCHING_ROOM = 2, IN_GAME = 3 };
 
-class CUser
+namespace user_state
 {
-protected:
-	CUser();
-	~CUser();
+	enum ROOM_STATE { FREE = 0, ACCEPTED = 1, IN_ROBBY = 2, IN_ROOM = 3,IN_LOADING=4, IN_GAME = 5 };
+}
 
-	unsigned short GetID();
-	E_USER_STATE GetState();
-	unsigned short GetRoomNum();
+class cUser
+{
+public:
+	cUser();
+	cUser(unsigned int _id);
+	~cUser();
 
-	void SetID(const unsigned short _id);
-	void SetState(const E_USER_STATE _state);
-	void SetRoomNum(const unsigned short _room_num);
+	void Init();
+
+	unsigned short GetID() { return m_id; }
+	user_state::ROOM_STATE GetState() { return m_state; };
+	RoomRef GetRoom() { return m_room; };
+	unsigned short GetPrevSize() { return m_prev_size; };
+		
+	void SetID(const unsigned int _id) { m_id = _id; };
+	void SetState(const user_state::ROOM_STATE _state) { m_state = _state; };
+	void SetRoom(RoomRef _room) { m_room = _room; };
+	void SetPrevSize(const unsigned short _prev_size) { m_prev_size = _prev_size; };
+	void SetSocket(const SOCKET& _socket) { m_socket = _socket; };
+
+	void StateLock() { EnterCriticalSection(&m_state_cs); }
+	void StateUnlock() { LeaveCriticalSection(&m_state_cs); }
+
+	void Send(int num_bytes, void* mess);
+	void Recv();
+	void Disconnect();
+
+
+private:
+	unsigned int       m_id;
+	user_state::ROOM_STATE m_state;
+	CRITICAL_SECTION   m_state_cs;
+	//unsigned int       m_room_id;
+
+public:
+	// Use when the user in room
+	bool               m_is_ready;
+	char               m_selected_character;	
+	cCharacter*        m_character;
+	RoomRef             m_room;
 
 private:
 	SOCKET             m_socket;
-	CEXP_OVER          m_recv_over;
-	int		           m_prev_size;
-
-	unsigned short     m_id;
-	E_USER_STATE       m_state;
-	unsigned short     m_room_num;
-
-	//mutex              m_state_lock;
-
-	friend CUserManager;
+	cExpOver           m_recv_over;
+	unsigned short 	   m_prev_size;
 };
