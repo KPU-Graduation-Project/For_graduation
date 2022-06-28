@@ -9,6 +9,8 @@
 #include "HoTGameInstance.h"
 #include "GameFramework/Character.h"
 #include "Protocol.h"	// 차후 경로 변경해야함
+#include "WeaponCannonBall.h"
+#include "WeaponMatchBullet.h"
 #include "Misc/OutputDeviceNull.h"
 
 AVRPlayerController_Base::AVRPlayerController_Base()
@@ -32,11 +34,6 @@ void AVRPlayerController_Base::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Get GameInstance Error!"));
 	}
-
-// 	PutObject(100, 100002,
-// 		FVector(-590.000000,-880.000000,85.998222),
-// 		FRotator(0, 0, 0),
-// 		FVector(1, 1, 1));
 }
 
 void AVRPlayerController_Base::Tick(float DeltaSeconds)
@@ -49,7 +46,7 @@ void AVRPlayerController_Base::Tick(float DeltaSeconds)
 
 void AVRPlayerController_Base::SendPlayerData()
 {
-	if (gameInst->SocketInstance && gameInst->IsIngame())
+	if (gameInst->CheckSend())
 	{
 		UE_LOG(LogTemp, Error, TEXT("Send Packet"));
 
@@ -147,23 +144,6 @@ void AVRPlayerController_Base::ProcessPacket()
 			}
 			break;
 
-		case SC_PACKET::SC_CREATE_ROOM:
-			break;
-		case SC_PACKET::SC_JOIN_ROOM:
-			break;
-		case SC_PACKET::SC_USER_JOIN_ROOM:
-			break;
-
-		// SC 어디감;
-		case SC_PACKET::USER_EXIT_ROOM:
-			break;
-
-		case SC_PACKET::SC_USER_READY_GAME:
-			break;
-
-		case SC_PACKET::SC_USER_CHANGE_SELECTED_CHARACTER:
-			break;
-
 		case SC_PACKET::SC_START_GAME:
 			UE_LOG(LogTemp, Warning, TEXT("SC_START_GAME"));
 
@@ -181,10 +161,8 @@ void AVRPlayerController_Base::ProcessPacket()
 		case SC_PACKET::SC_PUT_OBJECT:
 			{
 				sc_put_object_packet* packet = reinterpret_cast<sc_put_object_packet*>(p);
-				// PutObject(packet->id, packet->object_type,
-				// 	FVector(packet->x/100, packet->y/100, packet->z/100),
-				// 	FRotator(packet->pitch/100, packet->yaw/100, packet->roll/100),
-				// 	FVector(packet->scale_x / 100, packet->scale_y / 100, packet->scale_z / 100));
+				if (gameInst->GetActor(packet->object_type) == nullptr) return;
+
 				UE_LOG(LogTemp, Warning, TEXT("putobject %s"), *gameInst->GetActor(packet->object_type)->GetName());
 
 				FVector location, scale;
@@ -201,18 +179,69 @@ void AVRPlayerController_Base::ProcessPacket()
 				scale.X = static_cast<float>(packet->scale_x) / 100;
 				scale.Y = static_cast<float>(packet->scale_y) / 100;
 				scale.Z = static_cast<float>(packet->scale_z) / 100;
-				
-				PutObject(packet->id, packet->object_type, location, rotation, scale, packet->mesh_id);
+
+				PutObject(packet->id, packet->object_type, location, rotation, scale, packet->mesh_id, packet->parent_object_id);
 			}
 			break;
 
 		case SC_PACKET::SC_REMOVE_OBJECT:
+			{
+				sc_remove_object_packet* packet = reinterpret_cast<sc_remove_object_packet*>(p);
+
+				AActor* removeActor;
+				if (actorList.RemoveAndCopyValue(packet->id, removeActor) == false) break;
+				removeActor->Destroy();
+			}
+			break;
+
+		case SC_PACKET::SC_DESTROY_OBJECT:
+			{
+				sc_destroy_object_packet* packet = reinterpret_cast<sc_destroy_object_packet*>(p);
+
+				AActor* removeActor;
+				if (actorList.RemoveAndCopyValue(packet->id, removeActor) == false) break;
+
+				if (Cast<AWeaponMatchBullet>(removeActor))
+				{
+					Cast<AWeaponMatchBullet>(removeActor)->CallDestory();
+				}
+				else if (Cast<AWeaponCannonBall>(removeActor))
+				{
+					Cast<AWeaponCannonBall>(removeActor)->CallDestory();
+				}
+			}
+			break;
+
+		case SC_PACKET::SC_OBJECT_DATA:
+			{
+				sc_object_data_packet* packet = reinterpret_cast<sc_object_data_packet*>(p);
+
+				if (actorList.Contains(packet->id) == false) break;
+
+				FVector location, scale;
+				FRotator rotation;
+
+				location.X = static_cast<float>(packet->x) / 100;
+				location.Y = static_cast<float>(packet->y) / 100;
+				location.Z = static_cast<float>(packet->z) / 100;
+
+				rotation.Pitch = static_cast<float>(packet->pitch) / 100;
+				rotation.Yaw = static_cast<float>(packet->yaw) / 100;
+				rotation.Roll = static_cast<float>(packet->roll) / 100;
+
+				scale.X = static_cast<float>(packet->scale_x) / 100;
+				scale.Y = static_cast<float>(packet->scale_y) / 100;
+				scale.Z = static_cast<float>(packet->scale_z) / 100;
+
+				actorList[packet->id]->SetActorLocationAndRotation(location, rotation);
+				actorList[packet->id]->SetActorScale3D(scale);
+			}
 			break;
 
 		case SC_PACKET::SC_PLAYER_DATA:
 			{
 				sc_player_data_packet* packet = reinterpret_cast<sc_player_data_packet*>(p);
-				UE_LOG(LogTemp, Warning, TEXT("PlayerID %d SC_PLAYER_DATA %d"), playerID, packet->id);
+				//UE_LOG(LogTemp, Warning, TEXT("PlayerID %d SC_PLAYER_DATA %d"), playerID, packet->id);
 
 				// 자신의 캐릭터의 정보거나 잘못된 id라면 취소
 				if (packet->id == playerID || actorList.Contains(packet->id) == false)
@@ -221,8 +250,9 @@ void AVRPlayerController_Base::ProcessPacket()
 
 					return;
 				}
-				
+
 				AVRCharacter_Base* otherPlayer = Cast<AVRCharacter_Base>(actorList[packet->id]);
+				if (otherPlayer == nullptr) break;
 
 				FVector location;
 				FRotator rotation;
@@ -246,7 +276,7 @@ void AVRPlayerController_Base::ProcessPacket()
 				lhRotation.Pitch = static_cast<float>(packet->lh_pitch) / 100;
 				lhRotation.Yaw = static_cast<float>(packet->lh_yaw) / 100;
 				lhRotation.Roll = static_cast<float>(packet->lh_roll) / 100;
-				
+
 				rhLocation.X = static_cast<float>(packet->rh_x) / 100;
 				rhLocation.Y = static_cast<float>(packet->rh_y) / 100;
 				rhLocation.Z = static_cast<float>(packet->rh_z) / 100;
@@ -255,8 +285,44 @@ void AVRPlayerController_Base::ProcessPacket()
 				rhRotation.Roll = static_cast<float>(packet->rh_roll) / 100;
 
 				otherPlayer->SetHandLocationAndRotation(lhLocation, lhRotation, rhLocation, rhRotation);
-				break;
 			}
+			break;
+
+		case SC_PACKET::SC_SHOOT_BULLET:
+			{
+				sc_shoot_bullet_packet* packet = reinterpret_cast<sc_shoot_bullet_packet*>(p);
+				UClass* bullet = gameInst->GetBullet(packet->bullet_type);
+				if (bullet == nullptr) return;
+
+				FVector location;
+				FRotator rotation;
+
+				location.X = static_cast<float>(packet->x) / 100;
+				location.Y = static_cast<float>(packet->y) / 100;
+				location.Z = static_cast<float>(packet->z) / 100;
+
+				rotation.Pitch = static_cast<float>(packet->pitch) / 100;
+				rotation.Yaw = static_cast<float>(packet->yaw) / 100;
+				rotation.Roll = static_cast<float>(packet->roll) / 100;
+
+				FActorSpawnParameters SpawnParams;
+				actorList.Add(packet->id, GetWorld()->SpawnActor<AActor>(bullet, location, rotation, SpawnParams));
+			}
+			break;
+
+		case SC_PACKET::SC_OBJECT_UPDATE:
+			{
+				UE_LOG(LogTemp, Error, TEXT("SC_OBJECT_UPDATE"));
+				sc_object_update_packet* packet = reinterpret_cast<sc_object_update_packet*>(p);
+
+				if (!actorList.Contains(packet->object_id)) break;
+
+				FOutputDeviceNull ar;
+				FString command = FString::Printf(TEXT("SetRotation %f"), packet->direction == 1 ? -120.0 : 120.0);
+				actorList[packet->object_id]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
+			}
+			break;
+
 		default:
 			break;
 		}
@@ -266,29 +332,63 @@ void AVRPlayerController_Base::ProcessPacket()
 	}
 }
 
-void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID)
+void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID,
+                                         int parentID)
 {
+	if (gameInst->GetActor(objectID) == nullptr) return;
+
 	UE_LOG(LogTemp, Error, TEXT("Actor ID: %d, ObjectID: %d"), actorID, objectID);
 	FActorSpawnParameters SpawnParams;
 
+	// Set Transform
 	actorList.Add(actorID, GetWorld()->SpawnActor<AActor>(gameInst->GetActor(objectID), location, rotation, SpawnParams));
 	actorList[actorID]->SetActorScale3D(scale);
 
-	//char funcCallBuf[1024];
+	// Set Mesh ID
 	FOutputDeviceNull ar;
-	//_snprintf_s(funcCallBuf, sizeof(funcCallBuf), "%s %d", "SetMesh", meshID);
-	actorList[actorID]->CallFunctionByNameWithArguments(TEXT("SetMesh ") + meshID, ar, NULL, true);
+	FString command = FString::Printf(TEXT("SetMesh %d"), meshID);
+	actorList[actorID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
 
+	UE_LOG(LogTemp, Error, TEXT("%d"), parentID);
+	// Set Parent Actor
+	if (parentID != 0 && actorList.Contains(parentID))
+	{
+		UE_LOG(LogTemp, Error, TEXT("your parent %s"), *actorList[parentID]->GetName());
+
+		// 부모의 자식이 여럿이면 블루프린트에서 배열을 추가하는 방식으로
+		command = FString::Printf(TEXT("SetChild %s"), *actorList[actorID]->GetName());
+
+		actorList[parentID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("player ID: %d, actor ID: %d"), playerID, actorID);
+
+	// character Possess
 	if (playerID == actorID)
 	{
-		SetPlayerCharacter();
+		SetPlayerCharacter(objectID);
 	}
 }
 
-void AVRPlayerController_Base::SetPlayerCharacter()
+void AVRPlayerController_Base::SetPlayerCharacter(const int objectID)
 {
-	Possess(Cast<APawn>(actorList[playerID]));
-	vrPlayer = Cast<AVRCharacter_Base>(GetCharacter());
+	vrPlayer = Cast<AVRCharacter_Base>(actorList[playerID]);
+	if (vrPlayer)
+	{
+		UnPossess();
+		Possess(vrPlayer);
 
-	gameInst->GameStart();
+		if (objectID % 10 == 1)
+		{
+			playertype = PLAYERTYPE::GIRL;
+			UE_LOG(LogTemp, Error, TEXT("GIRL"));
+		}
+		else
+		{
+			playertype = PLAYERTYPE::BOY;
+			UE_LOG(LogTemp, Error, TEXT("BOY"));
+		}
+
+		gameInst->GameStart();
+	}
 }

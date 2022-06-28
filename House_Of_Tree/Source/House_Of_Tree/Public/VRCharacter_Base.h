@@ -53,5 +53,4 @@ public:
 
 	void SetLocationAndRotation(const FVector &location, const float &yaw);
 	void SetHandLocationAndRotation(const FVector &lhLocation, const FRotator &lhRotation, const FVector &rhLocationRH, const FRotator &rhRotation);
-	//void SetHeadRotation();
 };

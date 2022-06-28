@@ -14,7 +14,7 @@ AVRCharacter_Base::AVRCharacter_Base()
 
 	GetMesh()->SetOwnerNoSee(true);
 	GetMesh()->SetRelativeLocationAndRotation(FVector(-15, 0, -88), FRotator(0, -90 ,0));
-	GetMesh()->SetRelativeScale3D(FVector(1.7, 1.7, 1.7));
+	GetMesh()->SetRelativeScale3D(FVector(2.5, 2.5, 2.5));
 	
 	VR_Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	VR_Camera->SetupAttachment(RootComponent);

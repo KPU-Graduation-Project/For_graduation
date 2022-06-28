@@ -1,14 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
-#include <unordered_map>
-
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "ClientSocket.h"
 #include "HoTGameInstance.generated.h"
-
 /**
  * 
  */
@@ -30,7 +26,9 @@ public:
 	void InitSocket();
 
 	void SetInfo();
-	UClass* GetActor(int ObjectID);
+	UClass* GetActor(int ObjectID) { return *bpSet.Find(ObjectID); }
+
+	UClass* GetBullet(int index) {return BP_Bullet.IsValidIndex(index - 1)? BP_Bullet[index - 1].Get() : nullptr;}
 
 	ClientSocket* SocketInstance;
 
@@ -39,11 +37,18 @@ private:
 	bool ConnectNetwork;
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category=Network, DisplayName="IP 주소", meta = (EditCondition = "ConnectNetwork"))
+	UPROPERTY()
 	FString ipAddr;
 
 	UPROPERTY(EditDefaultsOnly, Category=Network, DisplayName="포트번호", meta = (EditCondition = "ConnectNetwork"))
 	int Port;
+
+	//UPROPERTY(EditDefaultsOnly, Category=Network, DisplayName="TEST", meta = (EditCondition = "ConnectNetwork"))
+	//int TEST;
+
+private:
+	UPROPERTY()
+	FString ipPath;
 
 	//*********************************************************************************************/
 
@@ -87,10 +92,11 @@ protected:
 
 	UPROPERTY()
 	bool allLoadComplete = false;
-	
+
 public:
 	void GameStart() { gameStart = true; }
 	void AllLoadComplete() { allLoadComplete = true; }
-
 	bool IsIngame() { return gameStart; };
+	
+	bool CheckSend() {return SocketInstance != nullptr && IsIngame(); }
 };

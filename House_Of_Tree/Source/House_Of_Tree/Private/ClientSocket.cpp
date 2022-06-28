@@ -102,6 +102,7 @@ bool ClientSocket::ConnectServer()
 	if (nRet == SOCKET_ERROR)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Fail")));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, gameInst->ipAddr);
 		return false;
 	}
 	else
@@ -109,6 +110,8 @@ bool ClientSocket::ConnectServer()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Success!")));
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
 		                                 FString::Printf(TEXT("%i.%i"), wsaData.wVersion >> 8, wsaData.wVersion & 0xFF));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, gameInst->ipAddr);
+
 		UE_LOG(LogTemp, Warning, TEXT("Socket Initialized"));
 		return true;
 	}

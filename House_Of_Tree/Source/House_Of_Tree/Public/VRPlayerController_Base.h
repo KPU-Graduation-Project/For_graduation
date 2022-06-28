@@ -17,6 +17,13 @@
 class UHoTGameInstance;
 class AVRCharacter_Base;
 
+UENUM()
+enum class PLAYERTYPE
+{
+	GIRL,
+	BOY
+};
+
 UCLASS()
 class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
 {
@@ -39,23 +46,33 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	TMap<int, AActor*> actorList;
-	
-	void SetPlayerCharacter();
-	
+
+	void SetPlayerCharacter(const int objectID);
+
+	UPROPERTY()
+	PLAYERTYPE playertype;
+
 	// Network system
 public:
 	Concurrency::concurrent_queue<char> buffer;
-	std::atomic<int> bufferSize {0};
+	std::atomic<int> bufferSize{0};
 
 protected:
 	void ProcessPacket();
 	void SendPlayerData();
 
-	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID);
+	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID, int parentID);
 
 public:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	AVRCharacter_Base* GetVRPlayer() { return vrPlayer; }
+	void AddActorList(int key, AActor* actor) { actorList.Add(key, actor); }
+
+	AActor* GetActorList(int key) { return *actorList.Find(key); }
+	const int* GetActorKey(AActor* actor) { return actorList.FindKey(actor); }
+
+	PLAYERTYPE GetPlayerType() { return playertype; }
 };
