@@ -94,7 +94,9 @@
 */Plugins/**/Intermediate/*
 
 
-!The Tree House Server/*
 !The Tree House Server/
+!The Tree House Server/*
+The Tree House Server/*.vs
+The Tree House Server/The Tree House Server/x64
 # End of https://www.toptal.com/developers/gitignore/api/unrealengine
 # End of https://www.toptal.com/developers/gitignore/api/unrealengine
