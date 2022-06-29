@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include <concurrent_queue.h>
-#include <atomic>
+
 
 #include "CoreMinimal.h"
 #include "HoTGameInstance.h"
+#include "Protocol.h"	// 차후 경로 변경해야함
 #include "GameFramework/PlayerController.h"
 #include "VRPlayerController_Base.generated.h"
 
@@ -52,13 +52,14 @@ protected:
 	UPROPERTY()
 	PLAYERTYPE playertype;
 
-	// Network system
-public:
-	Concurrency::concurrent_queue<char> buffer;
-	std::atomic<int> bufferSize{0};
+private:
+	char data[BUFSIZE];
+	int remainData = 0;
 
 protected:
-	void ProcessPacket();
+	void RecvPacket();
+	void ProcessPacket(char* p);
+
 	void SendPlayerData();
 
 	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID, int parentID);

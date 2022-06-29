@@ -50,9 +50,7 @@ uint32 ClientSocket::Run()
 		if (RecvLen != SOCKET_ERROR)
 		{
 			for (int i = 0; i<RecvLen; ++i)
-				gameInst->playerController->buffer.push(RecvBuff[i]);
-			
-			gameInst->playerController->bufferSize += RecvLen;
+				buffer.push(RecvBuff[i]);
 		}
 	}
 

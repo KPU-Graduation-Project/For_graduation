@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include <concurrent_queue.h>
+#include <atomic>
 
 // window 기본 타입 Hide
 #include "Windows/AllowWindowsPlatformTypes.h"
@@ -41,4 +43,8 @@ private:
 	FThreadSafeCounter StopTaskCounter;
 
 	UHoTGameInstance* gameInst;
+
+	// Network system
+public:
+	Concurrency::concurrent_queue<char> buffer;
 };
