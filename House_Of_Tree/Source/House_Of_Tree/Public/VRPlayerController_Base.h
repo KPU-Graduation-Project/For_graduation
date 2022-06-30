@@ -6,7 +6,6 @@
 
 #include "CoreMinimal.h"
 #include "HoTGameInstance.h"
-#include "Protocol.h"	// 차후 경로 변경해야함
 #include "GameFramework/PlayerController.h"
 #include "VRPlayerController_Base.generated.h"
 

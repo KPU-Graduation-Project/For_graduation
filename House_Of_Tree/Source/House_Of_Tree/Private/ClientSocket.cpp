@@ -5,10 +5,7 @@
 
 #include "HoTGameInstance.h"
 #include "VRPlayerController_Base.h"
-//#include "..\..\..\..\ServerPrototype/ServerPrototype/protocol.h"
 #include <queue>
-
-#include "Protocol.h"
 
 #pragma region Main Thread Code
 

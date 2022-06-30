@@ -3,7 +3,6 @@
 
 #include "NetworkModule.h"
 #include "HoTGameInstance.h"
-#include "Protocol.h"
 #include "VRCharacter_Base.h"
 #include "VRPlayerController_Base.h"
 
