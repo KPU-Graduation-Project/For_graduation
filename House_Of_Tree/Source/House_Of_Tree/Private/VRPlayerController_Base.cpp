@@ -28,7 +28,7 @@ void AVRPlayerController_Base::BeginPlay()
 
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Get GameInstance Error!"));
+		UE_LOG(LogPlayerController, Error, TEXT("Get GameInstance Error!"));
 	}
 }
 
@@ -44,7 +44,7 @@ void AVRPlayerController_Base::SendPlayerData()
 {
 	if (gameInst->CheckSend())
 	{
-		UE_LOG(LogTemp, Error, TEXT("Send Packet"));
+		UE_LOG(LogPlayerController, Display, TEXT("Send Packet"));
 
 		cs_player_data_packet sendPacket;
 		sendPacket.type = CS_PACKET::CS_PLAYER_DATA;
@@ -131,13 +131,13 @@ void AVRPlayerController_Base::RecvPacket()
 
 void AVRPlayerController_Base::ProcessPacket(char *p)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%d"), p[1]);
+	UE_LOG(LogPlayerController, Display, TEXT("Packet type: %d"), p[1]);
 
 	switch (p[1])
 	{
 	case SC_PACKET::SC_LOGINOK:
 	{
-		UE_LOG(LogTemp, Warning, TEXT("loginOK"));
+		UE_LOG(LogPlayerController, Display, TEXT("SC_LOGINOK"));
 		// 플레이어 입력 패킷인데 일단 비워두기
 		sc_loginok_packet *packet = reinterpret_cast<sc_loginok_packet *>(p);
 		playerID = packet->id;
@@ -145,7 +145,7 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 	break;
 
 	case SC_PACKET::SC_START_GAME:
-		UE_LOG(LogTemp, Warning, TEXT("SC_START_GAME"));
+		UE_LOG(LogPlayerController, Display, TEXT("SC_START_GAME"));
 
 		// 로비에서 인게임 로비 캠으로 전환
 
@@ -153,7 +153,7 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 		break;
 
 	case SC_PACKET::SC_ALL_USERS_LOADING_COMPLETE:
-		UE_LOG(LogTemp, Warning, TEXT("SC_ALL_USERS_LOADING_COMPLETE"));
+		UE_LOG(LogPlayerController, Display, TEXT("SC_ALL_USERS_LOADING_COMPLETE"));
 
 		gameInst->AllLoadComplete();
 		break;
@@ -163,7 +163,7 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 		sc_put_object_packet *packet = reinterpret_cast<sc_put_object_packet *>(p);
 		if (gameInst->GetActor(packet->object_type) == nullptr) return;
 
-		UE_LOG(LogTemp, Warning, TEXT("putobject %s"), *gameInst->GetActor(packet->object_type)->GetName());
+		UE_LOG(LogPlayerController, Display, TEXT("putobject %s"), *gameInst->GetActor(packet->object_type)->GetName());
 
 		FVector location, scale;
 		FRotator rotation;
@@ -246,7 +246,7 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 		// 자신의 캐릭터의 정보거나 잘못된 id라면 취소
 		if (packet->id == playerID || actorList.Contains(packet->id) == false)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("It's you"));
+			UE_LOG(LogPlayerController, Display, TEXT("It's you"));
 
 			return;
 		}
@@ -312,7 +312,7 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 
 	case SC_PACKET::SC_OBJECT_UPDATE:
 	{
-		UE_LOG(LogTemp, Error, TEXT("SC_OBJECT_UPDATE"));
+		UE_LOG(LogPlayerController, Display, TEXT("SC_OBJECT_UPDATE"));
 		sc_object_update_packet *packet = reinterpret_cast<sc_object_update_packet *>(p);
 
 		if (!actorList.Contains(packet->object_id)) break;
@@ -333,7 +333,7 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 {
 	if (gameInst->GetActor(objectID) == nullptr) return;
 
-	UE_LOG(LogTemp, Error, TEXT("Actor ID: %d, ObjectID: %d"), actorID, objectID);
+	UE_LOG(LogPlayerController, Display, TEXT("Actor ID: %d, ObjectID: %d"), actorID, objectID);
 	FActorSpawnParameters SpawnParams;
 
 	// Set Transform
@@ -345,11 +345,11 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 	FString command = FString::Printf(TEXT("SetMesh %d"), meshID);
 	actorList[actorID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
 
-	UE_LOG(LogTemp, Error, TEXT("%d"), parentID);
+	UE_LOG(LogPlayerController, Display, TEXT("%d"), parentID);
 	// Set Parent Actor
 	if (parentID != 0 && actorList.Contains(parentID))
 	{
-		UE_LOG(LogTemp, Error, TEXT("your parent %s"), *actorList[parentID]->GetName());
+		UE_LOG(LogPlayerController, Display, TEXT("your parent %s"), *actorList[parentID]->GetName());
 
 		// 부모의 자식이 여럿이면 블루프린트에서 배열을 추가하는 방식으로
 		command = FString::Printf(TEXT("SetChild %s"), *actorList[actorID]->GetName());
@@ -357,7 +357,7 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 		actorList[parentID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("player ID: %d, actor ID: %d"), playerID, actorID);
+	UE_LOG(LogPlayerController, Display, TEXT("player ID: %d, actor ID: %d"), playerID, actorID);
 
 	// character Possess
 	if (playerID == actorID)
@@ -377,12 +377,12 @@ void AVRPlayerController_Base::SetPlayerCharacter(const int objectID)
 		if (objectID % 10 == 1)
 		{
 			playertype = PLAYERTYPE::GIRL;
-			UE_LOG(LogTemp, Error, TEXT("GIRL"));
+			UE_LOG(LogPlayerController, Warning, TEXT("GIRL"));
 		}
 		else
 		{
 			playertype = PLAYERTYPE::BOY;
-			UE_LOG(LogTemp, Error, TEXT("BOY"));
+			UE_LOG(LogPlayerController, Warning, TEXT("BOY"));
 		}
 
 		gameInst->GameStart();

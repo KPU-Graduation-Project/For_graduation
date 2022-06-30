@@ -5,6 +5,7 @@
 #include "Engine/GameInstance.h"
 #include "ClientSocket.h"
 #include "HoTGameInstance.generated.h"
+
 /**
  * 
  */
@@ -52,6 +53,11 @@ private:
 
 	//*********************************************************************************************/
 
+private:
+	UPROPERTY(EditDefaultsOnly, Category = NavMesh, DisplayName = "내비 메쉬 데이터 생성")
+		bool ExportNavMesh;
+
+	//*********************************************************************************************/
 private:
 	UPROPERTY()
 	TMap<int, UClass*> bpSet;

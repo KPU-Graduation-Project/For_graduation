@@ -83,7 +83,7 @@ void AVRCharacter_Base::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void AVRCharacter_Base::SetLocationAndRotation(const FVector& location, const float& yaw)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%lf, %lf, %lf"), location.X, location.Y, location.Z);
+	UE_LOG(LogActor, Display, TEXT("%lf, %lf, %lf"), location.X, location.Y, location.Z);
 
 	FRotator rotation = GetActorRotation();
 	rotation.Yaw = yaw;
