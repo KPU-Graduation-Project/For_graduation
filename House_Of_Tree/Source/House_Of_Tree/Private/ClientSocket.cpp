@@ -36,7 +36,7 @@ ClientSocket::~ClientSocket()
 
 bool ClientSocket::Init()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Thread has been initialized"));
+	UE_LOG(LogNet, Warning, TEXT("Thread has been initialized"));
 
 	return true;
 }
@@ -50,9 +50,7 @@ uint32 ClientSocket::Run()
 		if (RecvLen != SOCKET_ERROR)
 		{
 			for (int i = 0; i<RecvLen; ++i)
-				gameInst->playerController->buffer.push(RecvBuff[i]);
-			
-			gameInst->playerController->bufferSize += RecvLen;
+				buffer.push(RecvBuff[i]);
 		}
 	}
 
@@ -112,7 +110,7 @@ bool ClientSocket::ConnectServer()
 		                                 FString::Printf(TEXT("%i.%i"), wsaData.wVersion >> 8, wsaData.wVersion & 0xFF));
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, gameInst->ipAddr);
 
-		UE_LOG(LogTemp, Warning, TEXT("Socket Initialized"));
+		UE_LOG(LogNet, Warning, TEXT("Socket Initialized"));
 		return true;
 	}
 }
@@ -123,7 +121,7 @@ bool ClientSocket::Send(const int SendSize, void* SendData)
 	memcpy(buff, SendData, SendSize);
 
 	int nSendLen = send(Socket, buff, buff[0], 0);
-	UE_LOG(LogTemp, Warning, TEXT("Packet SIZE %d"), nSendLen);
+	UE_LOG(LogNet, Display, TEXT("Packet SIZE %d"), nSendLen);
 
 	return true;
 }

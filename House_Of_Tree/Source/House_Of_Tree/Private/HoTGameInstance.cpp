@@ -24,7 +24,7 @@ void UHoTGameInstance::Init()
 {
 	Super::Init();
 
-	UE_LOG(LogTemp, Warning, TEXT("Instance Initialized"));
+	UE_LOG(LogInit, Warning, TEXT("Instance Initialized"));
 
 	path = FPaths::ProjectUserDir();
 	path.Append(TEXT("data.txt"));
@@ -43,7 +43,7 @@ void UHoTGameInstance::InitSocket()
 	{
 		char a[100];
 		in >> a;
-		UE_LOG(LogTemp, Warning, TEXT("%s"), ToCStr(a));
+		UE_LOG(LogInit, Warning, TEXT("%s"), ToCStr(a));
 		ipAddr = ToCStr(a);
 	}
 	else
@@ -57,6 +57,18 @@ void UHoTGameInstance::InitSocket()
 
 void UHoTGameInstance::SetInfo()
 {
+	// 네비 메쉬
+	if (ExportNavMesh)
+	{
+		FWorldContext Context = GEngine->GetWorldContexts().Last();
+		UWorld *World = Context.World();
+		const UNavigationSystemV1 *NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
+		const ANavigationData *NavData = NavSys->GetDefaultNavDataInstance();
+		const ARecastNavMesh *NavMesh = Cast<ARecastNavMesh>(NavData);
+		NavMesh->GetGenerator()->ExportNavigationData(FString(TEXT("C:\\Users\\Kclient\\Testnavmesh.obj")));
+		UE_LOG(LogInit, Warning, TEXT("NavMeshExported"));
+	}
+
 	// 블루 프린트 에셋을 로드해와서 저장
 	int key = 1, id = 1;
 	for (const auto i : BP_Char)
@@ -187,12 +199,4 @@ void UHoTGameInstance::SetInfo()
 		}
 		out.close();
 	}
-
-	FWorldContext Context = GEngine->GetWorldContexts().Last();
-	UWorld* World = Context.World();
-	const UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
-	const ANavigationData* NavData = NavSys->GetDefaultNavDataInstance();
-	const ARecastNavMesh* NavMesh = Cast<ARecastNavMesh>(NavData);
-	NavMesh->GetGenerator()->ExportNavigationData(FString(TEXT("C:\\Users\\Kclient\\Testnavmesh.obj")));
-	UE_LOG(LogTemp, Warning, TEXT("NavMeshExported"));
 }
