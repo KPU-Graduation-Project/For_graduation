@@ -136,6 +136,50 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 
 	switch (p[1])
 	{
+	// LOBBY
+	case SC_PACKET::SC_CREATE_ROOM:
+	{
+		sc_create_room_packet *packet = reinterpret_cast<sc_create_room_packet *>(p);
+		DE_Room.Broadcast(packet->room_id, packet->selected_character, packet->is_ready);
+	} 
+	break;
+
+	case SC_PACKET::SC_JOIN_ROOM:
+	{
+		sc_join_room_packet *packet = reinterpret_cast<sc_join_room_packet *>(p);
+		//if (!packet->rst) break;
+
+		DE_Room.Broadcast(packet->room_id, packet->selected_character, packet->is_ready);
+	} 
+	break;
+
+	case SC_PACKET::SC_USER_JOIN_ROOM:
+	{
+		sc_user_join_room_packet *packet = reinterpret_cast<sc_user_join_room_packet *>(p);
+
+		DE_User.Broadcast(packet->id, packet->selected_character, packet->is_ready);
+	}
+
+	case SC_PACKET::SC_USER_READY_GAME:
+	{
+		sc_user_ready_game_packet *packet = reinterpret_cast<sc_user_ready_game_packet *>(p);
+		DE_Ready.Broadcast(packet->is_ready);
+		// 서버측에서 나의 레디정보를 보내는지 안보내는지에 따라 파라미터 값을 변경해줘야함
+	}
+	break;
+
+	case SC_PACKET::USER_EXIT_ROOM:
+	{
+		// 채우기
+	}
+	break;
+
+	case SC_PACKET::SC_USER_CHANGE_SELECTED_CHARACTER:
+	{
+		// 채우기
+	}
+	break;
+
 	case SC_PACKET::SC_LOGINOK:
 	{
 		UE_LOG(LogPlayerController, Display, TEXT("SC_LOGINOK"));
@@ -148,7 +192,7 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 	case SC_PACKET::SC_START_GAME:
 		UE_LOG(LogPlayerController, Display, TEXT("SC_START_GAME"));
 
-		// 로비에서 인게임 로비 캠으로 전환
+		// 로비에서 인게임 맵으로 변경
 
 		gameInst->GameStart();
 		break;

@@ -9,6 +9,9 @@
 #include "GameFramework/PlayerController.h"
 #include "VRPlayerController_Base.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FROOM, int32, ID, int32, Character, bool, isReady);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRDY, bool, isReady);
+
 /**
  * 
  */
@@ -29,6 +32,18 @@ class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
 	GENERATED_BODY()
 public:
 	AVRPlayerController_Base();
+
+	// 방 입장 이벤트
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FROOM DE_Room;
+
+	// 다른 유저 입장 이벤트
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FROOM DE_User;
+
+	// 레디 이벤트
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FRDY DE_Ready;
 
 protected:
 	UPROPERTY()

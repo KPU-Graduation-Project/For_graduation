@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "../../../../The Tree House Server/The Tree House Server/Protocol.h"
 #include <concurrent_queue.h>
 
