@@ -105,5 +105,5 @@ public:
 
 	bool IsIngame() { return gameStart; };
 	
-	bool CheckSend() {return SocketInstance != nullptr && IsIngame(); }
+	bool CheckSend() { return SocketInstance != nullptr; }
 };

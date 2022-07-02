@@ -136,56 +136,70 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 
 	switch (p[1])
 	{
-	// LOBBY
-	case SC_PACKET::SC_CREATE_ROOM:
-	{
-		sc_create_room_packet *packet = reinterpret_cast<sc_create_room_packet *>(p);
-		DE_Room.Broadcast(packet->room_id, packet->selected_character, packet->is_ready);
-	} 
-	break;
-
-	case SC_PACKET::SC_JOIN_ROOM:
-	{
-		sc_join_room_packet *packet = reinterpret_cast<sc_join_room_packet *>(p);
-		//if (!packet->rst) break;
-
-		DE_Room.Broadcast(packet->room_id, packet->selected_character, packet->is_ready);
-	} 
-	break;
-
-	case SC_PACKET::SC_USER_JOIN_ROOM:
-	{
-		sc_user_join_room_packet *packet = reinterpret_cast<sc_user_join_room_packet *>(p);
-
-		DE_User.Broadcast(packet->id, packet->selected_character, packet->is_ready);
-	}
-
-	case SC_PACKET::SC_USER_READY_GAME:
-	{
-		sc_user_ready_game_packet *packet = reinterpret_cast<sc_user_ready_game_packet *>(p);
-		DE_Ready.Broadcast(packet->is_ready);
-		// 서버측에서 나의 레디정보를 보내는지 안보내는지에 따라 파라미터 값을 변경해줘야함
-	}
-	break;
-
-	case SC_PACKET::USER_EXIT_ROOM:
-	{
-		// 채우기
-	}
-	break;
-
-	case SC_PACKET::SC_USER_CHANGE_SELECTED_CHARACTER:
-	{
-		// 채우기
-	}
-	break;
-
 	case SC_PACKET::SC_LOGINOK:
 	{
 		UE_LOG(LogPlayerController, Display, TEXT("SC_LOGINOK"));
 		// 플레이어 입력 패킷인데 일단 비워두기
 		sc_loginok_packet *packet = reinterpret_cast<sc_loginok_packet *>(p);
 		playerID = packet->id;
+
+		DE_SetID.Broadcast(packet->id);
+	}
+	break;
+
+	case SC_PACKET::SC_CREATE_ROOM:
+	{
+		sc_create_room_packet *packet = reinterpret_cast<sc_create_room_packet *>(p);
+
+		if (packet->room_id != -1)
+		{
+			// Change to Room UI
+			DE_Room.Broadcast(packet->room_id, true, packet->selected_character, packet->is_ready);
+		}
+	}
+	break;
+
+	case SC_PACKET::SC_JOIN_ROOM:
+	{
+		sc_join_room_packet *packet = reinterpret_cast<sc_join_room_packet *>(p);
+		
+		if (packet->room_id != -1)
+		{
+			// Change to Room UI
+			DE_Room.Broadcast(packet->room_id, false, packet->selected_character, packet->is_ready);
+		}
+	}
+	break;
+
+	case SC_PACKET::SC_USER_JOIN_ROOM:
+	{
+		sc_user_join_room_packet *packet = reinterpret_cast<sc_user_join_room_packet *>(p);
+
+		// 여기는 상대방의 ID
+		DE_User.Broadcast(packet->id, false, packet->selected_character, packet->is_ready);
+	}
+
+	case SC_PACKET::SC_USER_EXIT_ROOM:
+	{
+		sc_user_exit_room_packet *packet = reinterpret_cast<sc_user_exit_room_packet *>(p);
+
+		DE_Exit.Broadcast(packet->id);
+	}
+	break;
+
+	case SC_PACKET::SC_USER_READY_GAME:
+	{
+		sc_user_ready_game_packet *packet = reinterpret_cast<sc_user_ready_game_packet *>(p);
+
+		DE_Ready.Broadcast(packet->id, packet->is_ready);
+	}
+	break;
+
+	case SC_PACKET::SC_USER_CHANGE_SELECTED_CHARACTER:
+	{
+		sc_user_change_selected_character *packet = reinterpret_cast<sc_user_change_selected_character *>(p);
+
+		DE_SelCharacter.Broadcast(packet->id, packet->selected_character);
 	}
 	break;
 
@@ -352,6 +366,13 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 
 		FActorSpawnParameters SpawnParams;
 		actorList.Add(packet->id, GetWorld()->SpawnActor<AActor>(bullet, location, rotation, SpawnParams));
+	}
+	break;
+
+	// Move to next map
+	case SC_PACKET::SC_MOVE_SECTOR:
+	{
+		// ********************************** Need to Fill ********************************** //
 	}
 	break;
 

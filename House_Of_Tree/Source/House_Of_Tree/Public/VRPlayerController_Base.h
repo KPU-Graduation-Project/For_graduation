@@ -1,16 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
-
-
 #include "CoreMinimal.h"
 #include "HoTGameInstance.h"
 #include "GameFramework/PlayerController.h"
 #include "VRPlayerController_Base.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FROOM, int32, ID, int32, Character, bool, isReady);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRDY, bool, isReady);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FROOM, int, ID1, bool, roomMaster, int, Character, bool, isReady);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRDY, int, ID2, bool, isReady);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FID, int, ID3);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSEL, int, ID4, int, Character);
 
 /**
  * 
@@ -33,6 +32,10 @@ class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
 public:
 	AVRPlayerController_Base();
 
+	// ID 설정
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FID DE_SetID;
+
 	// 방 입장 이벤트
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
 	FROOM DE_Room;
@@ -44,6 +47,14 @@ public:
 	// 레디 이벤트
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
 	FRDY DE_Ready;
+
+	// 방 나가기
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FID DE_Exit;
+
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FSEL DE_SelCharacter;
+	
 
 protected:
 	UPROPERTY()
