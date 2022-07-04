@@ -43,7 +43,7 @@ void AVRPlayerController_Base::Tick(float DeltaSeconds)
 
 void AVRPlayerController_Base::SendPlayerData()
 {
-	if (gameInst->CheckSend())
+	if (gameInst->CheckSend() && gameInst->IsIngame())
 	{
 		UE_LOG(LogPlayerController, Display, TEXT("Send Packet"));
 

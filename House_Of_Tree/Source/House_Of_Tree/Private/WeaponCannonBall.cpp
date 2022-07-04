@@ -61,7 +61,7 @@ void AWeaponCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 
 		if (Cast<AWeaponMatchBullet>(OtherActor) || Cast<AVRCharacter_Base>(OtherActor)) return;
 		
-		if (gameInst->CheckSend() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::BOY)
+		if (gameInst->CheckSend() && gameInst->IsIngame() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::BOY)
 		{
 			cs_bullet_hit_packet packet;
 			packet.type = CS_PACKET::CS_BULLET_HIT;
