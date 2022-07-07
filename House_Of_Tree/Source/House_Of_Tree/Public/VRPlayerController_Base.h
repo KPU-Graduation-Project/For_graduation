@@ -6,10 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "VRPlayerController_Base.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FROOM, int, ID1, bool, roomMaster, int, Character, bool, isReady);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRDY, int, ID2, bool, isReady);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FLOBBY, int, ID1, bool, roomMaster, int, Character, bool, isReady);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FID, int, ID3);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSEL, int, ID4, int, Character);
 
 /**
  * 
@@ -38,22 +36,19 @@ public:
 
 	// 방 입장 이벤트
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
-	FROOM DE_Room;
+	FLOBBY DE_PlayerEnterRoom;
 
 	// 다른 유저 입장 이벤트
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
-	FROOM DE_User;
-
-	// 레디 이벤트
-	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
-	FRDY DE_Ready;
+	FLOBBY DE_UserEnterRoom;
 
 	// 방 나가기
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
-	FID DE_Exit;
+	FID DE_ExitRoom;
 
+	// 유저의 상태 변경
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
-	FSEL DE_SelCharacter;
+	FLOBBY DE_ChangeState;
 	
 
 protected:

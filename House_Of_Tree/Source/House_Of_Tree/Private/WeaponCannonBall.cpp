@@ -59,6 +59,7 @@ void AWeaponCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 		ProjectileMovementComponent->SetVelocityInLocalSpace(FVector(0, 0, 0));
 		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
 
+		// 캐릭터나 다른 폭탄에 붙었을 경우는 스킵
 		if (Cast<AWeaponMatchBullet>(OtherActor) || Cast<AVRCharacter_Base>(OtherActor)) return;
 		
 		if (gameInst->CheckSend() && gameInst->IsIngame() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::BOY)

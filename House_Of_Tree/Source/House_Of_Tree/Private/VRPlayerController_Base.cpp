@@ -111,21 +111,24 @@ void AVRPlayerController_Base::SendPlayerData()
 
 void AVRPlayerController_Base::RecvPacket()
 {
-	int bufferSize = gameInst->SocketInstance->buffer.unsafe_size();
-
-	while (remainData < bufferSize)
+	if (gameInst->CheckSend())
 	{
-		while (remainData < BUFSIZE && remainData < bufferSize)
-		{
-			gameInst->SocketInstance->buffer.try_pop(data[remainData++]);
-		}
+		int bufferSize = gameInst->SocketInstance->buffer.unsafe_size();
 
-		while (remainData > 0 && data[0] <= remainData)
+		while (remainData < bufferSize)
 		{
-			ProcessPacket(data);
-			remainData -= data[0];
-			bufferSize -= data[0];
-			memcpy(data, data + data[0], BUFSIZE - data[0]);
+			while (remainData < BUFSIZE && remainData < bufferSize)
+			{
+				gameInst->SocketInstance->buffer.try_pop(data[remainData++]);
+			}
+
+			while (remainData > 0 && data[0] <= remainData)
+			{
+				ProcessPacket(data);
+				remainData -= data[0];
+				bufferSize -= data[0];
+				memcpy(data, data + data[0], BUFSIZE - data[0]);
+			}
 		}
 	}
 }
@@ -154,7 +157,7 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 		if (packet->room_id != -1)
 		{
 			// Change to Room UI
-			DE_Room.Broadcast(packet->room_id, true, packet->selected_character, packet->is_ready);
+			DE_PlayerEnterRoom.Broadcast(packet->room_id, packet->is_host, packet->selected_character, packet->is_ready);
 		}
 	}
 	break;
@@ -166,7 +169,7 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 		if (packet->room_id != -1)
 		{
 			// Change to Room UI
-			DE_Room.Broadcast(packet->room_id, false, packet->selected_character, packet->is_ready);
+			DE_PlayerEnterRoom.Broadcast(packet->room_id, packet->is_host, packet->selected_character, packet->is_ready);
 		}
 	}
 	break;
@@ -176,30 +179,22 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 		sc_user_join_room_packet *packet = reinterpret_cast<sc_user_join_room_packet *>(p);
 
 		// 여기는 상대방의 ID
-		DE_User.Broadcast(packet->id, false, packet->selected_character, packet->is_ready);
+		DE_UserEnterRoom.Broadcast(packet->id, packet->is_host, packet->selected_character, packet->is_ready);
 	}
 
 	case SC_PACKET::SC_USER_EXIT_ROOM:
 	{
 		sc_user_exit_room_packet *packet = reinterpret_cast<sc_user_exit_room_packet *>(p);
 
-		DE_Exit.Broadcast(packet->id);
+		DE_ExitRoom.Broadcast(packet->id);
 	}
 	break;
 
-	case SC_PACKET::SC_USER_READY_GAME:
+	case SC_PACKET::SC_CHANGE_USER_STATE:
 	{
-		sc_user_ready_game_packet *packet = reinterpret_cast<sc_user_ready_game_packet *>(p);
+		sc_change_user_state_packet *packet = reinterpret_cast<sc_change_user_state_packet *>(p);
 
-		DE_Ready.Broadcast(packet->id, packet->is_ready);
-	}
-	break;
-
-	case SC_PACKET::SC_USER_CHANGE_SELECTED_CHARACTER:
-	{
-		sc_user_change_selected_character *packet = reinterpret_cast<sc_user_change_selected_character *>(p);
-
-		DE_SelCharacter.Broadcast(packet->id, packet->selected_character);
+		DE_ChangeState.Broadcast(packet->id, packet->is_host, packet->selected_character, packet->is_ready);
 	}
 	break;
 
