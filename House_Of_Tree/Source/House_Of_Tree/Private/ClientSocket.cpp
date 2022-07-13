@@ -5,10 +5,7 @@
 
 #include "HoTGameInstance.h"
 #include "VRPlayerController_Base.h"
-//#include "..\..\..\..\ServerPrototype/ServerPrototype/protocol.h"
 #include <queue>
-
-#include "Protocol.h"
 
 #pragma region Main Thread Code
 
@@ -49,8 +46,13 @@ uint32 ClientSocket::Run()
 		int RecvLen = recv(Socket, reinterpret_cast<char*>(RecvBuff), BUFSIZE, 0);
 		if (RecvLen != SOCKET_ERROR)
 		{
-			for (int i = 0; i<RecvLen; ++i)
+			for (int i = 0; i < RecvLen; ++i)
 				buffer.push(RecvBuff[i]);
+		}
+		else
+		{
+			buffer.push(0);
+			return 0;
 		}
 	}
 

@@ -30,4 +30,25 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Network")
 	void TargetSpin(AActor *actor , bool forward);
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+	void CreateRoom();
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+	void JoinRoom(int roomID);
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+	void ReadyGame(bool isReady);
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+	void SelectCharacter(int selected);
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+	void ExitRoom();
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+	void StartGame();
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+	void DebugGame();
 };

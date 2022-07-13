@@ -15,9 +15,12 @@ AVRCharacter_Base::AVRCharacter_Base()
 	GetMesh()->SetOwnerNoSee(true);
 	GetMesh()->SetRelativeLocationAndRotation(FVector(-15, 0, -88), FRotator(0, -90 ,0));
 	GetMesh()->SetRelativeScale3D(FVector(2.5, 2.5, 2.5));
+
+	VR_Root = CreateDefaultSubobject<USceneComponent>(TEXT("VR_Root"));
+	VR_Root->SetupAttachment(RootComponent);
 	
 	VR_Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	VR_Camera->SetupAttachment(RootComponent);
+	VR_Camera->SetupAttachment(VR_Root);
 	VR_Camera->SetRelativeLocation(FVector(0, 0, 80));
 
 	MotionController_L = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionContoller_L"));
@@ -29,12 +32,12 @@ AVRCharacter_Base::AVRCharacter_Base()
 	Hand_L = EControllerHand::Left;
 	Hand_R = EControllerHand::Right;
 
-	MotionController_L->SetupAttachment(RootComponent);
+	MotionController_L->SetupAttachment(VR_Root);
 	MotionController_L->SetRelativeLocation(FVector(0, 0, 0));
 	MotionController_L->SetCollisionProfileName(TEXT("BlockAll"));
 	MotionController_L->SetTrackingSource(Hand_L);
 
-	MotionController_R->SetupAttachment(RootComponent);
+	MotionController_R->SetupAttachment(VR_Root);
 	MotionController_R->SetRelativeLocation(FVector(0, 0, 0));
 	MotionController_R->SetCollisionProfileName(TEXT("BlockAll"));
 	MotionController_R->SetTrackingSource(Hand_R);

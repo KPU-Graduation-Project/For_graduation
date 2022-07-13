@@ -30,6 +30,9 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USceneComponent *VR_Root;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UMotionControllerComponent* MotionController_L;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

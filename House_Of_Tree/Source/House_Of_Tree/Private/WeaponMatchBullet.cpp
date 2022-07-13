@@ -4,7 +4,6 @@
 #include "WeaponMatchBullet.h"
 
 #include "HoTGameInstance.h"
-#include "Protocol.h"
 #include "VRCharacter_Base.h"
 #include "VRPlayerController_Base.h"
 #include "Components/SphereComponent.h"
@@ -67,7 +66,7 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		Acceleration = 0;
 		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
 
-		if (gameInst->CheckSend() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::GIRL)
+		if (gameInst->CheckSend() && gameInst->IsIngame() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::GIRL)
 		{
 			cs_bullet_hit_packet packet;
 			packet.type = CS_PACKET::CS_BULLET_HIT;

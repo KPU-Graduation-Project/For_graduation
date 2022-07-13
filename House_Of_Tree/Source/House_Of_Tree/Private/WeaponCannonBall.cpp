@@ -4,7 +4,6 @@
 #include "WeaponCannonBall.h"
 
 #include "HoTGameInstance.h"
-#include "Protocol.h"
 #include "VRCharacter_Base.h"
 #include "VRPlayerController_Base.h"
 #include "WeaponMatchBullet.h"
@@ -60,9 +59,10 @@ void AWeaponCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 		ProjectileMovementComponent->SetVelocityInLocalSpace(FVector(0, 0, 0));
 		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
 
+		// 캐릭터나 다른 폭탄에 붙었을 경우는 스킵
 		if (Cast<AWeaponMatchBullet>(OtherActor) || Cast<AVRCharacter_Base>(OtherActor)) return;
 		
-		if (gameInst->CheckSend() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::BOY)
+		if (gameInst->CheckSend() && gameInst->IsIngame() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::BOY)
 		{
 			cs_bullet_hit_packet packet;
 			packet.type = CS_PACKET::CS_BULLET_HIT;

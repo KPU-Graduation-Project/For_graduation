@@ -9,6 +9,8 @@
 #include "WeaponCannonBall.h"
 #include "WeaponMatchBullet.h"
 #include "Misc/OutputDeviceNull.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 
 AVRPlayerController_Base::AVRPlayerController_Base()
 {}
@@ -42,7 +44,7 @@ void AVRPlayerController_Base::Tick(float DeltaSeconds)
 
 void AVRPlayerController_Base::SendPlayerData()
 {
-	if (gameInst->CheckSend())
+	if (gameInst->CheckSend() && gameInst->IsIngame())
 	{
 		UE_LOG(LogPlayerController, Display, TEXT("Send Packet"));
 
@@ -110,26 +112,30 @@ void AVRPlayerController_Base::SendPlayerData()
 
 void AVRPlayerController_Base::RecvPacket()
 {
-	int bufferSize = gameInst->SocketInstance->buffer.unsafe_size();
-
-	while (remainData < bufferSize)
+	if (gameInst->CheckSend())
 	{
-		while (remainData < BUFSIZE && remainData < bufferSize)
-		{
-			gameInst->SocketInstance->buffer.try_pop(data[remainData++]);
-		}
+		int bufferSize = gameInst->SocketInstance->buffer.unsafe_size();
 
-		while (remainData > 0 && data[0] <= remainData)
+		while (remainData < bufferSize)
 		{
-			ProcessPacket(data);
-			remainData -= data[0];
-			bufferSize -= data[0];
-			memcpy(data, data + data[0], BUFSIZE - data[0]);
+			while (remainData < BUFSIZE && remainData < bufferSize)
+			{
+				gameInst->SocketInstance->buffer.try_pop(data[remainData++]);
+			}
+
+			while (remainData > 0 && data[0] <= remainData)
+			{
+				if (ProcessPacket(data) == false)
+					return;
+				remainData -= data[0];
+				bufferSize -= data[0];
+				memcpy(data, data + data[0], BUFSIZE - data[0]);
+			}
 		}
 	}
 }
 
-void AVRPlayerController_Base::ProcessPacket(char *p)
+bool AVRPlayerController_Base::ProcessPacket(char *p)
 {
 	UE_LOG(LogPlayerController, Display, TEXT("Packet type: %d"), p[1]);
 
@@ -141,13 +147,66 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 		// 플레이어 입력 패킷인데 일단 비워두기
 		sc_loginok_packet *packet = reinterpret_cast<sc_loginok_packet *>(p);
 		playerID = packet->id;
+
+		DE_SetID.Broadcast(packet->id);
+	}
+	break;
+
+	case SC_PACKET::SC_CREATE_ROOM:
+	{
+		sc_create_room_packet *packet = reinterpret_cast<sc_create_room_packet *>(p);
+
+		if (packet->room_id != -1)
+		{
+			// Change to Room UI
+			DE_PlayerEnterRoom.Broadcast(packet->room_id, packet->is_host, packet->selected_character, packet->is_ready);
+		}
+	}
+	break;
+
+	case SC_PACKET::SC_JOIN_ROOM:
+	{
+		sc_join_room_packet *packet = reinterpret_cast<sc_join_room_packet *>(p);
+		
+		if (packet->room_id != -1)
+		{
+			// Change to Room UI
+			DE_PlayerEnterRoom.Broadcast(packet->room_id, packet->is_host, packet->selected_character, packet->is_ready);
+		}
+	}
+	break;
+
+	case SC_PACKET::SC_USER_JOIN_ROOM:
+	{
+		sc_user_join_room_packet *packet = reinterpret_cast<sc_user_join_room_packet *>(p);
+
+		// 여기는 상대방의 ID
+		DE_UserEnterRoom.Broadcast(packet->id, packet->is_host, packet->selected_character, packet->is_ready);
+	}
+
+	case SC_PACKET::SC_USER_EXIT_ROOM:
+	{
+		UE_LOG(LogTemp, Error, TEXT("Recv Exit Room"));
+
+		sc_user_exit_room_packet *packet = reinterpret_cast<sc_user_exit_room_packet *>(p);
+
+		DE_ExitRoom.Broadcast(packet->id);
+	}
+	break;
+
+	case SC_PACKET::SC_CHANGE_USER_STATE:
+	{
+		sc_change_user_state_packet *packet = reinterpret_cast<sc_change_user_state_packet *>(p);
+
+		DE_ChangeState.Broadcast(packet->id, packet->is_host, packet->selected_character, packet->is_ready);
 	}
 	break;
 
 	case SC_PACKET::SC_START_GAME:
+	case SC_PACKET::SC_DEBUG_SINGLE_START_GAME:
 		UE_LOG(LogPlayerController, Display, TEXT("SC_START_GAME"));
 
-		// 로비에서 인게임 로비 캠으로 전환
+		// 로비에서 인게임 맵으로 변경
 
 		gameInst->GameStart();
 		break;
@@ -161,7 +220,8 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 	case SC_PACKET::SC_PUT_OBJECT:
 	{
 		sc_put_object_packet *packet = reinterpret_cast<sc_put_object_packet *>(p);
-		if (gameInst->GetActor(packet->object_type) == nullptr) return;
+		if (gameInst->GetActor(packet->object_type) == nullptr) 
+			break;
 
 		UE_LOG(LogPlayerController, Display, TEXT("putobject %s"), *gameInst->GetActor(packet->object_type)->GetName());
 
@@ -247,8 +307,7 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 		if (packet->id == playerID || actorList.Contains(packet->id) == false)
 		{
 			UE_LOG(LogPlayerController, Display, TEXT("It's you"));
-
-			return;
+			break;
 		}
 
 		AVRCharacter_Base *otherPlayer = Cast<AVRCharacter_Base>(actorList[packet->id]);
@@ -292,7 +351,8 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 	{
 		sc_shoot_bullet_packet *packet = reinterpret_cast<sc_shoot_bullet_packet *>(p);
 		UClass *bullet = gameInst->GetBullet(packet->bullet_type);
-		if (bullet == nullptr) return;
+		if (bullet == nullptr)
+			break;
 
 		FVector location;
 		FRotator rotation;
@@ -310,6 +370,13 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 	}
 	break;
 
+	// Move to next map
+	case SC_PACKET::SC_MOVE_SECTOR:
+	{
+		// ********************************** Need to Fill ********************************** //
+	}
+	break;
+
 	case SC_PACKET::SC_OBJECT_UPDATE:
 	{
 		UE_LOG(LogPlayerController, Display, TEXT("SC_OBJECT_UPDATE"));
@@ -324,8 +391,11 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 	break;
 
 	default:
-		break;
+		UE_LOG(LogNet, Error, TEXT("Recv Wrong Pacekt!!"));
+		UKismetSystemLibrary::QuitGame(GetWorld(), 0, EQuitPreference::Quit, false);
+		return false;
 	}
+	return true;
 }
 
 void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID,

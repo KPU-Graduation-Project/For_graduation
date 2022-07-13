@@ -102,7 +102,8 @@ protected:
 public:
 	void GameStart() { gameStart = true; }
 	void AllLoadComplete() { allLoadComplete = true; }
+
 	bool IsIngame() { return gameStart; };
 	
-	bool CheckSend() {return SocketInstance != nullptr && IsIngame(); }
+	bool CheckSend() { return SocketInstance != nullptr; }
 };
