@@ -49,6 +49,11 @@ uint32 ClientSocket::Run()
 			for (int i = 0; i < RecvLen; ++i)
 				buffer.push(RecvBuff[i]);
 		}
+		else
+		{
+			buffer.push(0);
+			return 0;
+		}
 	}
 
 	return 0;

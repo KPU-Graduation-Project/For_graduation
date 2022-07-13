@@ -71,8 +71,6 @@ void UNetworkModule::TargetSpin(AActor *actor, bool forward)
 
 void UNetworkModule::CreateRoom()
 {
-	UE_LOG(LogActorComponent, Display, TEXT("???"));
-
 	if (!gameInst->CheckSend()) return;
 
 	cs_create_room_packet packet;

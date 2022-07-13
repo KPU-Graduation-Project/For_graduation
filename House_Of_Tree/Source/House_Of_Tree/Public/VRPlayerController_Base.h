@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FLOBBY, int, ID1, bool, roomMaster, int, Character, bool, isReady);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FID, int, ID3);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFUNC);
 
 /**
  * 
@@ -49,6 +50,9 @@ public:
 	// 유저의 상태 변경
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
 	FLOBBY DE_ChangeState;
+
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FFUNC DE_QUIT;
 	
 
 protected:
@@ -78,7 +82,7 @@ private:
 
 protected:
 	void RecvPacket();
-	void ProcessPacket(char* p);
+	bool ProcessPacket(char* p);
 
 	void SendPlayerData();
 

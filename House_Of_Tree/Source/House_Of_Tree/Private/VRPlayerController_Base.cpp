@@ -9,6 +9,7 @@
 #include "WeaponCannonBall.h"
 #include "WeaponMatchBullet.h"
 #include "Misc/OutputDeviceNull.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 
 AVRPlayerController_Base::AVRPlayerController_Base()
@@ -124,7 +125,8 @@ void AVRPlayerController_Base::RecvPacket()
 
 			while (remainData > 0 && data[0] <= remainData)
 			{
-				ProcessPacket(data);
+				if (ProcessPacket(data) == false)
+					return;
 				remainData -= data[0];
 				bufferSize -= data[0];
 				memcpy(data, data + data[0], BUFSIZE - data[0]);
@@ -133,7 +135,7 @@ void AVRPlayerController_Base::RecvPacket()
 	}
 }
 
-void AVRPlayerController_Base::ProcessPacket(char *p)
+bool AVRPlayerController_Base::ProcessPacket(char *p)
 {
 	UE_LOG(LogPlayerController, Display, TEXT("Packet type: %d"), p[1]);
 
@@ -184,6 +186,8 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 
 	case SC_PACKET::SC_USER_EXIT_ROOM:
 	{
+		UE_LOG(LogTemp, Error, TEXT("Recv Exit Room"));
+
 		sc_user_exit_room_packet *packet = reinterpret_cast<sc_user_exit_room_packet *>(p);
 
 		DE_ExitRoom.Broadcast(packet->id);
@@ -216,7 +220,8 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 	case SC_PACKET::SC_PUT_OBJECT:
 	{
 		sc_put_object_packet *packet = reinterpret_cast<sc_put_object_packet *>(p);
-		if (gameInst->GetActor(packet->object_type) == nullptr) return;
+		if (gameInst->GetActor(packet->object_type) == nullptr) 
+			break;
 
 		UE_LOG(LogPlayerController, Display, TEXT("putobject %s"), *gameInst->GetActor(packet->object_type)->GetName());
 
@@ -302,8 +307,7 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 		if (packet->id == playerID || actorList.Contains(packet->id) == false)
 		{
 			UE_LOG(LogPlayerController, Display, TEXT("It's you"));
-
-			return;
+			break;
 		}
 
 		AVRCharacter_Base *otherPlayer = Cast<AVRCharacter_Base>(actorList[packet->id]);
@@ -347,7 +351,8 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 	{
 		sc_shoot_bullet_packet *packet = reinterpret_cast<sc_shoot_bullet_packet *>(p);
 		UClass *bullet = gameInst->GetBullet(packet->bullet_type);
-		if (bullet == nullptr) return;
+		if (bullet == nullptr)
+			break;
 
 		FVector location;
 		FRotator rotation;
@@ -386,8 +391,11 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 	break;
 
 	default:
-		break;
+		UE_LOG(LogNet, Error, TEXT("Recv Wrong Pacekt!!"));
+		UKismetSystemLibrary::QuitGame(GetWorld(), 0, EQuitPreference::Quit, false);
+		return false;
 	}
+	return true;
 }
 
 void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID,
