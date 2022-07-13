@@ -46,7 +46,7 @@ uint32 ClientSocket::Run()
 		int RecvLen = recv(Socket, reinterpret_cast<char*>(RecvBuff), BUFSIZE, 0);
 		if (RecvLen != SOCKET_ERROR)
 		{
-			for (int i = 0; i<RecvLen; ++i)
+			for (int i = 0; i < RecvLen; ++i)
 				buffer.push(RecvBuff[i]);
 		}
 	}

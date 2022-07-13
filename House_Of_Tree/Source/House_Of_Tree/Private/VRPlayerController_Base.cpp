@@ -199,6 +199,7 @@ void AVRPlayerController_Base::ProcessPacket(char *p)
 	break;
 
 	case SC_PACKET::SC_START_GAME:
+	case SC_PACKET::SC_DEBUG_SINGLE_START_GAME:
 		UE_LOG(LogPlayerController, Display, TEXT("SC_START_GAME"));
 
 		// 로비에서 인게임 맵으로 변경

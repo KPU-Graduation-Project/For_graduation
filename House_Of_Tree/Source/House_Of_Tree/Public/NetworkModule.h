@@ -48,4 +48,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Network")
 	void StartGame();
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+	void DebugGame();
 };

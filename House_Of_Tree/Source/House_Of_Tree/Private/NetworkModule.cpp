@@ -143,3 +143,15 @@ void UNetworkModule::StartGame()
 	gameInst->SocketInstance->Send(packet.size, &packet);
 	UE_LOG(LogActorComponent, Display, TEXT("Send Game Start"));
 }
+
+void UNetworkModule::DebugGame()
+{
+	if (!gameInst->CheckSend()) return;
+
+	cs_debug_single_start_game packet;
+	packet.type = CS_PACKET::CS_DEBUG_SINGLE_START_GAME;
+	packet.size = sizeof(packet);
+
+	gameInst->SocketInstance->Send(packet.size, &packet);
+	UE_LOG(LogActorComponent, Display, TEXT("Send Debug Game"));
+}
