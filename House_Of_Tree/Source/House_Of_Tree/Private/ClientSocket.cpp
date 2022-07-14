@@ -5,10 +5,7 @@
 
 #include "HoTGameInstance.h"
 #include "VRPlayerController_Base.h"
-//#include "..\..\..\..\ServerPrototype/ServerPrototype/protocol.h"
 #include <queue>
-
-#include "Protocol.h"
 
 #pragma region Main Thread Code
 
@@ -36,7 +33,7 @@ ClientSocket::~ClientSocket()
 
 bool ClientSocket::Init()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Thread has been initialized"));
+	UE_LOG(LogNet, Warning, TEXT("Thread has been initialized"));
 
 	return true;
 }
@@ -49,10 +46,13 @@ uint32 ClientSocket::Run()
 		int RecvLen = recv(Socket, reinterpret_cast<char*>(RecvBuff), BUFSIZE, 0);
 		if (RecvLen != SOCKET_ERROR)
 		{
-			for (int i = 0; i<RecvLen; ++i)
-				gameInst->playerController->buffer.push(RecvBuff[i]);
-			
-			gameInst->playerController->bufferSize += RecvLen;
+			for (int i = 0; i < RecvLen; ++i)
+				buffer.push(RecvBuff[i]);
+		}
+		else
+		{
+			buffer.push(0);
+			return 0;
 		}
 	}
 
@@ -102,6 +102,7 @@ bool ClientSocket::ConnectServer()
 	if (nRet == SOCKET_ERROR)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Fail")));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, gameInst->ipAddr);
 		return false;
 	}
 	else
@@ -109,7 +110,9 @@ bool ClientSocket::ConnectServer()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Success!")));
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
 		                                 FString::Printf(TEXT("%i.%i"), wsaData.wVersion >> 8, wsaData.wVersion & 0xFF));
-		UE_LOG(LogTemp, Warning, TEXT("Socket Initialized"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, gameInst->ipAddr);
+
+		UE_LOG(LogNet, Warning, TEXT("Socket Initialized"));
 		return true;
 	}
 }
@@ -120,7 +123,7 @@ bool ClientSocket::Send(const int SendSize, void* SendData)
 	memcpy(buff, SendData, SendSize);
 
 	int nSendLen = send(Socket, buff, buff[0], 0);
-	UE_LOG(LogTemp, Warning, TEXT("Packet SIZE %d"), nSendLen);
+	UE_LOG(LogNet, Display, TEXT("Packet SIZE %d"), nSendLen);
 
 	return true;
 }

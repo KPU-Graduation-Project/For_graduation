@@ -2,14 +2,16 @@
 
 
 #include "WeaponMatchBullet.h"
+
+#include "HoTGameInstance.h"
+#include "VRCharacter_Base.h"
+#include "VRPlayerController_Base.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 // Sets default values
 AWeaponMatchBullet::AWeaponMatchBullet()
 {
-	InitialLifeSpan = 5.0f;
-
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -34,7 +36,11 @@ AWeaponMatchBullet::AWeaponMatchBullet()
 void AWeaponMatchBullet::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if (GetWorld() != nullptr && GetWorld()->GetGameInstance() != nullptr)
+	{
+		gameInst = Cast<UHoTGameInstance>(GetWorld()->GetGameInstance());
+	}
+	
 	Speed = ProjectileMovementComponent->InitialSpeed;
 }
 
@@ -50,11 +56,6 @@ void AWeaponMatchBullet::Tick(float DeltaTime)
 	Speed = Speed + Acceleration;
 }
 
-void AWeaponMatchBullet::FireInDirection(const FVector& ShootDirection)
-{
-	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
-}
-
 void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -64,5 +65,35 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		Speed = 0;
 		Acceleration = 0;
 		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
+
+		if (gameInst->CheckSend() && gameInst->IsIngame() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::GIRL)
+		{
+			cs_bullet_hit_packet packet;
+			packet.type = CS_PACKET::CS_BULLET_HIT;
+			packet.size = sizeof(packet);
+			
+			const int* key = gameInst->playerController->GetActorKey(OtherActor);
+			if (key == nullptr)
+				packet.object_id = 0;
+			else
+				packet.object_id = *key;
+
+			const int* actorID = gameInst->playerController->GetActorKey(this);
+			if (actorID == nullptr) return;
+			packet.bullet_id = *actorID;
+			
+			FVector location = GetTransform().GetLocation();
+			FRotator rotation = GetTransform().GetRotation().Rotator();
+		
+			packet.x = location.X * 100;
+			packet.y = location.Y * 100;
+			packet.z = location.Z * 100;
+
+			packet.pitch = rotation.Pitch * 100;
+			packet.yaw = rotation.Yaw * 100;
+			packet.roll = rotation.Roll * 100;
+
+			gameInst->SocketInstance->Send(packet.size, &packet);
+		}
 	}
 }

@@ -30,6 +30,9 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USceneComponent *VR_Root;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UMotionControllerComponent* MotionController_L;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -53,5 +56,4 @@ public:
 
 	void SetLocationAndRotation(const FVector &location, const float &yaw);
 	void SetHandLocationAndRotation(const FVector &lhLocation, const FRotator &lhRotation, const FVector &rhLocationRH, const FRotator &rhRotation);
-	//void SetHeadRotation();
 };

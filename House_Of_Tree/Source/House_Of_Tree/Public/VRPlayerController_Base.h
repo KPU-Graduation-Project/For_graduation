@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
-#include <concurrent_queue.h>
-#include <atomic>
-
 #include "CoreMinimal.h"
 #include "HoTGameInstance.h"
 #include "GameFramework/PlayerController.h"
 #include "VRPlayerController_Base.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FLOBBY, int, ID1, bool, roomMaster, int, Character, bool, isReady);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FID, int, ID3);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFUNC);
 
 /**
  * 
@@ -17,12 +17,43 @@
 class UHoTGameInstance;
 class AVRCharacter_Base;
 
+UENUM()
+enum class PLAYERTYPE
+{
+	GIRL,
+	BOY
+};
+
 UCLASS()
 class HOUSE_OF_TREE_API AVRPlayerController_Base : public APlayerController
 {
 	GENERATED_BODY()
 public:
 	AVRPlayerController_Base();
+
+	// ID 설정
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FID DE_SetID;
+
+	// 방 입장 이벤트
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FLOBBY DE_PlayerEnterRoom;
+
+	// 다른 유저 입장 이벤트
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FLOBBY DE_UserEnterRoom;
+
+	// 방 나가기
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FID DE_ExitRoom;
+
+	// 유저의 상태 변경
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FLOBBY DE_ChangeState;
+
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+	FFUNC DE_QUIT;
+	
 
 protected:
 	UPROPERTY()
@@ -39,23 +70,34 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	TMap<int, AActor*> actorList;
-	
-	void SetPlayerCharacter();
-	
-	// Network system
-public:
-	Concurrency::concurrent_queue<char> buffer;
-	std::atomic<int> bufferSize {0};
+
+	void SetPlayerCharacter(const int objectID);
+
+	UPROPERTY()
+	PLAYERTYPE playertype;
+
+private:
+	char data[BUFSIZE];
+	int remainData = 0;
 
 protected:
-	void ProcessPacket();
+	void RecvPacket();
+	bool ProcessPacket(char* p);
+
 	void SendPlayerData();
 
-	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID);
+	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID, int parentID);
 
 public:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	AVRCharacter_Base* GetVRPlayer() { return vrPlayer; }
+	void AddActorList(int key, AActor* actor) { actorList.Add(key, actor); }
+
+	AActor* GetActorList(int key) { return *actorList.Find(key); }
+	const int* GetActorKey(AActor* actor) { return actorList.FindKey(actor); }
+
+	PLAYERTYPE GetPlayerType() { return playertype; }
 };

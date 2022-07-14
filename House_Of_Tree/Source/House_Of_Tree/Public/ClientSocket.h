@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 
+#include "../../../../The Tree House Server/The Tree House Server/Protocol.h"
+#include <concurrent_queue.h>
+
 // window 기본 타입 Hide
 #include "Windows/AllowWindowsPlatformTypes.h"
 #include "Windows/prewindowsapi.h"
@@ -41,4 +44,8 @@ private:
 	FThreadSafeCounter StopTaskCounter;
 
 	UHoTGameInstance* gameInst;
+
+	// Network system
+public:
+	Concurrency::concurrent_queue<char> buffer;
 };

@@ -21,7 +21,7 @@ void AMapLoader::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	LoadPackageAsync( TEXT("/Game/Map/Map_2_puzzle"), 0, PKG_ContainsMap);
+	LoadPackageAsync(TEXT("Map_1_battle"), 0, PKG_ContainsMap);
 }
 
 // Called every frame
@@ -35,7 +35,7 @@ void AMapLoader::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 	FVector NormalImpulse, const FHitResult& Hit)
 {
 	UE_LOG(LogTemp, Error, TEXT("HIT"));
-	UGameplayStatics::OpenLevel( this, TEXT( "Map_2_puzzle"));
+	UGameplayStatics::OpenLevel( this, TEXT( "Map_1_battle"));
 	
 }
 
