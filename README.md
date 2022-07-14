@@ -1,5 +1,6 @@
-# 나무의 집 (House Of Tree)
-### Team 최고우
+<img src="로고.png"/>
+
+### Team 최고우 <img src="팀로고.png" width="40" height="40"/>
 #### 한국공학대학교 2022년 게임공학과 졸업작품
 ---
 ### 팀원
