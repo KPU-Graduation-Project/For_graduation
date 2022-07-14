@@ -390,6 +390,11 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 	}
 	break;
 
+	case SOCKET_ERROR:
+		UE_LOG(LogNet, Error, TEXT("Socket Error!!"));
+		UKismetSystemLibrary::QuitGame(GetWorld(), 0, EQuitPreference::Quit, false);
+		return false;
+
 	default:
 		UE_LOG(LogNet, Error, TEXT("Recv Wrong Pacekt!!"));
 		UKismetSystemLibrary::QuitGame(GetWorld(), 0, EQuitPreference::Quit, false);
