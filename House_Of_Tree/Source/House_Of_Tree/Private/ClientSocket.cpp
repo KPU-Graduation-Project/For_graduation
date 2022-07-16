@@ -51,7 +51,8 @@ uint32 ClientSocket::Run()
 		}
 		else
 		{
-			buffer.push(0);
+			buffer.push(2);
+			buffer.push(SOCKET_ERROR);
 			return 0;
 		}
 	}
