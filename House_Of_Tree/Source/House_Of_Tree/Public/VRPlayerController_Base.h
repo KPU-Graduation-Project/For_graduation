@@ -67,11 +67,11 @@ protected:
 		int playerID;
 
 	UPROPERTY()
-		AVRCharacter_Base *vrPlayer;
+		AVRCharacter_Base *vrPlayer = nullptr;
 
 	// ========================================== TestMode ========================================== //
 	UPROPERTY()
-		ATestCharacter *TestPlayer;
+		ATestCharacter *TestPlayer = nullptr;
 	// ============================================================================================== //
 
 	UPROPERTY(BlueprintReadOnly)

@@ -10,6 +10,7 @@
 #include "WeaponCannonBall.h"
 #include "WeaponMatchBullet.h"
 #include "Misc/OutputDeviceNull.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 
@@ -54,11 +55,11 @@ void AVRPlayerController_Base::SendPlayerData()
 
 		// ========================================== TestMode ========================================== //
 		// ============================================================================================== //
-		if (TestMode)
+		if (TestMode && TestPlayer)
 		{
 			// Character Transform
-			FVector pos = vrPlayer->GetActorLocation();
-			FRotator rat = vrPlayer->GetActorRotation();
+			FVector pos = TestPlayer->GetActorLocation();
+			FRotator rat = TestPlayer->GetActorRotation();
 
 			sendPacket.x = pos.X * 100;
 			sendPacket.y = pos.Y * 100;
@@ -87,7 +88,7 @@ void AVRPlayerController_Base::SendPlayerData()
 		// ============================================================================================== //
 		// ============================================================================================== //
 
-		else
+		else if (vrPlayer)
 		{
 			// Character Transform
 			FVector pos = vrPlayer->GetActorLocation();
@@ -169,6 +170,8 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		playerID = packet->id;
 
 		DE_SetID.Broadcast(packet->id);
+
+		LoadPackageAsync(TEXT("Game_Map1_puzzle"), 0, PKG_ContainsMap);
 	}
 	break;
 
@@ -227,6 +230,7 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		UE_LOG(LogPlayerController, Display, TEXT("SC_START_GAME"));
 
 		// 로비에서 인게임 맵으로 변경
+		UGameplayStatics::OpenLevel(this, TEXT("Game_Map1_puzzle"));
 
 		gameInst->GameStart();
 		break;
