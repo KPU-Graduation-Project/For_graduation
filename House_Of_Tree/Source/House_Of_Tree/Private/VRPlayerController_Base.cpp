@@ -58,6 +58,9 @@ void AVRPlayerController_Base::SendPlayerData()
 		FVector pos = trans.GetLocation();
 		FRotator rat = trans.GetRotation().Rotator();
 
+
+		//vrPlayer->GetMesh()->GetRelativeRotation();
+
 		sendPacket.x = pos.X * 100;
 		sendPacket.y = pos.Y * 100;
 		sendPacket.z = pos.Z * 100;
