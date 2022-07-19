@@ -33,11 +33,10 @@ public:
 
 	ClientSocket* SocketInstance;
 
-private:
-	UPROPERTY(EditDefaultsOnly, Category=Network, DisplayName="서버 연결")
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Network, DisplayName = "서버 연결")
 	bool ConnectNetwork;
 
-public:
 	UPROPERTY()
 	FString ipAddr;
 

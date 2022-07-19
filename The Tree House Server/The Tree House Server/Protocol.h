@@ -126,17 +126,7 @@ struct cs_player_data_packet
 	int           x;
 	int           y;
 	int           z;
-	short         pitch;
 	short         yaw;
-	short         roll;
-
-	// Head(VR) Transform
-	int           head_x;
-	int           head_y;
-	int           head_z;
-	short         head_pitch;
-	short         head_yaw;
-	short         head_roll;
 
 	// RightHand Transform
 	int           rh_x;
@@ -343,17 +333,7 @@ struct sc_player_data_packet
 	int           x;
 	int           y;
 	int           z;
-	short         pitch;
 	short         yaw;
-	short         roll;
-
-	// Head(VR) Transform
-	int           head_x;
-	int           head_y;
-	int           head_z;
-	short         head_pitch;
-	short         head_yaw;
-	short         head_roll;
 
 	// RightHand Transform
 	int           rh_x;

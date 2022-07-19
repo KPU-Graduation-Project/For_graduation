@@ -11,11 +11,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FID, int, ID3);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFUNC);
 
 /**
- * 
+ *
  */
 
 class UHoTGameInstance;
 class AVRCharacter_Base;
+class ATestCharacter;
 
 UENUM()
 enum class PLAYERTYPE
@@ -33,56 +34,65 @@ public:
 
 	// ID 설정
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
-	FID DE_SetID;
+		FID DE_SetID;
 
 	// 방 입장 이벤트
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
-	FLOBBY DE_PlayerEnterRoom;
+		FLOBBY DE_PlayerEnterRoom;
 
 	// 다른 유저 입장 이벤트
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
-	FLOBBY DE_UserEnterRoom;
+		FLOBBY DE_UserEnterRoom;
 
 	// 방 나가기
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
-	FID DE_ExitRoom;
+		FID DE_ExitRoom;
 
 	// 유저의 상태 변경
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
-	FLOBBY DE_ChangeState;
+		FLOBBY DE_ChangeState;
 
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
-	FFUNC DE_QUIT;
-	
+		FFUNC DE_QUIT;
+
 
 protected:
 	UPROPERTY()
-	UHoTGameInstance* gameInst;
+		UHoTGameInstance *gameInst;
 
-	UPROPERTY(EditDefaultsOnly, Category = "플레이어 캐릭터", DisplayName="캐릭터")
-	TArray<TSubclassOf<APawn>> Characters;
+	UPROPERTY(EditDefaultsOnly, Category = "플레이어 캐릭터", DisplayName = "캐릭터")
+		TArray<TSubclassOf<APawn>> Characters;
 
 	UPROPERTY(BlueprintReadOnly)
-	int playerID;
+		int playerID;
 
 	UPROPERTY()
-	AVRCharacter_Base* vrPlayer;
+		AVRCharacter_Base *vrPlayer;
+
+	// ========================================== TestMode ========================================== //
+	UPROPERTY()
+		ATestCharacter *TestPlayer;
+	// ============================================================================================== //
 
 	UPROPERTY(BlueprintReadOnly)
-	TMap<int, AActor*> actorList;
+		TMap<int, AActor *> actorList;
 
 	void SetPlayerCharacter(const int objectID);
 
 	UPROPERTY()
-	PLAYERTYPE playertype;
+		PLAYERTYPE playertype;
 
 private:
-	char data[BUFSIZE];
+	char data[BUFSIZE] = {0};
 	int remainData = 0;
+
+	// ========================================== TestMode ========================================== //
+	bool TestMode = false;
+	// ============================================================================================== //
 
 protected:
 	void RecvPacket();
-	bool ProcessPacket(char* p);
+	bool ProcessPacket(char *p);
 
 	void SendPlayerData();
 
@@ -93,11 +103,11 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	AVRCharacter_Base* GetVRPlayer() { return vrPlayer; }
-	void AddActorList(int key, AActor* actor) { actorList.Add(key, actor); }
+	AVRCharacter_Base *GetVRPlayer() { return vrPlayer; }
+	void AddActorList(int key, AActor *actor) { actorList.Add(key, actor); }
 
-	AActor* GetActorList(int key) { return *actorList.Find(key); }
-	const int* GetActorKey(AActor* actor) { return actorList.FindKey(actor); }
+	AActor *GetActorList(int key) { return *actorList.Find(key); }
+	const int *GetActorKey(AActor *actor) { return actorList.FindKey(actor); }
 
 	PLAYERTYPE GetPlayerType() { return playertype; }
 };

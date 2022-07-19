@@ -3,6 +3,7 @@
 
 #include "VRPlayerController_Base.h"
 #include "VRCharacter_Base.h"
+#include "TestCharacter.h"
 #include "EngineUtils.h"
 #include "GameFramework/Character.h"
 #include "ClientSocket.h"
@@ -46,70 +47,86 @@ void AVRPlayerController_Base::SendPlayerData()
 {
 	if (gameInst->CheckSend() && gameInst->IsIngame())
 	{
-		UE_LOG(LogPlayerController, Display, TEXT("Send Packet"));
-
 		cs_player_data_packet sendPacket;
 		sendPacket.type = CS_PACKET::CS_PLAYER_DATA;
 		sendPacket.size = sizeof(sendPacket);
 		sendPacket.id = playerID;
 
-		// Character Transform
-		FTransform trans = vrPlayer->GetTransform();
-		FVector pos = trans.GetLocation();
-		FRotator rat = trans.GetRotation().Rotator();
+		// ========================================== TestMode ========================================== //
+		// ============================================================================================== //
+		if (TestMode)
+		{
+			// Character Transform
+			FVector pos = vrPlayer->GetActorLocation();
+			FRotator rat = vrPlayer->GetActorRotation();
 
+			sendPacket.x = pos.X * 100;
+			sendPacket.y = pos.Y * 100;
+			sendPacket.z = pos.Z * 100;
 
-		//vrPlayer->GetMesh()->GetRelativeRotation();
+			sendPacket.yaw = rat.Yaw * 100;
 
-		sendPacket.x = pos.X * 100;
-		sendPacket.y = pos.Y * 100;
-		sendPacket.z = pos.Z * 100;
+			sendPacket.rh_x = 0;
+			sendPacket.rh_y = 0;
+			sendPacket.rh_z = 0;
 
-		sendPacket.pitch = rat.Pitch * 100;
-		sendPacket.yaw = rat.Yaw * 100;
-		sendPacket.roll = rat.Roll * 100;
+			sendPacket.rh_pitch = 0;
+			sendPacket.rh_yaw = 0;
+			sendPacket.rh_roll = 0;
 
-		// Head Transform
-		trans = vrPlayer->GetHeadTransform();
-		pos = trans.GetLocation();
-		rat = trans.GetRotation().Rotator();
+			sendPacket.lh_x = 0;
+			sendPacket.lh_y = 0;
+			sendPacket.lh_z = 0;
 
-		sendPacket.head_x = pos.X * 100;
-		sendPacket.head_y = pos.Y * 100;
-		sendPacket.head_z = pos.Z * 100;
+			sendPacket.lh_pitch = 0;
+			sendPacket.lh_yaw = 0;
+			sendPacket.lh_roll = 0;
 
-		sendPacket.head_pitch = rat.Pitch * 100;
-		sendPacket.head_yaw = rat.Yaw * 100;
-		sendPacket.head_roll = rat.Roll * 100;
+			gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
+		}
+		// ============================================================================================== //
+		// ============================================================================================== //
 
-		// RH Transform
-		trans = vrPlayer->GetRHTransform();
-		pos = trans.GetLocation();
-		rat = trans.GetRotation().Rotator();
+		else
+		{
+			// Character Transform
+			FVector pos = vrPlayer->GetActorLocation();
+			FRotator rat = vrPlayer->GetMesh()->GetRelativeRotation();
 
-		sendPacket.rh_x = pos.X * 100;
-		sendPacket.rh_y = pos.Y * 100;
-		sendPacket.rh_z = pos.Z * 100;
+			sendPacket.x = pos.X * 100;
+			sendPacket.y = pos.Y * 100;
+			sendPacket.z = pos.Z * 100;
 
-		sendPacket.rh_pitch = rat.Pitch * 100;
-		sendPacket.rh_yaw = rat.Yaw * 100;
-		sendPacket.rh_roll = rat.Roll * 100;
+			sendPacket.yaw = rat.Yaw * 100;
 
-		// LH Transform
-		trans = vrPlayer->GetLHTransform();
-		pos = trans.GetLocation();
-		rat = trans.GetRotation().Rotator();
+			// RH Transform
+			FTransform trans = vrPlayer->GetRHTransform();
+			pos = trans.GetLocation();
+			rat = trans.GetRotation().Rotator();
 
-		sendPacket.lh_x = pos.X * 100;
-		sendPacket.lh_y = pos.Y * 100;
-		sendPacket.lh_z = pos.Z * 100;
+			sendPacket.rh_x = pos.X * 100;
+			sendPacket.rh_y = pos.Y * 100;
+			sendPacket.rh_z = pos.Z * 100;
 
-		sendPacket.lh_pitch = rat.Pitch * 100;
-		sendPacket.lh_yaw = rat.Yaw * 100;
-		sendPacket.lh_roll = rat.Roll * 100;
+			sendPacket.rh_pitch = rat.Pitch * 100;
+			sendPacket.rh_yaw = rat.Yaw * 100;
+			sendPacket.rh_roll = rat.Roll * 100;
 
+			// LH Transform
+			trans = vrPlayer->GetLHTransform();
+			pos = trans.GetLocation();
+			rat = trans.GetRotation().Rotator();
 
-		gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
+			sendPacket.lh_x = pos.X * 100;
+			sendPacket.lh_y = pos.Y * 100;
+			sendPacket.lh_z = pos.Z * 100;
+
+			sendPacket.lh_pitch = rat.Pitch * 100;
+			sendPacket.lh_yaw = rat.Yaw * 100;
+			sendPacket.lh_roll = rat.Roll * 100;
+
+			gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
+		}
 	}
 }
 
@@ -170,7 +187,7 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 	case SC_PACKET::SC_JOIN_ROOM:
 	{
 		sc_join_room_packet *packet = reinterpret_cast<sc_join_room_packet *>(p);
-		
+
 		if (packet->room_id != -1)
 		{
 			// Change to Room UI
@@ -223,7 +240,7 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 	case SC_PACKET::SC_PUT_OBJECT:
 	{
 		sc_put_object_packet *packet = reinterpret_cast<sc_put_object_packet *>(p);
-		if (gameInst->GetActor(packet->object_type) == nullptr) 
+		if (gameInst->GetActor(packet->object_type) == nullptr)
 			break;
 
 		UE_LOG(LogPlayerController, Display, TEXT("putobject %s"), *gameInst->GetActor(packet->object_type)->GetName());
@@ -304,7 +321,6 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 	case SC_PACKET::SC_PLAYER_DATA:
 	{
 		sc_player_data_packet *packet = reinterpret_cast<sc_player_data_packet *>(p);
-		//UE_LOG(LogTemp, Warning, TEXT("PlayerID %d SC_PLAYER_DATA %d"), playerID, packet->id);
 
 		// 자신의 캐릭터의 정보거나 잘못된 id라면 취소
 		if (packet->id == playerID || actorList.Contains(packet->id) == false)
@@ -313,40 +329,41 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 			break;
 		}
 
-		AVRCharacter_Base *otherPlayer = Cast<AVRCharacter_Base>(actorList[packet->id]);
-		if (otherPlayer == nullptr) break;
+		if (!TestMode)
+		{
+			AVRCharacter_Base *otherPlayer = Cast<AVRCharacter_Base>(actorList[packet->id]);
+			if (otherPlayer == nullptr) break;
 
-		FVector location;
-		FRotator rotation;
+			FVector location;
+			float yaw;
 
-		location.X = static_cast<float>(packet->x) / 100;
-		location.Y = static_cast<float>(packet->y) / 100;
-		location.Z = static_cast<float>(packet->z) / 100;
+			location.X = static_cast<float>(packet->x) / 100;
+			location.Y = static_cast<float>(packet->y) / 100;
+			location.Z = static_cast<float>(packet->z) / 100;
 
-		rotation.Pitch = static_cast<float>(packet->pitch) / 100;
-		rotation.Yaw = static_cast<float>(packet->yaw) / 100;
-		rotation.Roll = static_cast<float>(packet->roll) / 100;
+			yaw = static_cast<float>(packet->yaw) / 100;
 
-		otherPlayer->SetLocationAndRotation(location, rotation.Yaw);
+			otherPlayer->SetLocationAndRotation(location, yaw);
 
-		FVector lhLocation, rhLocation;
-		FRotator lhRotation, rhRotation;
+			FVector lhLocation, rhLocation;
+			FRotator lhRotation, rhRotation;
 
-		lhLocation.X = static_cast<float>(packet->lh_x) / 100;
-		lhLocation.Y = static_cast<float>(packet->lh_y) / 100;
-		lhLocation.Z = static_cast<float>(packet->lh_z) / 100;
-		lhRotation.Pitch = static_cast<float>(packet->lh_pitch) / 100;
-		lhRotation.Yaw = static_cast<float>(packet->lh_yaw) / 100;
-		lhRotation.Roll = static_cast<float>(packet->lh_roll) / 100;
+			lhLocation.X = static_cast<float>(packet->lh_x) / 100;
+			lhLocation.Y = static_cast<float>(packet->lh_y) / 100;
+			lhLocation.Z = static_cast<float>(packet->lh_z) / 100;
+			lhRotation.Pitch = static_cast<float>(packet->lh_pitch) / 100;
+			lhRotation.Yaw = static_cast<float>(packet->lh_yaw) / 100;
+			lhRotation.Roll = static_cast<float>(packet->lh_roll) / 100;
 
-		rhLocation.X = static_cast<float>(packet->rh_x) / 100;
-		rhLocation.Y = static_cast<float>(packet->rh_y) / 100;
-		rhLocation.Z = static_cast<float>(packet->rh_z) / 100;
-		rhRotation.Pitch = static_cast<float>(packet->rh_pitch) / 100;
-		rhRotation.Yaw = static_cast<float>(packet->rh_yaw) / 100;
-		rhRotation.Roll = static_cast<float>(packet->rh_roll) / 100;
+			rhLocation.X = static_cast<float>(packet->rh_x) / 100;
+			rhLocation.Y = static_cast<float>(packet->rh_y) / 100;
+			rhLocation.Z = static_cast<float>(packet->rh_z) / 100;
+			rhRotation.Pitch = static_cast<float>(packet->rh_pitch) / 100;
+			rhRotation.Yaw = static_cast<float>(packet->rh_yaw) / 100;
+			rhRotation.Roll = static_cast<float>(packet->rh_roll) / 100;
 
-		otherPlayer->SetHandLocationAndRotation(lhLocation, lhRotation, rhLocation, rhRotation);
+			otherPlayer->SetHandLocationAndRotation(lhLocation, lhRotation, rhLocation, rhRotation);
+		}
 	}
 	break;
 
@@ -449,6 +466,8 @@ void AVRPlayerController_Base::SetPlayerCharacter(const int objectID)
 	vrPlayer = Cast<AVRCharacter_Base>(actorList[playerID]);
 	if (vrPlayer)
 	{
+		TestMode = false;
+
 		UnPossess();
 		Possess(vrPlayer);
 
@@ -463,6 +482,35 @@ void AVRPlayerController_Base::SetPlayerCharacter(const int objectID)
 			UE_LOG(LogPlayerController, Warning, TEXT("BOY"));
 		}
 
+
 		gameInst->GameStart();
 	}
+
+	// ========================================== TestMode ========================================== //
+	// ============================================================================================== //
+	else if (Cast<ATestCharacter>(actorList[playerID]) != nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("TEST PLAYER MODE")));
+
+		TestMode = true;
+		TestPlayer = Cast<ATestCharacter>(actorList[playerID]);
+
+		UnPossess();
+		Possess(TestPlayer);
+
+		if (objectID % 10 == 3)
+		{
+			playertype = PLAYERTYPE::GIRL;
+			UE_LOG(LogPlayerController, Warning, TEXT("TEST GIRL"));
+		}
+		else
+		{
+			playertype = PLAYERTYPE::BOY;
+			UE_LOG(LogPlayerController, Warning, TEXT("TEST BOY"));
+		}
+
+		gameInst->GameStart();
+	}
+	// ============================================================================================== //
+	// ============================================================================================== //
 }
