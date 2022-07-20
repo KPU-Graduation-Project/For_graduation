@@ -126,17 +126,7 @@ struct cs_player_data_packet
 	int           x;
 	int           y;
 	int           z;
-	short         pitch;
 	short         yaw;
-	short         roll;
-
-	// Head(VR) Transform
-	int           head_x;
-	int           head_y;
-	int           head_z;
-	short         head_pitch;
-	short         head_yaw;
-	short         head_roll;
 
 	// RightHand Transform
 	int           rh_x;
@@ -153,6 +143,9 @@ struct cs_player_data_packet
 	short         lh_pitch;
 	short         lh_yaw;
 	short         lh_roll;
+
+	// Character Speed
+	short		  Speed;
 };
 
 struct cs_shoot_bullet_packet
@@ -343,17 +336,7 @@ struct sc_player_data_packet
 	int           x;
 	int           y;
 	int           z;
-	short         pitch;
 	short         yaw;
-	short         roll;
-
-	// Head(VR) Transform
-	int           head_x;
-	int           head_y;
-	int           head_z;
-	short         head_pitch;
-	short         head_yaw;
-	short         head_roll;
 
 	// RightHand Transform
 	int           rh_x;
@@ -371,6 +354,8 @@ struct sc_player_data_packet
 	short         lh_yaw;
 	short         lh_roll;
 
+	// Character Speed
+	short		  Speed;
 };
 
 struct sc_shoot_bullet_packet

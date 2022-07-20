@@ -49,10 +49,16 @@ protected:
 
 	EControllerHand Hand_L, Hand_R;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float Speed;
+
 public:
-	FTransform GetHeadTransform() const {return VR_Camera->GetComponentTransform();}
-	FTransform GetRHTransform() const {return MotionController_R->GetComponentTransform();}
-	FTransform GetLHTransform() const {return MotionController_L->GetComponentTransform();}
+	inline FTransform GetHeadTransform() const {return VR_Camera->GetComponentTransform();}
+	inline FTransform GetRHTransform() const {return MotionController_R->GetComponentTransform();}
+	inline FTransform GetLHTransform() const {return MotionController_L->GetComponentTransform();}
+
+	inline float GetSpeed() { return Speed; }
+	inline void SetSpeed(float speed) { Speed = speed; }
 
 	void SetLocationAndRotation(const FVector &location, const float &yaw);
 	void SetHandLocationAndRotation(const FVector &lhLocation, const FRotator &lhRotation, const FVector &rhLocationRH, const FRotator &rhRotation);

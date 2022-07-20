@@ -64,7 +64,9 @@ void AWeaponMatchBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		ProjectileMovementComponent->SetVelocityInLocalSpace(FVector(0, 0, 0));
 		Speed = 0;
 		Acceleration = 0;
-		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
+
+		AttachToComponent(OtherComponent, FAttachmentTransformRules::KeepWorldTransform);
+		//AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
 
 		if (gameInst->CheckSend() && gameInst->IsIngame() && gameInst->playerController->GetPlayerType() == PLAYERTYPE::GIRL)
 		{

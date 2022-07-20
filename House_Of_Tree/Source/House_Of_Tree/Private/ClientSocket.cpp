@@ -124,7 +124,7 @@ bool ClientSocket::Send(const int SendSize, void* SendData)
 	memcpy(buff, SendData, SendSize);
 
 	int nSendLen = send(Socket, buff, buff[0], 0);
-	UE_LOG(LogNet, Display, TEXT("Packet SIZE %d"), nSendLen);
+	UE_LOG(LogNet, Display, TEXT("Send Packet SIZE %d"), nSendLen);
 
 	return true;
 }

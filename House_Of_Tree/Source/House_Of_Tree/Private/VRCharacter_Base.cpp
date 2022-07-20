@@ -70,12 +70,19 @@ AVRCharacter_Base::AVRCharacter_Base()
 void AVRCharacter_Base::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Speed = 0;
 }
 
 // Called every frame
 void AVRCharacter_Base::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (GetWorld()->GetFirstPlayerController()->GetPawn() != this)
+		return;
+
+	Speed = GetVelocity().Size();
 }
 
 // Called to bind functionality to input
