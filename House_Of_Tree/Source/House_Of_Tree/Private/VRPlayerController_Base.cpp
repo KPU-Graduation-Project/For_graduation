@@ -83,6 +83,8 @@ void AVRPlayerController_Base::SendPlayerData()
 			sendPacket.lh_yaw = 0;
 			sendPacket.lh_roll = 0;
 
+			sendPacket.Speed = 0;
+
 			gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
 		}
 		// ============================================================================================== //
@@ -125,6 +127,8 @@ void AVRPlayerController_Base::SendPlayerData()
 			sendPacket.lh_pitch = rat.Pitch * 100;
 			sendPacket.lh_yaw = rat.Yaw * 100;
 			sendPacket.lh_roll = rat.Roll * 100;
+
+			sendPacket.Speed = vrPlayer->GetSpeed();
 
 			gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
 		}
@@ -367,6 +371,8 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 			rhRotation.Roll = static_cast<float>(packet->rh_roll) / 100;
 
 			otherPlayer->SetHandLocationAndRotation(lhLocation, lhRotation, rhLocation, rhRotation);
+
+			otherPlayer->SetSpeed(static_cast<float>(packet->Speed) / 100);
 		}
 	}
 	break;

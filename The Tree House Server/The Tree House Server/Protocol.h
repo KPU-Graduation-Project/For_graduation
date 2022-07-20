@@ -143,6 +143,9 @@ struct cs_player_data_packet
 	short         lh_pitch;
 	short         lh_yaw;
 	short         lh_roll;
+
+	// Character Speed
+	short		  Speed;
 };
 
 struct cs_shoot_bullet_packet
@@ -351,6 +354,8 @@ struct sc_player_data_packet
 	short         lh_yaw;
 	short         lh_roll;
 
+	// Character Speed
+	short		  Speed;
 };
 
 struct sc_shoot_bullet_packet
