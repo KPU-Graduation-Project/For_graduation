@@ -12,6 +12,8 @@
 #include "Misc/OutputDeviceNull.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "UObject/SoftObjectPath.h"
+
 
 
 AVRPlayerController_Base::AVRPlayerController_Base()
@@ -51,7 +53,7 @@ void AVRPlayerController_Base::SendPlayerData()
 		cs_player_data_packet sendPacket;
 		sendPacket.type = CS_PACKET::CS_PLAYER_DATA;
 		sendPacket.size = sizeof(sendPacket);
-		sendPacket.id = playerID;
+		sendPacket.id = gameInst->GetPlayerID();
 
 		// ========================================== TestMode ========================================== //
 		// ============================================================================================== //
@@ -171,11 +173,16 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		UE_LOG(LogPlayerController, Display, TEXT("SC_LOGINOK"));
 		// 플레이어 입력 패킷인데 일단 비워두기
 		sc_loginok_packet *packet = reinterpret_cast<sc_loginok_packet *>(p);
-		playerID = packet->id;
+		gameInst->SetPlayerID(packet->id);
 
 		DE_SetID.Broadcast(packet->id);
 
-		LoadPackageAsync(TEXT("Game_Map1_puzzle"), 0, PKG_ContainsMap);
+		FSoftObjectPath map = gameInst->GetMap();
+		if (map != nullptr)
+		{
+			gameInst->StreamManager.RequestAsyncLoad(map, FStreamableDelegate::CreateUObject(this, &AVRPlayerController_Base::LoadComplete));
+			UE_LOG(LogTemp, Warning, TEXT("AsyncLoad Map %d"), gameInst->GetMapIndex());
+		}
 	}
 	break;
 
@@ -210,6 +217,7 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		// 여기는 상대방의 ID
 		DE_UserEnterRoom.Broadcast(packet->id, packet->is_host, packet->selected_character, packet->is_ready);
 	}
+	break;
 
 	case SC_PACKET::SC_USER_EXIT_ROOM:
 	{
@@ -230,20 +238,37 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 	break;
 
 	case SC_PACKET::SC_START_GAME:
-	case SC_PACKET::SC_DEBUG_SINGLE_START_GAME:
+	{
 		UE_LOG(LogPlayerController, Display, TEXT("SC_START_GAME"));
 
 		// 로비에서 인게임 맵으로 변경
+		// All_user_loading_complete 로 위치 변경해야함
 		UGameplayStatics::OpenLevel(this, TEXT("Game_Map1_puzzle"));
 
 		gameInst->GameStart();
-		break;
+	}
+	break;
+
+	case SC_PACKET::SC_DEBUG_SINGLE_START_GAME:
+	{
+		UE_LOG(LogPlayerController, Display, TEXT("SC_DEBUG_SINGLE_START_GAME"));
+
+		// 로비에서 인게임 맵으로 변경
+		// All_user_loading_complete 로 위치 변경해야함
+		UGameplayStatics::OpenLevel(this, TEXT("Game_Map1_puzzle"));
+
+		gameInst->GameStart();
+	}
+	break;
 
 	case SC_PACKET::SC_ALL_USERS_LOADING_COMPLETE:
+	{
 		UE_LOG(LogPlayerController, Display, TEXT("SC_ALL_USERS_LOADING_COMPLETE"));
 
 		gameInst->AllLoadComplete();
-		break;
+	}
+	break;
+
 
 	case SC_PACKET::SC_PUT_OBJECT:
 	{
@@ -331,7 +356,7 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		sc_player_data_packet *packet = reinterpret_cast<sc_player_data_packet *>(p);
 
 		// 자신의 캐릭터의 정보거나 잘못된 id라면 취소
-		if (packet->id == playerID || actorList.Contains(packet->id) == false)
+		if (packet->id == gameInst->GetPlayerID() || actorList.Contains(packet->id) == false)
 		{
 			UE_LOG(LogPlayerController, Display, TEXT("It's you"));
 			break;
@@ -427,8 +452,9 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 
 	default:
 		UE_LOG(LogNet, Error, TEXT("Recv Wrong Pacekt!!"));
-		UKismetSystemLibrary::QuitGame(GetWorld(), 0, EQuitPreference::Quit, false);
-		return false;
+		//UKismetSystemLibrary::QuitGame(GetWorld(), 0, EQuitPreference::Quit, false);
+		//return false;
+		break;
 	}
 	return true;
 }
@@ -462,10 +488,10 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 		actorList[parentID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
 	}
 
-	UE_LOG(LogPlayerController, Display, TEXT("player ID: %d, actor ID: %d"), playerID, actorID);
+	UE_LOG(LogPlayerController, Display, TEXT("player ID: %d, actor ID: %d"), gameInst->GetPlayerID(), actorID);
 
 	// character Possess
-	if (playerID == actorID)
+	if (gameInst->GetPlayerID() == actorID)
 	{
 		SetPlayerCharacter(objectID);
 	}
@@ -473,7 +499,7 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 
 void AVRPlayerController_Base::SetPlayerCharacter(const int objectID)
 {
-	vrPlayer = Cast<AVRCharacter_Base>(actorList[playerID]);
+	vrPlayer = Cast<AVRCharacter_Base>(actorList[gameInst->GetPlayerID()]);
 	if (vrPlayer)
 	{
 		TestMode = false;
@@ -498,12 +524,12 @@ void AVRPlayerController_Base::SetPlayerCharacter(const int objectID)
 
 	// ========================================== TestMode ========================================== //
 	// ============================================================================================== //
-	else if (Cast<ATestCharacter>(actorList[playerID]) != nullptr)
+	else if (Cast<ATestCharacter>(actorList[gameInst->GetPlayerID()]) != nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("TEST PLAYER MODE")));
 
 		TestMode = true;
-		TestPlayer = Cast<ATestCharacter>(actorList[playerID]);
+		TestPlayer = Cast<ATestCharacter>(actorList[gameInst->GetPlayerID()]);
 
 		UnPossess();
 		Possess(TestPlayer);
@@ -523,4 +549,15 @@ void AVRPlayerController_Base::SetPlayerCharacter(const int objectID)
 	}
 	// ============================================================================================== //
 	// ============================================================================================== //
+}
+
+void AVRPlayerController_Base::LoadComplete()
+{
+	cs_loading_complete_packet sendPacket;
+	sendPacket.type = CS_PACKET::CS_LOADING_COMPLETE;
+	sendPacket.size = sizeof(sendPacket);
+
+	UE_LOG(LogLoad, Display, TEXT("Send Load Complete"));
+
+	gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
 }

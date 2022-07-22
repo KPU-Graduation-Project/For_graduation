@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "ClientSocket.h"
+#include "Engine/StreamableManager.h"
 #include "HoTGameInstance.generated.h"
 
 /**
@@ -33,6 +34,8 @@ public:
 
 	ClientSocket* SocketInstance;
 
+	FStreamableManager StreamManager;
+
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Network, DisplayName = "서버 연결")
 	bool ConnectNetwork;
@@ -47,8 +50,9 @@ public:
 	//int TEST;
 
 private:
-	UPROPERTY()
 	FString ipPath;
+
+	int MapIndex = 0;
 
 	//*********************************************************************************************/
 
@@ -58,7 +62,6 @@ private:
 
 	//*********************************************************************************************/
 private:
-	UPROPERTY()
 	TMap<int, UClass*> bpSet;
 
 	// ID 리스트 파일을 새로 생성하라고 표시하는 명령어
@@ -83,7 +86,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Blueprint", DisplayName="Passive Object") // 005
 	TArray<TSubclassOf<AActor>> BP_PasObj;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, Category = "Map", DisplayName = "Map")
+	TArray<TSoftObjectPtr<UWorld>> Map;
+
 	FString path;
 
 	//*********************************************************************************************/
@@ -92,6 +97,9 @@ public:
 	AVRPlayerController_Base* playerController;
 
 protected:
+	UPROPERTY(BlueprintReadOnly)
+	int playerID;
+
 	UPROPERTY()
 	bool gameStart = false;
 
@@ -99,10 +107,26 @@ protected:
 	bool allLoadComplete = false;
 
 public:
-	void GameStart() { gameStart = true; }
-	void AllLoadComplete() { allLoadComplete = true; }
+	inline void SetPlayerID(int id) { playerID = id; }
+	inline int GetPlayerID() { return playerID; }
 
-	bool IsIngame() { return gameStart; };
+	inline void GameStart() { gameStart = true; }
+	inline void AllLoadComplete() { allLoadComplete = true; }
+
+	inline bool IsIngame() { return gameStart; };
 	
-	bool CheckSend() { return SocketInstance != nullptr; }
+	inline bool CheckSend() { return SocketInstance != nullptr; }
+
+	inline void ChangeMapIndex(int index) { MapIndex = index; }
+	inline int GetMapIndex() { return MapIndex; }
+
+	const FSoftObjectPath GetMap()
+	{
+		if (Map.IsValidIndex(MapIndex))
+		{
+			return Map[MapIndex].ToStringReference();
+		}
+
+		return nullptr;
+	}
 };

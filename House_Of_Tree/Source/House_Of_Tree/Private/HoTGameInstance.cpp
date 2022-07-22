@@ -69,44 +69,47 @@ void UHoTGameInstance::SetInfo()
 		UE_LOG(LogInit, Warning, TEXT("NavMeshExported"));
 	}
 
-	// 블루 프린트 에셋을 로드해와서 저장
-	int key = 1, id = 1;
-	for (const auto i : BP_Char)
+	if (bpSet.Num() == 0)
 	{
-		bpSet.Add((id * 100000) + key, i.Get());
-		key++;
-	}
+		// 블루 프린트 에셋을 로드해와서 저장
+		int key = 1, id = 1;
+		for (const auto i : BP_Char)
+		{
+			bpSet.Add((id * 100000) + key, i.Get());
+			key++;
+		}
 
-	key = 1;
-	id++;
-	for (const auto i : BP_Monster)
-	{
-		bpSet.Add((id * 100000) + key, i.Get());
-		key++;
-	}
+		key = 1;
+		id++;
+		for (const auto i : BP_Monster)
+		{
+			bpSet.Add((id * 100000) + key, i.Get());
+			key++;
+		}
 
-	key = 1;
-	id++;
-	for (const auto i : BP_Bullet)
-	{
-		bpSet.Add((id * 100000) + key, i.Get());
-		key++;
-	}
+		key = 1;
+		id++;
+		for (const auto i : BP_Bullet)
+		{
+			bpSet.Add((id * 100000) + key, i.Get());
+			key++;
+		}
 
-	key = 1;
-	id++;
-	for (const auto i : BP_DyObj)
-	{
-		bpSet.Add((id * 100000) + key, i.Get());
-		key++;
-	}
+		key = 1;
+		id++;
+		for (const auto i : BP_DyObj)
+		{
+			bpSet.Add((id * 100000) + key, i.Get());
+			key++;
+		}
 
-	key = 1;
-	id++;
-	for (const auto i : BP_PasObj)
-	{
-		bpSet.Add((id * 100000) + key, i.Get());
-		key++;
+		key = 1;
+		id++;
+		for (const auto i : BP_PasObj)
+		{
+			bpSet.Add((id * 100000) + key, i.Get());
+			key++;
+		}
 	}
 
 	if (makeIDList)
