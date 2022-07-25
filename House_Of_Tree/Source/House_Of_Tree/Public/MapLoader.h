@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "MapLoader.generated.h"
 
+class UHoTGameInstance;
+
 UCLASS()
 class HOUSE_OF_TREE_API AMapLoader : public AActor
 {
@@ -20,6 +22,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+		UHoTGameInstance *gameInst;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -30,4 +35,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+	void LoadComplete();
 };

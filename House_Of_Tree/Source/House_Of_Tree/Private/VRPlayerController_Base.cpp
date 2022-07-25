@@ -176,13 +176,6 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		gameInst->SetPlayerID(packet->id);
 
 		DE_SetID.Broadcast(packet->id);
-
-		FSoftObjectPath map = gameInst->GetMap();
-		if (map != nullptr)
-		{
-			gameInst->StreamManager.RequestAsyncLoad(map, FStreamableDelegate::CreateUObject(this, &AVRPlayerController_Base::LoadComplete));
-			UE_LOG(LogTemp, Warning, TEXT("AsyncLoad Map %d"), gameInst->GetMapIndex());
-		}
 	}
 	break;
 
@@ -241,9 +234,12 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 	{
 		UE_LOG(LogPlayerController, Display, TEXT("SC_START_GAME"));
 
-		// 로비에서 인게임 맵으로 변경
-		// All_user_loading_complete 로 위치 변경해야함
-		UGameplayStatics::OpenLevel(this, TEXT("Game_Map1_puzzle"));
+		FSoftObjectPath map = gameInst->GetMap();
+		if (map != nullptr)
+		{
+			gameInst->StreamManager.RequestAsyncLoad(map, FStreamableDelegate::CreateUObject(this, &AVRPlayerController_Base::LoadComplete));
+			UE_LOG(LogTemp, Warning, TEXT("AsyncLoad Map"));
+		}
 
 		gameInst->GameStart();
 	}
@@ -253,9 +249,12 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 	{
 		UE_LOG(LogPlayerController, Display, TEXT("SC_DEBUG_SINGLE_START_GAME"));
 
-		// 로비에서 인게임 맵으로 변경
-		// All_user_loading_complete 로 위치 변경해야함
-		UGameplayStatics::OpenLevel(this, TEXT("Game_Map1_puzzle"));
+		FSoftObjectPath map = gameInst->GetMap();
+		if (map != nullptr)
+		{
+			gameInst->StreamManager.RequestAsyncLoad(map, FStreamableDelegate::CreateUObject(this, &AVRPlayerController_Base::LoadComplete));
+			UE_LOG(LogTemp, Warning, TEXT("AsyncLoad Map"));
+		}
 
 		gameInst->GameStart();
 	}
@@ -420,6 +419,8 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		rotation.Yaw = static_cast<float>(packet->yaw) / 100;
 		rotation.Roll = static_cast<float>(packet->roll) / 100;
 
+		// need scale
+
 		FActorSpawnParameters SpawnParams;
 		actorList.Add(packet->id, GetWorld()->SpawnActor<AActor>(bullet, location, rotation, SpawnParams));
 	}
@@ -557,7 +558,13 @@ void AVRPlayerController_Base::LoadComplete()
 	sendPacket.type = CS_PACKET::CS_LOADING_COMPLETE;
 	sendPacket.size = sizeof(sendPacket);
 
+	gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
 	UE_LOG(LogLoad, Display, TEXT("Send Load Complete"));
 
-	gameInst->SocketInstance->Send(sendPacket.size, &sendPacket);
+
+	FSoftObjectPath map = gameInst->GetMap();
+	if (map != nullptr)
+	{
+		UGameplayStatics::OpenLevel(this, TEXT("GameMap"));
+	}
 }

@@ -52,8 +52,6 @@ public:
 private:
 	FString ipPath;
 
-	int MapIndex = 0;
-
 	//*********************************************************************************************/
 
 private:
@@ -87,7 +85,7 @@ private:
 	TArray<TSubclassOf<AActor>> BP_PasObj;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Map", DisplayName = "Map")
-	TArray<TSoftObjectPtr<UWorld>> Map;
+	TSoftObjectPtr<UWorld> Map;
 
 	FString path;
 
@@ -117,16 +115,8 @@ public:
 	
 	inline bool CheckSend() { return SocketInstance != nullptr; }
 
-	inline void ChangeMapIndex(int index) { MapIndex = index; }
-	inline int GetMapIndex() { return MapIndex; }
-
 	const FSoftObjectPath GetMap()
 	{
-		if (Map.IsValidIndex(MapIndex))
-		{
-			return Map[MapIndex].ToStringReference();
-		}
-
-		return nullptr;
+		return Map.ToStringReference();
 	}
 };
