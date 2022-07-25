@@ -13,7 +13,7 @@ AVRCharacter_Base::AVRCharacter_Base()
 		TEXT("SkeletalMesh'/Game/Resource/Actor/Hand/MannequinHand_Right.MannequinHand_Right'"));
 
 	GetMesh()->SetOwnerNoSee(true);
-	GetMesh()->SetRelativeLocationAndRotation(FVector(-15, 0, -88), FRotator(0, -90 ,0));
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90 ,0));
 	GetMesh()->SetRelativeScale3D(FVector(2.5, 2.5, 2.5));
 
 	VR_Root = CreateDefaultSubobject<USceneComponent>(TEXT("VR_Root"));

@@ -9,7 +9,7 @@
 
 #pragma region Main Thread Code
 
-ClientSocket::ClientSocket(UHoTGameInstance* Inst): StopTaskCounter(0)
+ClientSocket::ClientSocket(UHoTGameInstance* Inst)
 {
 	gameInst = Inst;
 	if (ConnectServer())
@@ -41,7 +41,7 @@ bool ClientSocket::Init()
 uint32 ClientSocket::Run()
 {
 	char RecvBuff[BUFSIZE];
-	while (StopTaskCounter.GetValue() == 0)
+	while (1)
 	{
 		int RecvLen = recv(Socket, reinterpret_cast<char*>(RecvBuff), BUFSIZE, 0);
 		if (RecvLen != SOCKET_ERROR)
@@ -58,11 +58,6 @@ uint32 ClientSocket::Run()
 	}
 
 	return 0;
-}
-
-void ClientSocket::Stop()
-{
-	StopTaskCounter.Increment();
 }
 
 void ClientSocket::Exit()

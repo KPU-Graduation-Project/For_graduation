@@ -32,7 +32,6 @@ public:
 
 	virtual bool Init() override;
 	virtual uint32 Run() override;
-	virtual void Stop() override;
 	virtual void Exit() override;
 
 	bool ConnectServer();
@@ -41,7 +40,6 @@ public:
 
 private:
 	FRunnableThread* Thread;
-	FThreadSafeCounter StopTaskCounter;
 
 	UHoTGameInstance* gameInst;
 

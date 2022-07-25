@@ -2,7 +2,7 @@
 
 
 #include "MapLoader.h"
-
+#include "HoTGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -20,8 +20,11 @@ AMapLoader::AMapLoader()
 void AMapLoader::BeginPlay()
 {
 	Super::BeginPlay();
+
+	gameInst = Cast<UHoTGameInstance>(GetWorld()->GetGameInstance());
 	
-	LoadPackageAsync(TEXT("Map_1_battle"), 0, PKG_ContainsMap);
+	//gameInst->StreamManager.RequestAsyncLoad(map, FStreamableDelegate::CreateUObject(this, &AMapLoader::LoadComplete));
+	//UE_LOG(LogTemp, Warning, TEXT("AsyncLoad Map %d"), gameInst->GetMapIndex());
 }
 
 // Called every frame
@@ -35,8 +38,17 @@ void AMapLoader::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 	FVector NormalImpulse, const FHitResult& Hit)
 {
 	UE_LOG(LogTemp, Error, TEXT("HIT"));
-	UGameplayStatics::OpenLevel( this, TEXT( "Map_1_battle"));
+
+	/*FSoftObjectPath map = gameInst->GetMap();
+	if (map != nullptr)
+	{
+		UGameplayStatics::OpenLevel(this, map.GetAssetPathName());
+		gameInst->ChangeMapIndex(1);
+	}*/
 	
 }
 
-
+void AMapLoader::LoadComplete()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Map Load Complete"));
+}
