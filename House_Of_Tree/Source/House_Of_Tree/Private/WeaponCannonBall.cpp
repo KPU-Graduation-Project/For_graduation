@@ -58,7 +58,7 @@ void AWeaponCannonBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 	{
 		ProjectileMovementComponent->SetVelocityInLocalSpace(FVector(0, 0, 0));
 
-		AttachToComponent(OtherComponent, FAttachmentTransformRules::KeepWorldTransform);
+		this->AttachToComponent(OtherComponent, FAttachmentTransformRules::KeepWorldTransform);
 
 		//AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
 

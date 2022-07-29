@@ -408,7 +408,7 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		if (bullet == nullptr)
 			break;
 
-		FVector location;
+		FVector location, scale;
 		FRotator rotation;
 
 		location.X = static_cast<float>(packet->x) / 100;
@@ -419,17 +419,22 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		rotation.Yaw = static_cast<float>(packet->yaw) / 100;
 		rotation.Roll = static_cast<float>(packet->roll) / 100;
 
-		// need scale
+		scale.X = static_cast<float>(packet->scale_x) / 100;
+		scale.Y = static_cast<float>(packet->scale_y) / 100;
+		scale.Z = static_cast<float>(packet->scale_z) / 100;
 
 		FActorSpawnParameters SpawnParams;
 		actorList.Add(packet->id, GetWorld()->SpawnActor<AActor>(bullet, location, rotation, SpawnParams));
+		actorList[packet->id]->SetActorScale3D(scale);
 	}
 	break;
 
 	// Move to next map
-	case SC_PACKET::SC_MOVE_SECTOR:
+	case SC_PACKET::SC_CHANGE_STAGE:
 	{
-		// ********************************** Need to Fill ********************************** //
+		sc_change_stage_packet *packet = reinterpret_cast<sc_change_stage_packet *>(p);
+
+		DE_Stage.Broadcast(static_cast<int>(packet->new_stage));
 	}
 	break;
 

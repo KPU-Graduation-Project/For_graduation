@@ -52,8 +52,13 @@ public:
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
 		FLOBBY DE_ChangeState;
 
+	// 종료
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
 		FFUNC DE_QUIT;
+
+	// 맵 이동 패킷
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+		FID DE_Stage;
 
 
 protected:
