@@ -1,11 +1,7 @@
-#pragma once
-
+﻿#pragma once
 
 constexpr short SERVER_PORT = 6000;
 constexpr int   BUFSIZE = 1024;
-
-constexpr unsigned int  MAX_USER = 10;
-constexpr unsigned int  MAX_ROOM = 5;
 
 namespace CS_PACKET
 {
@@ -31,7 +27,7 @@ namespace SC_PACKET
         SC_LOGINOK,
         SC_CREATE_ROOM, SC_JOIN_ROOM, SC_USER_JOIN_ROOM, SC_USER_EXIT_ROOM, SC_CHANGE_USER_STATE,
         SC_START_GAME, SC_ALL_USERS_LOADING_COMPLETE,
-        SC_PUT_OBJECT, SC_REMOVE_OBJECT, SC_DESTROY_OBJECT, SC_OBJECT_DATA, SC_PLAYER_DATA, SC_SHOOT_BULLET, SC_MOVE_SECTOR, SC_OBJECT_UPDATE,
+        SC_PUT_OBJECT, SC_REMOVE_OBJECT, SC_DESTROY_OBJECT, SC_OBJECT_DATA, SC_PLAYER_DATA, SC_SHOOT_BULLET, SC_CHANGE_STAGE, SC_OBJECT_UPDATE,
 
         SC_DEBUG_SINGLE_START_GAME = 100
     };
@@ -374,16 +370,18 @@ struct sc_shoot_bullet_packet
     short         pitch;
     short         yaw;
     short         roll;
-
+    short         scale_x;
+    short         scale_y;
+    short         scale_z;
 };
 
-struct sc_move_sector_packet
+struct sc_change_stage_packet
 {
     unsigned char size;
     unsigned char type;
 
     //unsigned char old_sector
-    unsigned char  new_sector;
+    unsigned char new_stage;
 };
 
 struct sc_object_update_packet
