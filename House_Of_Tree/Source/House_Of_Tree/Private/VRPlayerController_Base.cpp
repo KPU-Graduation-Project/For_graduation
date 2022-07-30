@@ -292,7 +292,7 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		scale.Y = static_cast<float>(packet->scale_y) / 100;
 		scale.Z = static_cast<float>(packet->scale_z) / 100;
 
-		PutObject(packet->id, packet->object_type, location, rotation, scale, packet->mesh_id, packet->parent_object_id);
+		PutObject(packet->id, packet->object_type, location, rotation, scale, packet->mesh_id, packet->parent_object_id, packet->owner);
 	}
 	break;
 
@@ -429,6 +429,12 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 	}
 	break;
 
+	case SC_PACKET::SC_END_STAGE:
+	{
+		/**************************************************************************************************/
+	}
+	break;
+
 	// Move to next map
 	case SC_PACKET::SC_CHANGE_STAGE:
 	{
@@ -466,7 +472,7 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 }
 
 void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID,
-	int parentID)
+	int parentID, int owner)
 {
 	if (gameInst->GetActor(objectID) == nullptr) return;
 
@@ -492,6 +498,13 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 		command = FString::Printf(TEXT("SetChild %s"), *actorList[actorID]->GetName());
 
 		actorList[parentID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
+	}
+
+	// check owner & set
+	if (owner != 0 && owner == gameInst->GetPlayerID())
+	{
+		command = FString::Printf(TEXT("SetOwned"));
+		actorList[actorID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
 	}
 
 	UE_LOG(LogPlayerController, Display, TEXT("player ID: %d, actor ID: %d"), gameInst->GetPlayerID(), actorID);

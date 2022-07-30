@@ -51,4 +51,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Network")
 	void DebugGame();
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+	void ObjectData(AActor *actor);
 };

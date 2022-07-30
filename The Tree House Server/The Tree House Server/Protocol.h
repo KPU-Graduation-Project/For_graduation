@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 constexpr short SERVER_PORT = 6000;
-constexpr int   BUFSIZE = 1024;
 
 namespace CS_PACKET
 {
@@ -11,7 +10,7 @@ namespace CS_PACKET
         CS_LOGIN,
         CS_CREATE_ROOM, CS_JOIN_ROOM, CS_JOIN_RANDOM_ROOM, CS_READY_GAME, CS_CHANGE_SELECTED_CHARACTER, CS_EXIT_ROOM,
         CS_START_GAME, CS_LOADING_COMPLETE,
-        CS_PLAYER_DATA, CS_SHOOT_BULLET, CS_BULLET_HIT, CS_OBJECT_UPDATE,
+        CS_PLAYER_DATA, CS_SHOOT_BULLET, CS_BULLET_HIT, CS_OBJECT_UPDATE, CS_OBJECT_DATA,
 
         CS_DEBUG_SINGLE_START_GAME = 100
 
@@ -27,7 +26,8 @@ namespace SC_PACKET
         SC_LOGINOK,
         SC_CREATE_ROOM, SC_JOIN_ROOM, SC_USER_JOIN_ROOM, SC_USER_EXIT_ROOM, SC_CHANGE_USER_STATE,
         SC_START_GAME, SC_ALL_USERS_LOADING_COMPLETE,
-        SC_PUT_OBJECT, SC_REMOVE_OBJECT, SC_DESTROY_OBJECT, SC_OBJECT_DATA, SC_PLAYER_DATA, SC_SHOOT_BULLET, SC_CHANGE_STAGE, SC_OBJECT_UPDATE,
+        SC_PUT_OBJECT, SC_REMOVE_OBJECT, SC_DESTROY_OBJECT, SC_OBJECT_DATA, SC_PLAYER_DATA,
+        SC_SHOOT_BULLET, SC_END_STAGE, SC_CHANGE_STAGE, SC_OBJECT_UPDATE,
 
         SC_DEBUG_SINGLE_START_GAME = 100
     };
@@ -184,6 +184,25 @@ struct cs_object_update_packet
     char direction; // 0 = reverse / 1 = forward
 };
 
+struct cs_object_data_packet
+{
+    unsigned char size;
+    unsigned char type;
+
+    unsigned int  object_id;
+    int           x;
+    int           y;
+    int           z;
+    short         pitch;
+    short         yaw;
+    short         roll;
+    short         scale_x;
+    short         scale_y;
+    short         scale_z;
+
+
+};
+
 //--------------------SC PACKET----------------------//
 //---------------------------------------------------//
 
@@ -273,8 +292,8 @@ struct sc_put_object_packet
     unsigned char mesh_id;
     // id of parent object(if it's passive object) / if object is dynamic object: id = 0
     unsigned int  parent_object_id;
-    // if user owned this object: 1, else : 0
-    char          owned;
+    // if owner = user id: user owned this object, server owned : 0
+    unsigned int  owner;
 
     int           x;
     int           y;
@@ -375,12 +394,22 @@ struct sc_shoot_bullet_packet
     short         scale_z;
 };
 
+struct sc_end_stage_packet
+{
+    unsigned char size;
+    unsigned char type;
+
+    unsigned char cur_stage;
+
+};
+
+
 struct sc_change_stage_packet
 {
     unsigned char size;
     unsigned char type;
 
-    //unsigned char old_sector
+
     unsigned char new_stage;
 };
 
@@ -400,12 +429,6 @@ struct sc_object_move_packet
 
     unsigned int  object_id;
     unsigned int  event_type;
-};
-
-struct object_move_packet
-{
-    unsigned char size;
-    unsigned char type;
 };
 
 

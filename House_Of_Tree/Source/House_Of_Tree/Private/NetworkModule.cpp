@@ -153,3 +153,34 @@ void UNetworkModule::DebugGame()
 	gameInst->SocketInstance->Send(packet.size, &packet);
 	UE_LOG(LogActorComponent, Display, TEXT("Send Debug Game"));
 }
+
+void UNetworkModule::ObjectData(AActor *actor)
+{
+	if (gameInst->CheckSend() && gameInst->IsIngame())
+	{
+		const int *key = gameInst->playerController->GetActorKey(actor);
+		if (key == nullptr) return;
+
+		cs_object_data_packet packet;
+		packet.type = CS_PACKET::CS_OBJECT_DATA;
+		packet.size = sizeof(packet);
+
+		packet.object_id = *key;
+
+		FTransform trans = actor->GetTransform();
+		packet.x = trans.GetLocation().X;
+		packet.y = trans.GetLocation().Y;
+		packet.z = trans.GetLocation().Z;
+
+		packet.pitch = trans.GetRotation().Rotator().Pitch;
+		packet.yaw = trans.GetRotation().Rotator().Yaw;
+		packet.roll = trans.GetRotation().Rotator().Roll;
+
+		packet.scale_x = trans.GetScale3D().X;
+		packet.scale_y = trans.GetScale3D().Y;
+		packet.scale_z = trans.GetScale3D().Z;
+
+		gameInst->SocketInstance->Send(packet.size, &packet);
+		UE_LOG(LogActorComponent, Display, TEXT("Send ObjectData"));
+	}
+}

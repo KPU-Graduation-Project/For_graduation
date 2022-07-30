@@ -98,7 +98,7 @@ protected:
 
 	void SendPlayerData();
 
-	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID, int parentID);
+	void PutObject(int actorID, int objectID, FVector location, FRotator rotation, FVector scale, int meshID, int parentID, int owner);
 
 	void LoadComplete();
 

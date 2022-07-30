@@ -11,6 +11,8 @@
  * 
  */
 
+constexpr int BUFSIZE = 1024;
+
 class AVRPlayerController_Base;
 class AVRCharacter_Base;
 
