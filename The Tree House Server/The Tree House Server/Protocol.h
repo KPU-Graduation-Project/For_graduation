@@ -11,6 +11,7 @@ namespace CS_PACKET
         CS_CREATE_ROOM, CS_JOIN_ROOM, CS_JOIN_RANDOM_ROOM, CS_READY_GAME, CS_CHANGE_SELECTED_CHARACTER, CS_EXIT_ROOM,
         CS_START_GAME, CS_LOADING_COMPLETE,
         CS_PLAYER_DATA, CS_SHOOT_BULLET, CS_BULLET_HIT, CS_OBJECT_UPDATE, CS_OBJECT_DATA,
+        CS_MONSTER_EVENT,
 
         CS_DEBUG_SINGLE_START_GAME = 100
 
@@ -28,6 +29,7 @@ namespace SC_PACKET
         SC_START_GAME, SC_ALL_USERS_LOADING_COMPLETE,
         SC_PUT_OBJECT, SC_REMOVE_OBJECT, SC_DESTROY_OBJECT, SC_OBJECT_DATA, SC_PLAYER_DATA,
         SC_SHOOT_BULLET, SC_END_STAGE, SC_CHANGE_STAGE, SC_OBJECT_UPDATE,
+        SC_MONSTER_EVENT,
 
         SC_DEBUG_SINGLE_START_GAME = 100
     };
@@ -201,6 +203,21 @@ struct cs_object_data_packet
     short         scale_z;
 
 
+};
+
+
+// enum MONSTER_EVENT { IDLE, MOVE, ATTACK };
+struct cs_monster_event_pacet
+{
+    unsigned char size;
+    unsigned char type;
+
+    unsigned int  object_id;
+    unsigned char event_type;
+
+    int           x;
+    int           y;
+    int           z;
 };
 
 //--------------------SC PACKET----------------------//
@@ -431,6 +448,18 @@ struct sc_object_move_packet
     unsigned int  event_type;
 };
 
+struct sc_monster_event_pacet
+{
+    unsigned char size;
+    unsigned char type;
+
+    unsigned int  object_id;
+    unsigned char event_type;
+
+    int           x;
+    int           y;
+    int           z;
+};
 
 //-------------------------------------//
 

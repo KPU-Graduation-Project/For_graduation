@@ -301,8 +301,17 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		sc_remove_object_packet *packet = reinterpret_cast<sc_remove_object_packet *>(p);
 
 		AActor *removeActor;
+
 		if (actorList.RemoveAndCopyValue(packet->id, removeActor) == false) break;
-		removeActor->Destroy();
+		if (removeActor)
+		{
+			removeActor->Destroy();
+			UE_LOG(LogTemp, Display, TEXT("Destroy"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Display, TEXT("invalid actor %d"), packet->id);
+		}
 	}
 	break;
 
@@ -329,6 +338,9 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		sc_object_data_packet *packet = reinterpret_cast<sc_object_data_packet *>(p);
 
 		if (actorList.Contains(packet->id) == false) break;
+
+		UE_LOG(LogPlayerController, Display, TEXT("SC_OBJECT_DATA"));
+
 
 		FVector location, scale;
 		FRotator rotation;
@@ -431,7 +443,9 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 
 	case SC_PACKET::SC_END_STAGE:
 	{
-		/**************************************************************************************************/
+		sc_end_stage_packet *packet = reinterpret_cast<sc_end_stage_packet *>(p);
+
+		DE_EndStage.Broadcast(packet->cur_stage);
 	}
 	break;
 
@@ -503,8 +517,7 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 	// check owner & set
 	if (owner != 0 && owner == gameInst->GetPlayerID())
 	{
-		command = FString::Printf(TEXT("SetOwned"));
-		actorList[actorID]->CallFunctionByNameWithArguments(*command, ar, NULL, true);
+		DE_SETOWNER.Broadcast();
 	}
 
 	UE_LOG(LogPlayerController, Display, TEXT("player ID: %d, actor ID: %d"), gameInst->GetPlayerID(), actorID);
