@@ -184,3 +184,66 @@ void UNetworkModule::ObjectData(AActor *actor)
 		UE_LOG(LogActorComponent, Display, TEXT("Send ObjectData"));
 	}
 }
+
+void UNetworkModule::Monster(AActor *actor, int state)
+{
+	if (gameInst->CheckSend() && gameInst->IsIngame())
+	{
+		const int *key = gameInst->playerController->GetActorKey(actor);
+		if (key == nullptr) return;
+
+		cs_monster_event_pacet packet;
+		packet.type = CS_PACKET::CS_MONSTER_EVENT;
+		packet.size = sizeof(packet);
+
+		packet.object_id = *key;
+
+		FTransform trans = actor->GetTransform();
+
+		switch (state)
+		{
+		case 0:
+			return;
+
+		case 1: // Move
+		{
+			packet.x = trans.GetLocation().X;
+			packet.y = trans.GetLocation().Y;
+			packet.z = trans.GetLocation().Z;
+		}
+		break;
+
+		case 2: // Attack
+		{
+			// X == Roll / Y = Pitch / Z = Yaw
+			packet.x = trans.GetRotation().Rotator().Roll;
+			packet.y = trans.GetRotation().Rotator().Pitch;
+			packet.z = trans.GetRotation().Rotator().Yaw;
+		}
+		break;
+
+		default:
+			break;
+		}
+
+		gameInst->SocketInstance->Send(packet.size, &packet);
+		UE_LOG(LogActorComponent, Display, TEXT("Send Monster"));
+	}
+}
+
+void UNetworkModule::BlowUp(AActor *actor)
+{
+	if (gameInst->CheckSend() && gameInst->IsIngame())
+	{
+		const int *key = gameInst->playerController->GetActorKey(actor);
+		if (key == nullptr) return;
+
+		cs_blow_object_packet packet;
+		packet.type = CS_PACKET::CS_BLOW_OBJECT;
+		packet.size = sizeof(packet);
+		packet.object_id = *key;
+
+		gameInst->SocketInstance->Send(packet.size, &packet);
+		UE_LOG(LogActorComponent, Display, TEXT("BlowUp"));
+	}
+}

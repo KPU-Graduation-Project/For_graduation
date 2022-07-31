@@ -322,13 +322,20 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 		AActor *removeActor;
 		if (actorList.RemoveAndCopyValue(packet->id, removeActor) == false) break;
 
-		if (Cast<AWeaponMatchBullet>(removeActor))
+		if (removeActor)
 		{
-			Cast<AWeaponMatchBullet>(removeActor)->CallDestory();
-		}
-		else if (Cast<AWeaponCannonBall>(removeActor))
-		{
-			Cast<AWeaponCannonBall>(removeActor)->CallDestory();
+			if (Cast<AWeaponMatchBullet>(removeActor))
+			{
+				Cast<AWeaponMatchBullet>(removeActor)->CallDestory();
+			}
+			else if (Cast<AWeaponCannonBall>(removeActor))
+			{
+				Cast<AWeaponCannonBall>(removeActor)->CallDestory();
+			}
+			else
+			{
+				removeActor->Destroy();
+			}
 		}
 	}
 	break;
@@ -471,6 +478,40 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 	}
 	break;
 
+	case SC_PACKET::SC_MONSTER_EVENT:
+	{
+		UE_LOG(LogPlayerController, Display, TEXT("SC_MONSTER_EVENT"));
+		sc_monster_event_pacet *packet = reinterpret_cast<sc_monster_event_pacet *>(p);
+
+		if (!actorList.Contains(packet->object_id)) break;
+
+		switch (packet->event_type)
+		{
+		case 0:
+			break;
+
+		case 1:
+		{
+			actorList[packet->object_id]->SetActorLocation(FVector(packet->x, packet->y, packet->z));
+		}
+		break;
+
+		case 2:
+		{
+			// X == Roll / Y = Pitch / Z = Yaw
+			actorList[packet->object_id]->SetActorRotation(FRotator(packet->y, packet->z, packet->x).Quaternion());
+			FOutputDeviceNull OutputDeviceNull;
+
+			actorList[packet->object_id]->CallFunctionByNameWithArguments(TEXT("Call Explosion"), OutputDeviceNull, nullptr, true);
+		}
+		break;
+
+		default:
+			break;
+		}
+	}
+	break;
+
 	case SOCKET_ERROR:
 		UE_LOG(LogNet, Error, TEXT("Socket Error!!"));
 		UKismetSystemLibrary::QuitGame(GetWorld(), 0, EQuitPreference::Quit, false);
@@ -518,6 +559,9 @@ void AVRPlayerController_Base::PutObject(int actorID, int objectID, FVector loca
 	if (owner != 0 && owner == gameInst->GetPlayerID())
 	{
 		DE_SETOWNER.Broadcast();
+		FOutputDeviceNull OutputDeviceNull;
+
+		actorList[actorID]->CallFunctionByNameWithArguments(TEXT("TestFunc"), OutputDeviceNull, nullptr, true);
 	}
 
 	UE_LOG(LogPlayerController, Display, TEXT("player ID: %d, actor ID: %d"), gameInst->GetPlayerID(), actorID);
