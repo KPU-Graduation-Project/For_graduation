@@ -60,6 +60,12 @@ public:
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
 		FID DE_Stage;
 
+	// 도토리 연결
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+		FFUNC DE_SETOWNER;
+
+	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintCallable, Category = "Event")
+		FID DE_EndStage;
 
 protected:
 	UPROPERTY()

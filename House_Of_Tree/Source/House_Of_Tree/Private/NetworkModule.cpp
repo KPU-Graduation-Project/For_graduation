@@ -168,17 +168,17 @@ void UNetworkModule::ObjectData(AActor *actor)
 		packet.object_id = *key;
 
 		FTransform trans = actor->GetTransform();
-		packet.x = trans.GetLocation().X;
-		packet.y = trans.GetLocation().Y;
-		packet.z = trans.GetLocation().Z;
+		packet.x = trans.GetLocation().X * 100;
+		packet.y = trans.GetLocation().Y * 100;
+		packet.z = trans.GetLocation().Z * 100;
 
-		packet.pitch = trans.GetRotation().Rotator().Pitch;
-		packet.yaw = trans.GetRotation().Rotator().Yaw;
-		packet.roll = trans.GetRotation().Rotator().Roll;
+		packet.pitch = trans.GetRotation().Rotator().Pitch * 100;
+		packet.yaw = trans.GetRotation().Rotator().Yaw * 100;
+		packet.roll = trans.GetRotation().Rotator().Roll * 100;
 
-		packet.scale_x = trans.GetScale3D().X;
-		packet.scale_y = trans.GetScale3D().Y;
-		packet.scale_z = trans.GetScale3D().Z;
+		packet.scale_x = trans.GetScale3D().X * 100;
+		packet.scale_y = trans.GetScale3D().Y * 100;
+		packet.scale_z = trans.GetScale3D().Z * 100;
 
 		gameInst->SocketInstance->Send(packet.size, &packet);
 		UE_LOG(LogActorComponent, Display, TEXT("Send ObjectData"));
