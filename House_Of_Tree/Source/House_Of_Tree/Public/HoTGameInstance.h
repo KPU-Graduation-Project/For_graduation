@@ -98,7 +98,7 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
-	int playerID;
+	int playerID = 0;
 
 	UPROPERTY()
 	bool gameStart = false;

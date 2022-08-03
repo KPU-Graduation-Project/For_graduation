@@ -36,6 +36,11 @@ void AVRPlayerController_Base::BeginPlay()
 	{
 		UE_LOG(LogPlayerController, Error, TEXT("Get GameInstance Error!"));
 	}
+
+	if (gameInst->GetPlayerID() != 0)
+	{
+		DE_SetID.Broadcast(gameInst->GetPlayerID());
+	}
 }
 
 void AVRPlayerController_Base::Tick(float DeltaSeconds)
@@ -502,13 +507,19 @@ bool AVRPlayerController_Base::ProcessPacket(char *p)
 			actorList[packet->object_id]->SetActorRotation(FRotator(packet->y, packet->z, packet->x).Quaternion());
 			FOutputDeviceNull OutputDeviceNull;
 
-			actorList[packet->object_id]->CallFunctionByNameWithArguments(TEXT("Call Explosion"), OutputDeviceNull, nullptr, true);
+			actorList[packet->object_id]->CallFunctionByNameWithArguments(TEXT("Event_Explosion"), OutputDeviceNull, nullptr, true);
 		}
 		break;
 
 		default:
 			break;
 		}
+	}
+	break;
+
+	case SC_PACKET::SC_GAME_END:
+	{
+		UGameplayStatics::OpenLevel(this, TEXT("LobbyMap"));
 	}
 	break;
 
