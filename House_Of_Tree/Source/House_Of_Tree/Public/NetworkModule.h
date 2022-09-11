@@ -8,12 +8,12 @@
 
 class UHoTGameInstance;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class HOUSE_OF_TREE_API UNetworkModule : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UNetworkModule();
 
@@ -22,36 +22,42 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY()
-	UHoTGameInstance *gameInst;
+		UHoTGameInstance *gameInst;
 
 public:
-	UFUNCTION(BlueprintCallable, Category="Network")
-	void ShootBullet(FVector location, FRotator rotation);
-
-	UFUNCTION(BlueprintCallable, Category="Network")
-	void TargetSpin(AActor *actor , bool forward);
+	UFUNCTION(BlueprintCallable, Category = "Network")
+		void ShootBullet(FVector location, FRotator rotation);
 
 	UFUNCTION(BlueprintCallable, Category = "Network")
-	void CreateRoom();
+		void TargetSpin(AActor *actor, bool forward);
 
 	UFUNCTION(BlueprintCallable, Category = "Network")
-	void JoinRoom(int roomID);
+		void CreateRoom();
 
 	UFUNCTION(BlueprintCallable, Category = "Network")
-	void ReadyGame(bool isReady);
+		void JoinRoom(int roomID);
 
 	UFUNCTION(BlueprintCallable, Category = "Network")
-	void SelectCharacter(int selected);
+		void ReadyGame(bool isReady);
 
 	UFUNCTION(BlueprintCallable, Category = "Network")
-	void ExitRoom();
+		void SelectCharacter(int selected);
 
 	UFUNCTION(BlueprintCallable, Category = "Network")
-	void StartGame();
+		void ExitRoom();
 
 	UFUNCTION(BlueprintCallable, Category = "Network")
-	void DebugGame();
+		void StartGame();
 
 	UFUNCTION(BlueprintCallable, Category = "Network")
-	void ObjectData(AActor *actor);
+		void DebugGame();
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+		void ObjectData(AActor *actor);
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+		void Monster(AActor *actor, int state);
+
+	UFUNCTION(BlueprintCallable, Category = "Network")
+		void BlowUp(AActor *actor);
 };
