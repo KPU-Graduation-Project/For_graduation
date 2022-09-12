@@ -90,6 +90,8 @@ protected:
 	UPROPERTY()
 		PLAYERTYPE playertype;
 
+	void QuitGame();
+
 private:
 	char data[BUFSIZE] = {0};
 	int remainData = 0;

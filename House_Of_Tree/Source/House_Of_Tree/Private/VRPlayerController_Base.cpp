@@ -23,6 +23,8 @@ void AVRPlayerController_Base::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InputComponent->BindAction("Quit", IE_Pressed, this, &AVRPlayerController_Base::QuitGame);
+
 	gameInst = Cast<UHoTGameInstance>(GetWorld()->GetGameInstance());
 
 	if (gameInst)
@@ -41,6 +43,11 @@ void AVRPlayerController_Base::BeginPlay()
 	{
 		DE_SetID.Broadcast(gameInst->GetPlayerID());
 	}
+}
+
+void AVRPlayerController_Base::QuitGame()
+{
+	UKismetSystemLibrary::QuitGame(GetWorld(), 0, EQuitPreference::Quit, false);
 }
 
 void AVRPlayerController_Base::Tick(float DeltaSeconds)
