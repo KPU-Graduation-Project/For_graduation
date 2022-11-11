@@ -5,8 +5,8 @@
 ---
 ### 팀원
 * [고선민 (Kclient)](https://github.com/go4521304) / Client Programmer
-* [우ㅇㅇ (kakik)](https://github.com/kakik) / Server Programmer
-* [최ㅇㅇ (Eundd00)](https://github.com/Eundd00) / Graphic Artist
+* [우찬희 (kakik)](https://github.com/kakik) / Server Programmer
+* [최은서 (Eundd00)](https://github.com/Eundd00) / Graphic Artist
 </br>
 
 * 플레이 영상: https://youtu.be/i8JNwfzPjEs
