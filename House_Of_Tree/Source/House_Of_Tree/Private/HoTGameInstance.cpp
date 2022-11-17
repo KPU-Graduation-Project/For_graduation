@@ -57,17 +57,17 @@ void UHoTGameInstance::InitSocket()
 
 void UHoTGameInstance::SetInfo()
 {
-	// 네비 메쉬
-	if (ExportNavMesh)
-	{
-		FWorldContext Context = GEngine->GetWorldContexts().Last();
-		UWorld *World = Context.World();
-		const UNavigationSystemV1 *NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
-		const ANavigationData *NavData = NavSys->GetDefaultNavDataInstance();
-		const ARecastNavMesh *NavMesh = Cast<ARecastNavMesh>(NavData);
-		NavMesh->GetGenerator()->ExportNavigationData(FString(TEXT("C:\\Users\\Kclient\\Testnavmesh.obj")));
-		UE_LOG(LogInit, Warning, TEXT("NavMeshExported"));
-	}
+	//// 네비 메쉬
+	//if (ExportNavMesh)
+	//{
+	//	FWorldContext Context = GEngine->GetWorldContexts().Last();
+	//	UWorld *World = Context.World();
+	//	const UNavigationSystemV1 *NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
+	//	const ANavigationData *NavData = NavSys->GetDefaultNavDataInstance();
+	//	const ARecastNavMesh *NavMesh = Cast<ARecastNavMesh>(NavData);
+	//	NavMesh->GetGenerator()->ExportNavigationData(FString(TEXT("C:\\Users\\Kclient\\Testnavmesh.obj")));
+	//	UE_LOG(LogInit, Warning, TEXT("NavMeshExported"));
+	//}
 
 	if (bpSet.Num() == 0)
 	{
